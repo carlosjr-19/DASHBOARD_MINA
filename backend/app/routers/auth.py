@@ -12,38 +12,36 @@ class LoginRequest(BaseModel):
     password: str
 
 
-# Usuarios definidos por variables de entorno (backend/.env en local, Variables en Railway)
-# <ROL>_EMAIL y <ROL>_PASSWORD. Si falta alguna de las dos, ese usuario no se habilita.
-_ROLES = [
-    ("ADMIN", "admin", "Administración"),
-    ("PRODUCCION", "produccion", "Producción"),
-    ("COTIZACIONES", "cotizaciones", "Cotizaciones"),
-]
-
-
-def _cargar_usuarios():
-    usuarios = {}
-    for prefijo, role, nombre in _ROLES:
-        email = (os.getenv(f"{prefijo}_EMAIL") or "").strip().lower()
-        password = (os.getenv(f"{prefijo}_PASSWORD") or "").strip()
-        if email and password:
-            usuarios[email] = {"password": password, "role": role, "nombre": nombre}
-    if not usuarios:
-        print("[AUTH] ADVERTENCIA: no hay usuarios configurados. Define ADMIN_EMAIL / ADMIN_PASSWORD, etc.")
-    return usuarios
-
-
-USER_ROLES = _cargar_usuarios()
+# Usuario Administrador definido por variables de entorno (backend/.env en local, Variables en Railway)
+# ADMIN_EMAIL y ADMIN_PASSWORD.
+def _obtener_admin():
+    email = (os.getenv("ADMIN_EMAIL") or "").strip().lower()
+    password = (os.getenv("ADMIN_PASSWORD") or "").strip()
+    if not email or not password:
+        print("[AUTH] ADVERTENCIA: no está configurado ADMIN_EMAIL o ADMIN_PASSWORD en el entorno.")
+    return {
+        "email": email,
+        "password": password,
+        "role": "admin",
+        "nombre": "Administración"
+    }
 
 
 @router.post("/login")
 def login(creds: LoginRequest):
-    user_info = USER_ROLES.get(creds.email.lower().strip())
-    if not user_info or user_info["password"] != creds.password.strip():
+    admin = _obtener_admin()
+    input_user = creds.email.lower().strip()
+    input_pwd = creds.password.strip()
+
+    # Solo se permite el acceso al usuario ADMIN (ya sea con su correo configurado o con el usuario "admin")
+    es_admin = bool(admin["email"]) and (input_user == admin["email"] or input_user == "admin")
+
+    if not es_admin or input_pwd != admin["password"]:
         raise HTTPException(status_code=401, detail="Credenciales incorrectas")
+
     return {
         "success": True,
-        "email": creds.email,
-        "role": user_info["role"],
-        "nombre": user_info["nombre"]
+        "email": admin["email"],
+        "role": admin["role"],
+        "nombre": admin["nombre"]
     }
