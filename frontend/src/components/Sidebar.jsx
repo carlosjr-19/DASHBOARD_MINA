@@ -68,7 +68,7 @@ export default function Sidebar({
       {/* Sidebar element */}
       <aside
         className={`
-          no-print flex flex-col bg-[#161719] border-r border-gray-800/80
+          no-print flex flex-col bg-th-161719 border-r border-gray-800/80
           /* Mobile styles (fixed drawer overlay) */
           fixed inset-y-0 left-0 z-50 w-64 transition-transform duration-300 ease-in-out lg:static lg:z-20
           ${isOpen ? 'translate-x-0 shadow-2xl lg:shadow-none' : '-translate-x-full lg:translate-x-0'}
@@ -124,7 +124,7 @@ export default function Sidebar({
         </nav>
 
         {/* User Card at bottom of sidebar */}
-        <div className="p-3 border-t border-gray-800/80 bg-[#131416]">
+        <div className="p-3 border-t border-gray-800/80 bg-th-131416">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <div className="w-7 h-7 rounded-full bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-xs font-bold text-orange-400 flex-shrink-0">

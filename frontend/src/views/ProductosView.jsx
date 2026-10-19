@@ -48,7 +48,7 @@ export default function ProductosView({
     <div className="space-y-4">
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Catálogo Activo</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-lg sm:text-2xl font-bold text-gray-100">{totalItems}</span>
@@ -56,7 +56,7 @@ export default function ProductosView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Costo Promedio</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm sm:text-xl font-bold font-mono text-gray-200">{formatMoney(costoPromedio)}</span>
@@ -64,7 +64,7 @@ export default function ProductosView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Precio Venta Promedio</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm sm:text-xl font-bold font-mono text-orange-400">{formatMoney(precioPromedio)}</span>
@@ -72,7 +72,7 @@ export default function ProductosView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Ganancia Promedio</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm sm:text-xl font-bold font-mono text-emerald-400">{formatMoney(gananciaPromedio)}</span>
@@ -82,7 +82,7 @@ export default function ProductosView({
       </div>
 
       {/* Toolbar: Search + Add Product */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-[#18191b] p-3 rounded-xl border border-gray-800">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-th-18191b p-3 rounded-xl border border-gray-800">
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
           <input
@@ -90,7 +90,7 @@ export default function ProductosView({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar producto o servicio por nombre o proveedor..."
-            className="w-full bg-[#121314] text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full bg-th-121314 text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
@@ -104,10 +104,10 @@ export default function ProductosView({
       </div>
 
       {/* Product List Table matching Imagen 2 */}
-      <div className="overflow-x-auto rounded-xl border border-gray-800 bg-[#161719] shadow-sm">
+      <div className="overflow-x-auto rounded-xl border border-gray-800 bg-th-161719 shadow-sm">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-gray-800 bg-[#131416] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+            <tr className="border-b border-gray-800 bg-th-131416 text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
               <th className="py-3 px-2 w-8 text-center"></th>
               <th className="py-3 px-3 min-w-[200px]">PRODUCTO / SERVICIO</th>
               <th className="py-3 px-3 text-center min-w-[130px]">PROVEEDOR</th>
@@ -139,7 +139,7 @@ export default function ProductosView({
                       <td className="py-3 px-2 text-center text-gray-400">
                         <button
                           type="button"
-                          className="p-1 hover:text-white rounded transition-colors"
+                          className="p-1 hover:text-gray-50 rounded transition-colors"
                           onClick={(e) => { e.stopPropagation(); toggleExpand(prod.id); }}
                         >
                           {isExp ? (
@@ -205,9 +205,9 @@ export default function ProductosView({
 
                     {/* Expanded Insumos Sub-table (matching Imagen 2) */}
                     {isExp && (
-                      <tr className="bg-[#141517]">
+                      <tr className="bg-th-141517">
                         <td colSpan={8} className="p-3 pl-8 sm:pl-10 border-b border-gray-800">
-                          <div className="bg-[#18191c] rounded-xl border border-gray-800/80 p-3 max-w-4xl shadow-inner">
+                          <div className="bg-th-18191c rounded-xl border border-gray-800/80 p-3 max-w-4xl shadow-inner">
                             <table className="w-full text-left border-collapse text-xs">
                               <thead>
                                 <tr className="border-b border-gray-800 text-[10px] font-bold uppercase text-gray-400">

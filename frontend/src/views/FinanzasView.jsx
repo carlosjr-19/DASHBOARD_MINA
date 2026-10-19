@@ -154,7 +154,7 @@ export default function FinanzasView({
     <div className="space-y-4">
       {/* Top Highlights: Ingresos, Egresos, Flujo Neto */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl shadow-sm">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl shadow-sm">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Total Ingresos</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm sm:text-xl font-bold font-mono text-emerald-400 truncate">{formatMoney(totalIngresos)}</span>
@@ -162,7 +162,7 @@ export default function FinanzasView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl shadow-sm">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl shadow-sm">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Total Egresos / Gastos</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm sm:text-xl font-bold font-mono text-rose-400 truncate">{formatMoney(totalEgresos)}</span>
@@ -170,7 +170,7 @@ export default function FinanzasView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl shadow-sm col-span-2 sm:col-span-1">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl shadow-sm col-span-2 sm:col-span-1">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Flujo Neto en Caja</span>
           <div className="flex items-center justify-between mt-1">
             <span className={`text-sm sm:text-xl font-bold font-mono truncate ${
@@ -229,7 +229,7 @@ export default function FinanzasView({
                 className={`p-3 rounded-xl border cursor-pointer transition-all ${
                   isSelected
                     ? 'bg-orange-600/20 border-orange-500 ring-1 ring-orange-500'
-                    : 'bg-[#1c1d1f] border-gray-800 hover:border-gray-700'
+                    : 'bg-th-1c1d1f border-gray-800 hover:border-gray-700'
                 }`}
               >
                 <div className="flex items-center justify-between">
@@ -255,7 +255,7 @@ export default function FinanzasView({
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'movimientos'
                 ? 'bg-orange-600 text-white shadow-md'
-                : 'bg-[#1c1d1f] text-gray-400 hover:text-gray-200 border border-gray-800'
+                : 'bg-th-1c1d1f text-gray-400 hover:text-gray-200 border border-gray-800'
             }`}
           >
             <CreditCard className="w-4 h-4" />
@@ -276,7 +276,7 @@ export default function FinanzasView({
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'recolecciones'
                 ? 'bg-orange-600 text-white shadow-md'
-                : 'bg-[#1c1d1f] text-gray-400 hover:text-gray-200 border border-gray-800'
+                : 'bg-th-1c1d1f text-gray-400 hover:text-gray-200 border border-gray-800'
             }`}
           >
             <Truck className="w-4 h-4" />
@@ -297,7 +297,7 @@ export default function FinanzasView({
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
               activeTab === 'resico'
                 ? 'bg-orange-600 text-white shadow-md'
-                : 'bg-[#1c1d1f] text-gray-400 hover:text-gray-200 border border-gray-800'
+                : 'bg-th-1c1d1f text-gray-400 hover:text-gray-200 border border-gray-800'
             }`}
           >
             <FileSpreadsheet className="w-4 h-4" />
@@ -327,7 +327,7 @@ export default function FinanzasView({
 
       {/* Category Expenses Breakdown & Filters (Shown for Movimientos de Caja) */}
       {activeTab === 'movimientos' && (
-        <div className="bg-[#18191b] p-3 rounded-xl border border-gray-800 space-y-2.5">
+        <div className="bg-th-18191b p-3 rounded-xl border border-gray-800 space-y-2.5">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
               <Tag className="w-3.5 h-3.5 text-orange-400" />
@@ -343,7 +343,7 @@ export default function FinanzasView({
               className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                 selectedCategoria === 'TODAS'
                   ? 'bg-orange-600 text-white shadow-sm border border-orange-500'
-                  : 'bg-[#151617] text-gray-400 hover:text-gray-200 border border-gray-800 hover:border-gray-700'
+                  : 'bg-th-151617 text-gray-400 hover:text-gray-200 border border-gray-800 hover:border-gray-700'
               }`}
             >
               <span>Todas</span>
@@ -368,7 +368,7 @@ export default function FinanzasView({
                   className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                     isSelected
                       ? 'bg-orange-600 text-white shadow-sm border border-orange-500'
-                      : 'bg-[#151617] text-gray-400 hover:text-gray-200 border border-gray-800 hover:border-gray-700'
+                      : 'bg-th-151617 text-gray-400 hover:text-gray-200 border border-gray-800 hover:border-gray-700'
                   }`}
                 >
                   <span>{cat}</span>
@@ -390,7 +390,7 @@ export default function FinanzasView({
 
       {/* TAB 1: MOVIMIENTOS DE CAJA (Horizontal Single-Row Table) */}
       {activeTab === 'movimientos' && (
-        <div className="bg-[#18191b] rounded-xl border border-gray-800 overflow-hidden shadow-lg">
+        <div className="bg-th-18191b rounded-xl border border-gray-800 overflow-hidden shadow-lg">
           <div className="p-3 border-b border-gray-800 flex items-center justify-between">
             <span className="text-xs font-bold text-gray-300">
               Historial de Movimientos {selectedCuenta !== 'TODAS' ? `(${selectedCuenta})` : ''} {selectedCategoria !== 'TODAS' ? `• [${selectedCategoria}]` : ''}
@@ -401,7 +401,7 @@ export default function FinanzasView({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-[#141517] text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
+                <tr className="bg-th-141517 text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
                   <th className="py-2.5 px-2 text-center w-8"></th>
                   <th className="py-2.5 px-3 text-center min-w-[90px]">TIPO</th>
                   <th className="py-2.5 px-3 text-center min-w-[100px]">FECHA</th>
@@ -424,14 +424,14 @@ export default function FinanzasView({
                         {/* Horizontal Single-Line Movement Row */}
                         <tr 
                           onClick={() => isGroup && toggleGroup(mov.id)}
-                          className={`hover:bg-[#1f2022] transition-colors ${isGroup ? 'cursor-pointer' : ''}`}
+                          className={`hover:bg-th-1f2022 transition-colors ${isGroup ? 'cursor-pointer' : ''}`}
                         >
                           {/* Col 0: Chevron / Expand */}
                           <td className="py-2.5 px-2 text-center">
                             {isGroup ? (
                               <button 
                                 type="button" 
-                                className="p-1 hover:text-white rounded text-gray-400 transition-colors"
+                                className="p-1 hover:text-gray-50 rounded text-gray-400 transition-colors"
                                 onClick={(e) => { e.stopPropagation(); toggleGroup(mov.id); }}
                               >
                                 {isExpanded ? (
@@ -515,13 +515,13 @@ export default function FinanzasView({
 
                         {/* Expandable Grouped Insumos Sub-Table without redundant header */}
                         {isGroup && isExpanded && (
-                          <tr className="bg-[#121315]">
+                          <tr className="bg-th-121315">
                             <td colSpan={8} className="p-3 pl-8 pr-4">
-                              <div className="rounded-lg border border-gray-700/80 overflow-hidden bg-[#18191c]">
+                              <div className="rounded-lg border border-gray-700/80 overflow-hidden bg-th-18191c">
                                 <div className="overflow-x-auto">
                                   <table className="w-full text-left text-xs">
                                     <thead>
-                                      <tr className="bg-[#141517] text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
+                                      <tr className="bg-th-141517 text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
                                         <th className="py-2.5 px-3">INSUMO / MATERIAL</th>
                                         <th className="py-2.5 px-3 text-center">PROVEEDOR</th>
                                         <th className="py-2.5 px-2 text-center">CANT.</th>
@@ -551,7 +551,7 @@ export default function FinanzasView({
                                       ))}
                                     </tbody>
                                     <tfoot>
-                                      <tr className="bg-[#141517] border-t border-gray-700 font-bold text-xs">
+                                      <tr className="bg-th-141517 border-t border-gray-700 font-bold text-xs">
                                         <td colSpan={4} className="py-2.5 px-3 text-right uppercase text-gray-400 font-sans">
                                           Total Insumos Pagados ({mov.cuenta}):
                                         </td>
@@ -584,7 +584,7 @@ export default function FinanzasView({
 
       {/* TAB 2: HISTORIAL DE RECOLECCIONES */}
       {activeTab === 'recolecciones' && (
-        <div className="bg-[#18191b] rounded-xl border border-gray-800 overflow-hidden shadow-lg">
+        <div className="bg-th-18191b rounded-xl border border-gray-800 overflow-hidden shadow-lg">
           <div className="p-3 border-b border-gray-800 flex items-center justify-between">
             <span className="text-xs font-bold text-gray-300">
               Historial de Recolecciones
@@ -595,7 +595,7 @@ export default function FinanzasView({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-[#141517] text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
+                <tr className="bg-th-141517 text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
                   <th className="py-2.5 px-2 text-center w-8"></th>
                   <th className="py-2.5 px-3 text-center min-w-[90px]">FOLIO</th>
                   <th className="py-2.5 px-3 text-center min-w-[100px]">FECHA</th>
@@ -625,12 +625,12 @@ export default function FinanzasView({
                         {/* Single Horizontal Row */}
                         <tr 
                           onClick={() => toggleRecoleccion(rec.id)}
-                          className="hover:bg-[#1f2022] transition-colors cursor-pointer"
+                          className="hover:bg-th-1f2022 transition-colors cursor-pointer"
                         >
                           <td className="py-2.5 px-2 text-center">
                             <button 
                               type="button" 
-                              className="p-1 hover:text-white rounded text-gray-400 transition-colors"
+                              className="p-1 hover:text-gray-50 rounded text-gray-400 transition-colors"
                               onClick={(e) => { e.stopPropagation(); toggleRecoleccion(rec.id); }}
                             >
                               {isExpanded ? (
@@ -694,9 +694,9 @@ export default function FinanzasView({
 
                         {/* Expanded Detail */}
                         {isExpanded && (
-                          <tr className="bg-[#121315]">
+                          <tr className="bg-th-121315">
                             <td colSpan={8} className="p-3 pl-8 pr-4">
-                              <div className="p-3.5 bg-[#161719] border border-gray-800 rounded-xl text-xs space-y-3 animate-in fade-in">
+                              <div className="p-3.5 bg-th-161719 border border-gray-800 rounded-xl text-xs space-y-3 animate-in fade-in">
                                 {/* Expense Breakdown Grid */}
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                                   <div className="p-2.5 rounded-lg bg-cyan-950/30 border border-cyan-800/40 flex items-center justify-between">
@@ -741,7 +741,7 @@ export default function FinanzasView({
                                       const clientName = ped.cliente || (pedidos && pedidos.find(p => p.id === ped.pedidoId)?.cliente) || 'Cliente';
 
                                       return (
-                                        <div key={pIdx} className="p-2 rounded-lg bg-[#1a1b1e] border border-gray-800 flex items-center justify-between text-[11px]">
+                                        <div key={pIdx} className="p-2 rounded-lg bg-th-1a1b1e border border-gray-800 flex items-center justify-between text-[11px]">
                                           <div className="flex items-center gap-2 truncate">
                                             <span className="font-mono font-bold text-orange-400 bg-orange-950/80 px-1.5 py-0.2 rounded border border-orange-800">
                                               {ped.pedidoId}

@@ -136,7 +136,7 @@ export default function ClientesView({
     <div className="space-y-4">
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Total Clientes</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-lg sm:text-2xl font-bold text-gray-100">{clientes.length}</span>
@@ -144,7 +144,7 @@ export default function ClientesView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Deuda Pendiente Total</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm sm:text-xl font-bold font-mono text-rose-400 truncate">{formatMoney(totalDeuda)}</span>
@@ -152,7 +152,7 @@ export default function ClientesView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl col-span-2 sm:col-span-1">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl col-span-2 sm:col-span-1">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Ganancia Histórica</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm sm:text-xl font-bold font-mono text-emerald-400 truncate">{formatMoney(totalGanancia)}</span>
@@ -162,7 +162,7 @@ export default function ClientesView({
       </div>
 
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-2.5 bg-[#18191b] p-3 rounded-xl border border-gray-800">
+      <div className="flex items-center justify-between gap-2.5 bg-th-18191b p-3 rounded-xl border border-gray-800">
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
           <input
@@ -170,7 +170,7 @@ export default function ClientesView({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar por nombre, RFC o teléfono..."
-            className="w-full bg-[#121314] text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full bg-th-121314 text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
@@ -190,7 +190,7 @@ export default function ClientesView({
             <div 
               key={idx} 
               onClick={() => setSelectedClienteHistory(cli)}
-              className="bg-[#1c1d1f] border border-gray-800 rounded-xl p-3 flex flex-col justify-between hover:border-orange-500/60 transition-all shadow-sm cursor-pointer group"
+              className="bg-th-1c1d1f border border-gray-800 rounded-xl p-3 flex flex-col justify-between hover:border-orange-500/60 transition-all shadow-sm cursor-pointer group"
               title="Haz clic para ver el historial de pedidos de este cliente"
             >
               <div>
@@ -233,7 +233,7 @@ export default function ClientesView({
               </div>
 
               {/* Metrics (compact layout with small text) */}
-              <div className="grid grid-cols-3 gap-1 bg-[#151617] p-2 rounded-lg border border-gray-800 text-center text-xs mt-2.5">
+              <div className="grid grid-cols-3 gap-1 bg-th-151617 p-2 rounded-lg border border-gray-800 text-center text-xs mt-2.5">
                 <div>
                   <span className="text-[9px] text-gray-500 block uppercase">Pedidos</span>
                   <span className="font-bold text-gray-200 text-xs">{cli.pedidos || 0}</span>
@@ -252,7 +252,7 @@ export default function ClientesView({
             </div>
           ))
         ) : (
-          <div className="col-span-full bg-[#1c1d1f] border border-gray-800 rounded-xl p-12 text-center text-gray-500">
+          <div className="col-span-full bg-th-1c1d1f border border-gray-800 rounded-xl p-12 text-center text-gray-500">
             <Users className="w-10 h-10 mx-auto text-gray-600 mb-2" />
             <p className="text-sm font-semibold">No se encontraron clientes</p>
           </div>
@@ -262,9 +262,9 @@ export default function ClientesView({
       {/* MODAL HISTORIAL DEL CLIENTE (Imagen 5 de referencia) */}
       {selectedClienteHistory && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm overflow-y-auto animate-in fade-in">
-          <div className="bg-[#1b1c1e] border border-gray-700 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col">
+          <div className="bg-th-1b1c1e border border-gray-700 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col">
             {/* Header del Modal */}
-            <div className="p-4 sm:p-5 border-b border-gray-800 flex items-start justify-between bg-[#151618] shrink-0">
+            <div className="p-4 sm:p-5 border-b border-gray-800 flex items-start justify-between bg-th-151618 shrink-0">
               <div>
                 <h3 className="text-lg sm:text-xl font-bold text-gray-100">
                   {selectedClienteHistory.nombre}
@@ -304,7 +304,7 @@ export default function ClientesView({
             </div>
 
             {/* Sub-header Stats */}
-            <div className="p-3 bg-[#131416] border-b border-gray-800/80 flex items-center justify-around text-center text-xs">
+            <div className="p-3 bg-th-131416 border-b border-gray-800/80 flex items-center justify-around text-center text-xs">
               <div>
                 <span className="text-[10px] text-gray-500 uppercase block">Total Cobrado</span>
                 <span className="font-mono font-bold text-gray-100 text-sm">{formatMoney(totalCobradoCliente)}</span>
@@ -331,7 +331,7 @@ export default function ClientesView({
                   return (
                     <div 
                       key={order.id} 
-                      className="bg-[#18191c] border border-gray-700/80 rounded-xl overflow-hidden shadow-sm"
+                      className="bg-th-18191c border border-gray-700/80 rounded-xl overflow-hidden shadow-sm"
                     >
                       {/* Accordion Row */}
                       <div 
@@ -339,7 +339,7 @@ export default function ClientesView({
                         className="p-3 sm:p-3.5 flex items-center justify-between cursor-pointer hover:bg-gray-800/40 transition-colors gap-2"
                       >
                         <div className="flex items-center gap-2.5">
-                          <button type="button" className="p-1 text-gray-400 hover:text-white rounded">
+                          <button type="button" className="p-1 text-gray-400 hover:text-gray-50 rounded">
                             {isExpanded ? (
                               <ChevronDown className="w-4 h-4 text-orange-400" />
                             ) : (
@@ -376,11 +376,11 @@ export default function ClientesView({
 
                       {/* Expanded Products Table matching Image 5 Structure */}
                       {isExpanded && (
-                        <div className="p-3 bg-[#131416] border-t border-gray-800 animate-in fade-in">
-                          <div className="overflow-x-auto rounded-lg border border-gray-800 bg-[#17181b]">
+                        <div className="p-3 bg-th-131416 border-t border-gray-800 animate-in fade-in">
+                          <div className="overflow-x-auto rounded-lg border border-gray-800 bg-th-17181b">
                             <table className="w-full text-left text-xs">
                               <thead>
-                                <tr className="bg-[#1c1d21] text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
+                                <tr className="bg-th-1c1d21 text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
                                   <th className="py-2 px-3">DETALLE</th>
                                   <th className="py-2 px-3 text-center">PRECIO UNIT</th>
                                   <th className="py-2 px-2 text-center">CANTIDAD</th>
@@ -440,7 +440,7 @@ export default function ClientesView({
       {/* Modal Add / Edit */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="bg-[#1e2022] border border-gray-700 w-full max-w-sm rounded-xl p-4 space-y-3">
+          <div className="bg-th-1e2022 border border-gray-700 w-full max-w-sm rounded-xl p-4 space-y-3">
             <h3 className="font-bold text-gray-100 text-sm">
               {editingCliente ? 'Editar Cliente' : 'Registrar Nuevo Cliente'}
             </h3>
@@ -453,7 +453,7 @@ export default function ClientesView({
                   required
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
-                  className="w-full bg-[#151617] text-gray-200 p-2 rounded border border-gray-700"
+                  className="w-full bg-th-151617 text-gray-200 p-2 rounded border border-gray-700"
                 />
               </div>
 
@@ -464,7 +464,7 @@ export default function ClientesView({
                     type="text"
                     value={telefono}
                     onChange={(e) => setTelefono(e.target.value)}
-                    className="w-full bg-[#151617] text-gray-200 p-2 rounded border border-gray-700"
+                    className="w-full bg-th-151617 text-gray-200 p-2 rounded border border-gray-700"
                   />
                 </div>
                 <div>
@@ -473,7 +473,7 @@ export default function ClientesView({
                     type="email"
                     value={correo}
                     onChange={(e) => setCorreo(e.target.value)}
-                    className="w-full bg-[#151617] text-gray-200 p-2 rounded border border-gray-700"
+                    className="w-full bg-th-151617 text-gray-200 p-2 rounded border border-gray-700"
                   />
                 </div>
               </div>
@@ -486,14 +486,14 @@ export default function ClientesView({
                     placeholder="RFC"
                     value={rfc}
                     onChange={(e) => setRfc(e.target.value.toUpperCase())}
-                    className="bg-[#151617] text-gray-200 p-2 rounded border border-gray-700 uppercase font-mono"
+                    className="bg-th-151617 text-gray-200 p-2 rounded border border-gray-700 uppercase font-mono"
                   />
                   <input
                     type="text"
                     placeholder="Código Postal"
                     value={cp}
                     onChange={(e) => setCp(e.target.value)}
-                    className="bg-[#151617] text-gray-200 p-2 rounded border border-gray-700"
+                    className="bg-th-151617 text-gray-200 p-2 rounded border border-gray-700"
                   />
                 </div>
               </div>

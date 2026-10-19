@@ -41,7 +41,7 @@ export default function ModalCambiarEstatus({ order, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-      <div className="bg-[#1e2022] border border-gray-700 w-full max-w-sm rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
+      <div className="bg-th-1e2022 border border-gray-700 w-full max-w-sm rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
         <div className="flex items-center justify-between p-4 border-b border-gray-800">
           <h3 className="font-bold text-gray-100 text-sm">
             Cambiar Estatus: <span className="text-orange-400 font-mono">{order?.id}</span>
@@ -65,7 +65,7 @@ export default function ModalCambiarEstatus({ order, onClose, onSave }) {
                   className={`px-3 py-2 text-xs font-medium rounded-lg border text-left transition-all ${
                     selectedStatus === st
                       ? 'bg-orange-600/30 text-orange-300 border-orange-500 ring-1 ring-orange-500'
-                      : 'bg-[#151617] text-gray-300 border-gray-800 hover:border-gray-700'
+                      : 'bg-th-151617 text-gray-300 border-gray-800 hover:border-gray-700'
                   }`}
                 >
                   {st}
@@ -84,7 +84,7 @@ export default function ModalCambiarEstatus({ order, onClose, onSave }) {
                 type="date"
                 value={fechaEntrega}
                 onChange={(e) => setFechaEntrega(e.target.value)}
-                className="w-full bg-[#121314] text-xs text-gray-200 border border-emerald-900/60 rounded p-2 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                className="w-full bg-th-121314 text-xs text-gray-200 border border-emerald-900/60 rounded p-2 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
               />
             </div>
           )}
@@ -100,13 +100,13 @@ export default function ModalCambiarEstatus({ order, onClose, onSave }) {
                 onChange={(e) => setMotivoCancelacion(e.target.value)}
                 placeholder="Escribe la razón (el stock se restituirá automáticamente)..."
                 rows={2}
-                className="w-full bg-[#121314] text-xs text-gray-200 border border-rose-900/60 rounded p-2 focus:ring-1 focus:ring-rose-500 focus:outline-none"
+                className="w-full bg-th-121314 text-xs text-gray-200 border border-rose-900/60 rounded p-2 focus:ring-1 focus:ring-rose-500 focus:outline-none"
               />
             </div>
           )}
         </div>
 
-        <div className="p-3 bg-[#17181a] border-t border-gray-800 flex justify-end gap-2">
+        <div className="p-3 bg-th-17181a border-t border-gray-800 flex justify-end gap-2">
           <button
             onClick={onClose}
             className="px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:text-gray-200 bg-gray-800"

@@ -91,7 +91,7 @@ export default function InventarioView({
     <div className="space-y-4">
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Total Insumos</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-lg sm:text-2xl font-bold text-gray-100">{inventario.length}</span>
@@ -99,7 +99,7 @@ export default function InventarioView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Stock Bajo / Alertas</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-lg sm:text-2xl font-bold text-rose-400">{lowStockCount}</span>
@@ -107,7 +107,7 @@ export default function InventarioView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl col-span-2 sm:col-span-1">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl col-span-2 sm:col-span-1">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Valorización Inventario</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm sm:text-xl font-bold font-mono text-emerald-400 truncate">{formatMoney(totalValue)}</span>
@@ -117,7 +117,7 @@ export default function InventarioView({
       </div>
 
       {/* Search & Add Action */}
-      <div className="flex items-center justify-between gap-2.5 bg-[#18191b] p-3 rounded-xl border border-gray-800">
+      <div className="flex items-center justify-between gap-2.5 bg-th-18191b p-3 rounded-xl border border-gray-800">
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
           <input
@@ -125,7 +125,7 @@ export default function InventarioView({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar material o proveedor..."
-            className="w-full bg-[#121314] text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full bg-th-121314 text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
@@ -139,7 +139,7 @@ export default function InventarioView({
       </div>
 
       {/* Items List - Table Style horizontal single-row matching Pedidos and Cuentas */}
-      <div className="bg-[#18191b] rounded-xl border border-gray-800 overflow-hidden shadow-lg">
+      <div className="bg-th-18191b rounded-xl border border-gray-800 overflow-hidden shadow-lg">
         <div className="p-3 border-b border-gray-800 flex items-center justify-between">
           <span className="text-xs font-bold text-gray-300">
             Catálogo de Insumos y Materiales en Stock
@@ -150,7 +150,7 @@ export default function InventarioView({
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="bg-[#141517] text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
+              <tr className="bg-th-141517 text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
                 <th className="py-2.5 px-2 text-center w-8"></th>
                 <th className="py-2.5 px-3 min-w-[200px]">MATERIAL / INSUMO</th>
                 <th className="py-2.5 px-3 text-center min-w-[130px]">PROVEEDOR</th>
@@ -173,13 +173,13 @@ export default function InventarioView({
                       {/* Horizontal Single Line Row */}
                       <tr 
                         onClick={() => setExpandedItemId(isExpanded ? null : item.id)}
-                        className="hover:bg-[#1f2022] transition-colors cursor-pointer"
+                        className="hover:bg-th-1f2022 transition-colors cursor-pointer"
                       >
                         {/* Col 0: Chevron */}
                         <td className="py-2.5 px-2 text-center">
                           <button 
                             type="button" 
-                            className="p-1 hover:text-white rounded text-gray-400 transition-colors"
+                            className="p-1 hover:text-gray-50 rounded text-gray-400 transition-colors"
                             onClick={(e) => { e.stopPropagation(); setExpandedItemId(isExpanded ? null : item.id); }}
                           >
                             {isExpanded ? (
@@ -259,9 +259,9 @@ export default function InventarioView({
 
                       {/* Expanded Usos Detail */}
                       {isExpanded && (
-                        <tr className="bg-[#121315]">
+                        <tr className="bg-th-121315">
                           <td colSpan={8} className="p-3 pl-8 pr-4">
-                            <div className="p-3.5 bg-[#161719] border border-gray-800 rounded-xl text-xs space-y-2.5 animate-in fade-in">
+                            <div className="p-3.5 bg-th-161719 border border-gray-800 rounded-xl text-xs space-y-2.5 animate-in fade-in">
                               <div className="flex items-center justify-between">
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-orange-400 flex items-center gap-1.5">
                                   <Clock className="w-3.5 h-3.5" />
@@ -273,10 +273,10 @@ export default function InventarioView({
                               </div>
 
                               {item.usos && item.usos.length > 0 ? (
-                                <div className="overflow-x-auto rounded-lg border border-gray-800 bg-[#141517]">
+                                <div className="overflow-x-auto rounded-lg border border-gray-800 bg-th-141517">
                                   <table className="w-full text-left text-xs">
                                     <thead>
-                                      <tr className="bg-[#1f2024] text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold">
+                                      <tr className="bg-th-1f2024 text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold">
                                         <th className="py-2 px-3 text-center">TIPO</th>
                                         <th className="py-2 px-3 text-center">PEDIDO</th>
                                         <th className="py-2 px-3">MOTIVO / DESCRIPCIÓN</th>
@@ -342,7 +342,7 @@ export default function InventarioView({
       {/* Add / Edit Insumo Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="bg-[#1e2022] border border-gray-700 w-full max-w-sm rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
+          <div className="bg-th-1e2022 border border-gray-700 w-full max-w-sm rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
             <div className="p-4 border-b border-gray-800 flex items-center justify-between">
               <h3 className="font-bold text-gray-100 text-sm">
                 {editingItem ? 'Editar Insumo' : 'Agregar Nuevo Insumo a Stock'}
@@ -362,7 +362,7 @@ export default function InventarioView({
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
                   placeholder="Ej. Vinil Textil Blanco, Taza Blanca 11oz..."
-                  className="w-full bg-[#151617] text-gray-200 p-2 rounded-lg border border-gray-700 text-xs focus:ring-1 focus:ring-orange-500 focus:outline-none"
+                  className="w-full bg-th-151617 text-gray-200 p-2 rounded-lg border border-gray-700 text-xs focus:ring-1 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
 
@@ -373,7 +373,7 @@ export default function InventarioView({
                   value={proveedor}
                   onChange={(e) => setProveedor(e.target.value)}
                   placeholder="Ej. Papelera del Centro, Propio..."
-                  className="w-full bg-[#151617] text-gray-200 p-2 rounded-lg border border-gray-700 text-xs text-center focus:ring-1 focus:ring-orange-500 focus:outline-none"
+                  className="w-full bg-th-151617 text-gray-200 p-2 rounded-lg border border-gray-700 text-xs text-center focus:ring-1 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
 
@@ -387,7 +387,7 @@ export default function InventarioView({
                     value={precio}
                     onChange={(e) => setPrecio(e.target.value)}
                     placeholder="0.00"
-                    className="w-full bg-[#151617] text-gray-200 p-2 rounded-lg border border-gray-700 text-xs font-mono font-bold"
+                    className="w-full bg-th-151617 text-gray-200 p-2 rounded-lg border border-gray-700 text-xs font-mono font-bold"
                   />
                 </div>
 
@@ -400,7 +400,7 @@ export default function InventarioView({
                     value={stock}
                     onChange={(e) => setStock(e.target.value)}
                     placeholder="0"
-                    className="w-full bg-[#151617] text-gray-200 p-2 rounded-lg border border-gray-700 text-xs font-mono font-bold text-emerald-400"
+                    className="w-full bg-th-151617 text-gray-200 p-2 rounded-lg border border-gray-700 text-xs font-mono font-bold text-emerald-400"
                   />
                 </div>
               </div>
@@ -412,7 +412,7 @@ export default function InventarioView({
                   value={alerta}
                   onChange={(e) => setAlerta(e.target.value)}
                   placeholder="5"
-                  className="w-full bg-[#151617] text-gray-200 p-2 rounded-lg border border-gray-700 text-xs font-mono"
+                  className="w-full bg-th-151617 text-gray-200 p-2 rounded-lg border border-gray-700 text-xs font-mono"
                 />
               </div>
 

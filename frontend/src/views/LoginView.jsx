@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function LoginView({ onLogin }) {
   const [email, setEmail] = useState('ventas.minadesign@gmail.com');
-  const [password, setPassword] = useState('1210');
+  const [password, setPassword] = useState('');
+  const passwordRef = useRef(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -22,12 +24,15 @@ export default function LoginView({ onLogin }) {
 
   const selectAccount = (mail) => {
     setEmail(mail);
-    setPassword('1210');
+    setPassword('');
+    setError('');
+    passwordRef.current?.focus();
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#121314]">
-      <div className="w-full max-w-sm bg-[#1c1d1f] border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-th-121314 relative">
+      <ThemeToggle className="absolute top-4 right-4" />
+      <div className="w-full max-w-sm bg-th-1c1d1f border border-gray-800 rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
         {/* Brand */}
         <div className="text-center space-y-2">
           <div className="w-14 h-14 rounded-2xl bg-orange-600 flex items-center justify-center mx-auto shadow-lg shadow-orange-950 font-extrabold text-2xl text-white">
@@ -56,7 +61,7 @@ export default function LoginView({ onLogin }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="usuario@minadesign.com"
-                className="w-full bg-[#151617] text-gray-100 pl-9 pr-3 py-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm"
+                className="w-full bg-th-151617 text-gray-100 pl-9 pr-3 py-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm"
               />
             </div>
           </div>
@@ -69,11 +74,13 @@ export default function LoginView({ onLogin }) {
               <Lock className="w-4 h-4 absolute left-3 top-2.5 text-gray-500" />
               <input
                 type="password"
+                ref={passwordRef}
+                autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••"
-                className="w-full bg-[#151617] text-gray-100 pl-9 pr-3 py-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm"
+                className="w-full bg-th-151617 text-gray-100 pl-9 pr-3 py-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm"
               />
             </div>
           </div>
@@ -95,20 +102,23 @@ export default function LoginView({ onLogin }) {
           </span>
           <div className="grid grid-cols-3 gap-1.5 text-[10px]">
             <button
+              type="button"
               onClick={() => selectAccount('ventas.minadesign@gmail.com')}
-              className="p-1.5 bg-[#151617] hover:bg-gray-800 rounded border border-gray-700/60 text-gray-300 transition-colors"
+              className="p-1.5 bg-th-151617 hover:bg-gray-800 rounded border border-gray-700/60 text-gray-300 transition-colors"
             >
               Admin
             </button>
             <button
+              type="button"
               onClick={() => selectAccount('produccion.minadesign@gmail.com')}
-              className="p-1.5 bg-[#151617] hover:bg-gray-800 rounded border border-gray-700/60 text-gray-300 transition-colors"
+              className="p-1.5 bg-th-151617 hover:bg-gray-800 rounded border border-gray-700/60 text-gray-300 transition-colors"
             >
               Producción
             </button>
             <button
+              type="button"
               onClick={() => selectAccount('cotizaciones.minadesign@gmail.com')}
-              className="p-1.5 bg-[#151617] hover:bg-gray-800 rounded border border-gray-700/60 text-gray-300 transition-colors"
+              className="p-1.5 bg-th-151617 hover:bg-gray-800 rounded border border-gray-700/60 text-gray-300 transition-colors"
             >
               Cotizador
             </button>

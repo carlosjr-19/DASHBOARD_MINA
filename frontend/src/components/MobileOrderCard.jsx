@@ -100,14 +100,14 @@ export default function MobileOrderCard({
       <tr 
         onClick={() => setExpanded(!expanded)} 
         className={`hover:bg-gray-800/40 cursor-pointer transition-colors border-b border-gray-800/80 text-xs ${
-          isCancelled ? 'opacity-40 grayscale bg-[#121314]/90 text-gray-500' : ''
+          isCancelled ? 'opacity-40 grayscale bg-th-121314/90 text-gray-500' : ''
         }`}
       >
         {/* 1. Expand Chevron */}
         <td className="py-3 px-2 text-center text-gray-400 w-8">
           <button 
             type="button" 
-            className="p-1 hover:text-white rounded transition-colors"
+            className="p-1 hover:text-gray-50 rounded transition-colors"
             onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
           >
             {expanded ? (
@@ -263,7 +263,7 @@ export default function MobileOrderCard({
 
       {/* Expanded Details Section */}
       {expanded && (
-        <tr className="bg-[#151618]">
+        <tr className="bg-th-151618">
           <td colSpan={10} className="p-3.5 sm:p-4 border-b border-gray-800">
             {/* Header of Desglose: DESGLOSE DE COSTOS E INSUMOS + Financial metrics */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-gray-800/80">
@@ -297,7 +297,7 @@ export default function MobileOrderCard({
             </div>
 
           {/* Table matching reference structure: Compact layout without redundant thead */}
-          <div className="overflow-x-auto rounded-lg border border-gray-800 bg-[#141517]">
+          <div className="overflow-x-auto rounded-lg border border-gray-800 bg-th-141517">
             <table className="w-full text-left border-collapse text-xs">
               <tbody className="divide-y divide-gray-800/60">
                 {order.productos && order.productos.length > 0 ? (
@@ -321,7 +321,7 @@ export default function MobileOrderCard({
                     return (
                       <React.Fragment key={idx}>
                         {/* Product Header Row - Col 1 is product info, Cols 2-7 are column titles */}
-                        <tr className="bg-[#1b1c20] border-t-2 border-b border-gray-700/80 font-medium">
+                        <tr className="bg-th-1b1c20 border-t-2 border-b border-gray-700/80 font-medium">
                           <td className="py-2.5 px-3 min-w-[180px]">
                             <div className="font-bold text-gray-100 text-xs sm:text-sm">
                               {cantProd}x {prod.nombre}
@@ -455,7 +455,7 @@ export default function MobileOrderCard({
                         })}
 
                         {/* Product Financial Metrics Footer (Recuadro Naranja movido a la parte de abajo) */}
-                        <tr className="bg-[#17181b] border-b border-gray-800">
+                        <tr className="bg-th-17181b border-b border-gray-800">
                           <td colSpan={7} className="py-2 px-3">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                               <span className="text-[10px] uppercase font-bold text-gray-400">
@@ -491,7 +491,7 @@ export default function MobileOrderCard({
 
                 {/* Gastos de Recolección / Logística en una sola línea */}
                 {order.recolecciones && order.recolecciones.length > 0 && order.recolecciones.map((rec, rIdx) => (
-                  <tr key={rIdx} className="bg-[#181613] border-t border-amber-900/40 text-[11px]">
+                  <tr key={rIdx} className="bg-th-181613 border-t border-amber-900/40 text-[11px]">
                     <td colSpan={7} className="py-2.5 px-3">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-gray-300">
                         <div className="flex items-center gap-2 flex-wrap">

@@ -1,0 +1,62 @@
+========================================================================
+           MINA DESIGN ERP - GUÍA DE COMANDOS MANUALES
+========================================================================
+
+1. ACCESO RÁPIDO CON ARCHIVO .BAT:
+----------------------------------
+Simplemente haz doble clic en el archivo "iniciar_sistema.bat" en la raíz
+del proyecto. Esto arrancará el servidor en http://localhost:8000 y abrirá
+automáticamente tu navegador.
+
+
+2. EJECUCIÓN MANUAL DEL BACKEND (FastAPI + Python):
+---------------------------------------------------
+Abre una terminal (PowerShell o CMD) en la carpeta "backend":
+
+    cd "j:\Mi unidad\DASHBOARD_MINA\backend"
+    uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+El backend estará disponible en:
+- Panel y App Web:       http://localhost:8000
+- Documentación Swagger: http://localhost:8000/docs
+- Base de datos SQLite:  backend/app/db/mina_design.db
+
+
+3. EJECUCIÓN MANUAL DEL FRONTEND (React + Vite Dev):
+----------------------------------------------------
+Para desarrollo con recarga en caliente (Hot Reload):
+
+    $env:PATH = "j:\Mi unidad\DASHBOARD_MINA\node_full\node-v20.18.0-win-x64;" + $env:PATH
+    cd "C:\Users\natha\mina_frontend"
+    npm run dev
+
+La interfaz se abrirá en: http://localhost:5173
+(Las peticiones a /api se redirigen automáticamente al puerto 8000).
+
+
+4. COMPILACIÓN DE PRODUCCIÓN DEL FRONTEND (Build):
+-------------------------------------------------
+Para generar los archivos estáticos optimizados en /dist:
+
+    $env:PATH = "j:\Mi unidad\DASHBOARD_MINA\node_full\node-v20.18.0-win-x64;" + $env:PATH
+    cd "C:\Users\natha\mina_frontend"
+    npm run build
+    Copy-Item -Path "dist" -Destination "j:\Mi unidad\DASHBOARD_MINA\frontend\dist" -Recurse -Force
+
+
+5. EJECUCIÓN CON DOCKER:
+------------------------
+Para compilar y correr la imagen Docker que contiene todo (Frontend + Backend):
+
+    docker build -t mina-design-erp .
+    docker run -d -p 8000:8000 --name mina-erp mina-design-erp
+
+Acceso: http://localhost:8000
+
+
+6. CREDENCIALES DE ACCESO:
+--------------------------
+- Administrador:  ventas.minadesign@gmail.com        | Contraseña: 1210
+- Producción:     produccion.minadesign@gmail.com    | Contraseña: 1210
+- Cotizaciones:   cotizaciones.minadesign@gmail.com  | Contraseña: 1210
+========================================================================

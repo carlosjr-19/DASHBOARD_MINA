@@ -53,7 +53,7 @@ export default function PedidosView({
     <div className="space-y-4">
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Total Pedidos</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-lg sm:text-2xl font-bold text-gray-100">{listPedidos.length}</span>
@@ -61,7 +61,7 @@ export default function PedidosView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">En Producción / Activos</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-lg sm:text-2xl font-bold text-blue-400">{activosCount}</span>
@@ -69,7 +69,7 @@ export default function PedidosView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Total Cobrado</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm sm:text-xl font-bold font-mono text-emerald-400 truncate">{formatMoney(totalCobrado)}</span>
@@ -77,7 +77,7 @@ export default function PedidosView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Ganancia Real</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm sm:text-xl font-bold font-mono text-emerald-400 truncate">{formatMoney(totalGanancia)}</span>
@@ -87,7 +87,7 @@ export default function PedidosView({
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-[#18191b] p-2.5 rounded-xl border border-gray-800">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-th-18191b p-2.5 rounded-xl border border-gray-800">
         {/* Buscador más pequeño */}
         <div className="relative w-full sm:w-60 md:w-64 shrink-0">
           <Search className="w-3.5 h-3.5 absolute left-2.5 top-2 text-gray-400 pointer-events-none" />
@@ -96,7 +96,7 @@ export default function PedidosView({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar cliente o folio..."
-            className="w-full bg-[#121314] text-[11px] text-gray-100 pl-8 pr-2.5 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full bg-th-121314 text-[11px] text-gray-100 pl-8 pr-2.5 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
@@ -122,7 +122,7 @@ export default function PedidosView({
                 className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                   isSelected
                     ? 'bg-orange-600 text-white shadow-sm border border-orange-500'
-                    : 'bg-[#151617] text-gray-400 hover:text-gray-200 border border-gray-800 hover:border-gray-700'
+                    : 'bg-th-151617 text-gray-400 hover:text-gray-200 border border-gray-800 hover:border-gray-700'
                 }`}
               >
                 <span>{st.label}</span>
@@ -142,10 +142,10 @@ export default function PedidosView({
       </div>
 
       {/* Orders Table Container matching reference image */}
-      <div className="overflow-x-auto rounded-xl border border-gray-800 bg-[#161719] shadow-sm">
+      <div className="overflow-x-auto rounded-xl border border-gray-800 bg-th-161719 shadow-sm">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-gray-800 bg-[#131416] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+            <tr className="border-b border-gray-800 bg-th-131416 text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
               <th className="py-3 px-2 w-8"></th>
               <th className="py-3 px-3 min-w-[95px]">ID</th>
               <th className="py-3 px-3 min-w-[100px]">FECHA</th>

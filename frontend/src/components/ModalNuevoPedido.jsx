@@ -426,17 +426,17 @@ export default function ModalNuevoPedido({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-sm overflow-y-auto">
       {/* Modal Container más amplio (max-w-5xl) para que no esté amontonado */}
-      <div className="bg-[#1b1c1e] border border-gray-700 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[95vh] flex flex-col animate-in fade-in zoom-in-95">
+      <div className="bg-th-1b1c1e border border-gray-700 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[95vh] flex flex-col animate-in fade-in zoom-in-95">
         
         {/* Header Superior Fijo */}
-        <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-[#151618] shrink-0">
+        <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-th-151618 shrink-0">
           <div className="flex items-center gap-3">
             <span className="font-bold text-gray-100 text-sm sm:text-base">
               {isEditing ? 'Editar' : 'Crear'} {pedidoTipo === 'COTIZACION' ? 'Presupuesto / Cotización' : 'Pedido'}
             </span>
 
             {!isEditing && (
-              <div className="flex items-center bg-[#111213] rounded-lg p-0.5 border border-gray-700 text-xs">
+              <div className="flex items-center bg-th-111213 rounded-lg p-0.5 border border-gray-700 text-xs">
                 <button
                   type="button"
                   onClick={() => setPedidoTipo('PEDIDO')}
@@ -472,7 +472,7 @@ export default function ModalNuevoPedido({
         <form onSubmit={handleSubmit} className="overflow-y-auto p-4 sm:p-5 space-y-4 text-xs flex-1">
           
           {/* 1. Datos del Cliente */}
-          <div className="bg-[#141517] p-4 rounded-xl border border-gray-800 space-y-3">
+          <div className="bg-th-141517 p-4 rounded-xl border border-gray-800 space-y-3">
             <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400 block">
               1. Datos del Cliente
             </span>
@@ -487,7 +487,7 @@ export default function ModalNuevoPedido({
                   value={clienteNombre}
                   onChange={(e) => handleSelectCliente(e.target.value)}
                   placeholder="Escribe o selecciona..."
-                  className="w-full bg-[#1c1d1f] text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:ring-1 focus:ring-orange-500 focus:outline-none"
+                  className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                 />
                 <datalist id="clientes-list">
                   {clientes.map((c, i) => (
@@ -503,7 +503,7 @@ export default function ModalNuevoPedido({
                   value={telefono}
                   onChange={(e) => setTelefono(e.target.value)}
                   placeholder="10 dígitos"
-                  className="w-full bg-[#1c1d1f] text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:ring-1 focus:ring-orange-500 focus:outline-none"
+                  className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
 
@@ -514,7 +514,7 @@ export default function ModalNuevoPedido({
                   value={fechaEntrega}
                   onClick={(e) => e.target.showPicker && e.target.showPicker()}
                   onChange={(e) => setFechaEntrega(e.target.value)}
-                  className="w-full bg-[#1c1d1f] text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:ring-1 focus:ring-orange-500 focus:outline-none cursor-pointer"
+                  className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:ring-1 focus:ring-orange-500 focus:outline-none cursor-pointer"
                 />
               </div>
             </div>
@@ -533,7 +533,7 @@ export default function ModalNuevoPedido({
                 </label>
 
                 {requiereFactura && (
-                  <div className="flex items-center gap-2 bg-[#101112] p-1 rounded-lg border border-gray-700 text-xs">
+                  <div className="flex items-center gap-2 bg-th-101112 p-1 rounded-lg border border-gray-700 text-xs">
                     <label className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md cursor-pointer transition-all ${
                       tipoPersona === 'Fisica' ? 'bg-orange-600/30 text-orange-300 font-bold border border-orange-500/40' : 'text-gray-400'
                     }`}>
@@ -566,7 +566,7 @@ export default function ModalNuevoPedido({
               </div>
 
               {requiereFactura && (
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 bg-[#101112] rounded-xl border border-gray-800 animate-in fade-in">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 bg-th-101112 rounded-xl border border-gray-800 animate-in fade-in">
                   <div>
                     <label className="text-gray-400 block mb-1">RFC</label>
                     <input
@@ -574,7 +574,7 @@ export default function ModalNuevoPedido({
                       value={rfc}
                       onChange={(e) => setRfc(e.target.value.toUpperCase())}
                       placeholder="XAXX010101000"
-                      className="w-full bg-[#1c1d1f] text-gray-100 p-2 rounded border border-gray-700 uppercase font-mono"
+                      className="w-full bg-th-1c1d1f text-gray-100 p-2 rounded border border-gray-700 uppercase font-mono"
                     />
                   </div>
                   <div>
@@ -584,7 +584,7 @@ export default function ModalNuevoPedido({
                       value={razonSocial}
                       onChange={(e) => setRazonSocial(e.target.value)}
                       placeholder="Nombre fiscal de la empresa"
-                      className="w-full bg-[#1c1d1f] text-gray-100 p-2 rounded border border-gray-700"
+                      className="w-full bg-th-1c1d1f text-gray-100 p-2 rounded border border-gray-700"
                     />
                   </div>
                   <div>
@@ -594,7 +594,7 @@ export default function ModalNuevoPedido({
                       value={cp}
                       onChange={(e) => setCp(e.target.value)}
                       placeholder="72000"
-                      className="w-full bg-[#1c1d1f] text-gray-100 p-2 rounded border border-gray-700 font-mono"
+                      className="w-full bg-th-1c1d1f text-gray-100 p-2 rounded border border-gray-700 font-mono"
                     />
                   </div>
                 </div>
@@ -613,7 +613,7 @@ export default function ModalNuevoPedido({
                 onClick={addProducto}
                 className="flex items-center gap-1.5 text-xs text-orange-400 hover:text-orange-300 font-semibold px-3 py-1.5 rounded-lg bg-orange-950/30 border border-orange-900/40 transition-all active:scale-95"
               >
-                <Plus className="w-4 h-4 text-white" />
+                <Plus className="w-4 h-4 text-gray-50" />
                 <span>Agregar Producto</span>
               </button>
             </div>
@@ -624,7 +624,7 @@ export default function ModalNuevoPedido({
               const precioTotalProd = cantP * puP;
 
               return (
-                <div key={pIdx} className="bg-[#141517] p-4 rounded-xl border border-gray-800 space-y-3.5 shadow-sm">
+                <div key={pIdx} className="bg-th-141517 p-4 rounded-xl border border-gray-800 space-y-3.5 shadow-sm">
                   
                   {/* Cabecera del Producto */}
                   <div className="flex items-center justify-between border-b border-gray-800 pb-2">
@@ -667,7 +667,7 @@ export default function ModalNuevoPedido({
                         value={prod.nombre}
                         onChange={(e) => updateProducto(pIdx, 'nombre', e.target.value)}
                         placeholder="Escribe o selecciona del catálogo..."
-                        className="w-full bg-[#1c1d1f] text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
+                        className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
                       />
                       <datalist id={`catalogo-list-${pIdx}`}>
                         {catalogo.map((cat, cIdx) => (
@@ -685,7 +685,7 @@ export default function ModalNuevoPedido({
                         value={prod.proveedor}
                         onChange={(e) => updateProducto(pIdx, 'proveedor', e.target.value)}
                         placeholder="Ej. Papelera / Propio"
-                        className="w-full bg-[#1c1d1f] text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center"
+                        className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center"
                       />
                     </div>
 
@@ -696,7 +696,7 @@ export default function ModalNuevoPedido({
                         value={prod.nota}
                         onChange={(e) => updateProducto(pIdx, 'nota', e.target.value)}
                         placeholder="Talla, color, etc."
-                        className="w-full bg-[#1c1d1f] text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center"
+                        className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center"
                       />
                     </div>
 
@@ -707,7 +707,7 @@ export default function ModalNuevoPedido({
                         min="1"
                         value={prod.cant}
                         onChange={(e) => updateProducto(pIdx, 'cant', e.target.value)}
-                        className="w-full bg-[#1c1d1f] text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center font-bold"
+                        className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center font-bold"
                       />
                     </div>
 
@@ -718,7 +718,7 @@ export default function ModalNuevoPedido({
                         step="any"
                         value={prod.precioUnitario}
                         onChange={(e) => updateProducto(pIdx, 'precioUnitario', e.target.value)}
-                        className="w-full bg-[#1c1d1f] text-gray-100 font-mono p-2.5 rounded-lg border border-gray-700 text-center"
+                        className="w-full bg-th-1c1d1f text-gray-100 font-mono p-2.5 rounded-lg border border-gray-700 text-center"
                       />
                     </div>
 
@@ -729,7 +729,7 @@ export default function ModalNuevoPedido({
                         type="text"
                         readOnly
                         value={`$${precioTotalProd.toFixed(2)}`}
-                        className="w-full bg-[#121314] text-emerald-400 font-bold p-2.5 rounded-lg border border-gray-700 text-center text-sm focus:outline-none cursor-default"
+                        className="w-full bg-th-121314 text-emerald-400 font-bold p-2.5 rounded-lg border border-gray-700 text-center text-sm focus:outline-none cursor-default"
                       />
                     </div>
                   </div>
@@ -740,7 +740,7 @@ export default function ModalNuevoPedido({
                       <button
                         type="button"
                         onClick={() => setCollapsedInsumos(prev => ({ ...prev, [pIdx]: !prev[pIdx] }))}
-                        className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-gray-400 hover:text-white transition-colors"
+                        className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-gray-400 hover:text-gray-50 transition-colors"
                         title={collapsedInsumos[pIdx] ? "Mostrar listado de insumos" : "Ocultar listado de insumos"}
                       >
                         <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${collapsedInsumos[pIdx] ? '-rotate-90 text-gray-500' : 'rotate-0 text-orange-400'}`} />
@@ -755,7 +755,7 @@ export default function ModalNuevoPedido({
                         }}
                         className="text-xs text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1"
                       >
-                        <Plus className="w-3.5 h-3.5 text-white" />
+                        <Plus className="w-3.5 h-3.5 text-gray-50" />
                         <span>Añadir Insumo</span>
                       </button>
                     </div>
@@ -786,7 +786,7 @@ export default function ModalNuevoPedido({
                       const totalInsumo = (parseFloat(ins.cant) || 1) * (parseFloat(ins.costoUnitario) || 0);
 
                       return (
-                        <div key={iIdx} className="bg-[#1c1d1f] p-2.5 rounded-lg border border-gray-800 grid grid-cols-1 sm:grid-cols-12 gap-2 items-center text-xs">
+                        <div key={iIdx} className="bg-th-1c1d1f p-2.5 rounded-lg border border-gray-800 grid grid-cols-1 sm:grid-cols-12 gap-2 items-center text-xs">
                           {/* Insumo: único renglón con desplegable o texto libre */}
                           <div className="sm:col-span-3">
                             <input
@@ -803,7 +803,7 @@ export default function ModalNuevoPedido({
                                   updateInsumo(pIdx, iIdx, 'nombre', val);
                                 }
                               }}
-                              className="w-full bg-[#121314] text-gray-200 px-2.5 py-2 rounded border border-gray-700 text-xs focus:ring-1 focus:ring-orange-500 font-medium text-center"
+                              className="w-full bg-th-121314 text-gray-200 px-2.5 py-2 rounded border border-gray-700 text-xs focus:ring-1 focus:ring-orange-500 font-medium text-center"
                             />
                             <datalist id={`insumos-stock-list-${pIdx}-${iIdx}`}>
                               {inventario.map((inv) => (
@@ -824,7 +824,7 @@ export default function ModalNuevoPedido({
                                 updateInsumo(pIdx, iIdx, 'detalle', e.target.value);
                                 updateInsumo(pIdx, iIdx, 'nota', e.target.value);
                               }}
-                              className="w-full bg-[#121314] text-gray-200 p-2 rounded border border-gray-700 text-xs text-center"
+                              className="w-full bg-th-121314 text-gray-200 p-2 rounded border border-gray-700 text-xs text-center"
                             />
                           </div>
 
@@ -835,7 +835,7 @@ export default function ModalNuevoPedido({
                               placeholder="Proveedor"
                               value={ins.proveedor}
                               onChange={(e) => updateInsumo(pIdx, iIdx, 'proveedor', e.target.value)}
-                              className="w-full bg-[#121314] text-gray-200 p-2 rounded border border-gray-700 text-xs text-center"
+                              className="w-full bg-th-121314 text-gray-200 p-2 rounded border border-gray-700 text-xs text-center"
                             />
                           </div>
 
@@ -848,7 +848,7 @@ export default function ModalNuevoPedido({
                               placeholder="Cant"
                               value={ins.cant}
                               onChange={(e) => updateInsumo(pIdx, iIdx, 'cant', e.target.value)}
-                              className="w-full bg-[#121314] text-gray-200 p-2 rounded border border-gray-700 text-xs text-center font-bold"
+                              className="w-full bg-th-121314 text-gray-200 p-2 rounded border border-gray-700 text-xs text-center font-bold"
                             />
                           </div>
 
@@ -860,7 +860,7 @@ export default function ModalNuevoPedido({
                               placeholder="P. Unit"
                               value={ins.costoUnitario}
                               onChange={(e) => updateInsumo(pIdx, iIdx, 'costoUnitario', e.target.value)}
-                              className="w-full bg-[#121314] text-gray-200 p-2 rounded border border-gray-700 text-xs text-center font-bold"
+                              className="w-full bg-th-121314 text-gray-200 p-2 rounded border border-gray-700 text-xs text-center font-bold"
                             />
                           </div>
 
@@ -870,7 +870,7 @@ export default function ModalNuevoPedido({
                               type="text"
                               readOnly
                               value={`$${totalInsumo.toFixed(2)}`}
-                              className="w-full bg-[#121314] text-gray-200 p-2 rounded border border-gray-700 text-xs text-center font-bold focus:outline-none cursor-default truncate"
+                              className="w-full bg-th-121314 text-gray-200 p-2 rounded border border-gray-700 text-xs text-center font-bold focus:outline-none cursor-default truncate"
                             />
                           </div>
 
@@ -880,7 +880,7 @@ export default function ModalNuevoPedido({
                               <select
                                 value={ins.metodoPago}
                                 onChange={(e) => updateInsumo(pIdx, iIdx, 'metodoPago', e.target.value)}
-                                className="w-full bg-[#121314] text-gray-200 p-2 rounded border border-gray-700 text-xs text-center font-medium"
+                                className="w-full bg-th-121314 text-gray-200 p-2 rounded border border-gray-700 text-xs text-center font-medium"
                               >
                                 {METODOS_PAGO.map((m) => (
                                   <option key={m} value={m}>{m}</option>
@@ -893,7 +893,7 @@ export default function ModalNuevoPedido({
                                 className="text-gray-500 hover:text-rose-400 p-1 transition-colors"
                                 title="Eliminar insumo"
                               >
-                                <X className="w-4 h-4 text-white" />
+                                <X className="w-4 h-4 text-gray-50" />
                               </button>
                             </div>
                           ) : (
@@ -904,7 +904,7 @@ export default function ModalNuevoPedido({
                                 className="text-gray-500 hover:text-rose-400 p-1 transition-colors"
                                 title="Eliminar insumo"
                               >
-                                <X className="w-4 h-4 text-white" />
+                                <X className="w-4 h-4 text-gray-50" />
                               </button>
                             </div>
                           )}
@@ -934,7 +934,7 @@ export default function ModalNuevoPedido({
                         }}
                         className="text-[11px] text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1"
                       >
-                        <Plus className="w-3.5 h-3.5 text-white" />
+                        <Plus className="w-3.5 h-3.5 text-gray-50" />
                         <span>Añadir Merma</span>
                       </button>
                     </div>
@@ -983,7 +983,7 @@ export default function ModalNuevoPedido({
                                       updateMerma(pIdx, mIdx, 'material', val);
                                     }
                                   }}
-                                  className="w-full bg-[#121314] text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center"
+                                  className="w-full bg-th-121314 text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center"
                                 />
                                 <datalist id={`merma-stock-list-${pIdx}-${mIdx}`}>
                                   {inventario.map((inv) => (
@@ -1001,7 +1001,7 @@ export default function ModalNuevoPedido({
                                   placeholder="Motivo (ej. Error corte)"
                                   value={merma.motivo}
                                   onChange={(e) => updateMerma(pIdx, mIdx, 'motivo', e.target.value)}
-                                  className="w-full bg-[#121314] text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center"
+                                  className="w-full bg-th-121314 text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center"
                                 />
                               </div>
 
@@ -1014,7 +1014,7 @@ export default function ModalNuevoPedido({
                                   placeholder="Cant"
                                   value={merma.cant}
                                   onChange={(e) => updateMerma(pIdx, mIdx, 'cant', e.target.value)}
-                                  className="w-full bg-[#121314] text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center font-bold"
+                                  className="w-full bg-th-121314 text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center font-bold"
                                 />
                               </div>
 
@@ -1026,7 +1026,7 @@ export default function ModalNuevoPedido({
                                   placeholder="Costo U."
                                   value={merma.costoUnitario}
                                   onChange={(e) => updateMerma(pIdx, mIdx, 'costoUnitario', e.target.value)}
-                                  className="w-full bg-[#121314] text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center font-bold"
+                                  className="w-full bg-th-121314 text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center font-bold"
                                 />
                               </div>
 
@@ -1036,7 +1036,7 @@ export default function ModalNuevoPedido({
                                   type="text"
                                   readOnly
                                   value={`$${totalMerma.toFixed(2)}`}
-                                  className="w-full bg-[#121314] text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center font-bold focus:outline-none cursor-default"
+                                  className="w-full bg-th-121314 text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center font-bold focus:outline-none cursor-default"
                                 />
                               </div>
 
@@ -1046,7 +1046,7 @@ export default function ModalNuevoPedido({
                                   <select
                                     value={merma.metodoPago || 'STOCK'}
                                     onChange={(e) => updateMerma(pIdx, mIdx, 'metodoPago', e.target.value)}
-                                    className="w-full bg-[#121314] text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center font-medium"
+                                    className="w-full bg-th-121314 text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center font-medium"
                                   >
                                     {METODOS_PAGO.map((m) => (
                                       <option key={m} value={m}>{m}</option>
@@ -1059,7 +1059,7 @@ export default function ModalNuevoPedido({
                                     className="text-gray-500 hover:text-rose-400 p-1 transition-colors"
                                     title="Eliminar merma"
                                   >
-                                    <X className="w-4 h-4 text-white" />
+                                    <X className="w-4 h-4 text-gray-50" />
                                   </button>
                                 </div>
                               ) : (
@@ -1070,7 +1070,7 @@ export default function ModalNuevoPedido({
                                     className="text-gray-500 hover:text-rose-400 p-1 transition-colors"
                                     title="Eliminar merma"
                                   >
-                                    <X className="w-4 h-4 text-white" />
+                                    <X className="w-4 h-4 text-gray-50" />
                                   </button>
                                 </div>
                               )}
@@ -1087,7 +1087,7 @@ export default function ModalNuevoPedido({
         </form>
 
         {/* 3. RESUMEN FINANCIERO Y BOTONES FIJOS EN LA PANTALLA EN TODO MOMENTO */}
-        <div className="sticky bottom-0 bg-[#141517] border-t border-gray-700/80 p-3 sm:p-4 z-30 shadow-2xl space-y-3 shrink-0">
+        <div className="sticky bottom-0 bg-th-141517 border-t border-gray-700/80 p-3 sm:p-4 z-30 shadow-2xl space-y-3 shrink-0">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-orange-400 flex items-center gap-1.5">
               <DollarSign className="w-3.5 h-3.5" />
@@ -1107,7 +1107,7 @@ export default function ModalNuevoPedido({
                 : 'grid-cols-2 sm:grid-cols-5'
           }`}>
             {/* 1. Subtotal */}
-            <div className="bg-[#1c1d1f] p-2 rounded-lg border border-gray-800">
+            <div className="bg-th-1c1d1f p-2 rounded-lg border border-gray-800">
               <span className="text-[10px] text-gray-500 uppercase block font-semibold">Subtotal Venta</span>
               <span className="font-mono font-bold text-gray-200 text-xs sm:text-sm">${subtotal.toFixed(2)}</span>
             </div>
@@ -1133,19 +1133,19 @@ export default function ModalNuevoPedido({
             )}
 
             {/* 4. Total del Pedido */}
-            <div className="bg-[#1c1d1f] p-2 rounded-lg border border-gray-800">
+            <div className="bg-th-1c1d1f p-2 rounded-lg border border-gray-800">
               <span className="text-[10px] text-gray-500 uppercase block font-semibold">Total a Cobrar</span>
               <span className="font-mono font-bold text-orange-400 text-xs sm:text-base">${total.toFixed(2)}</span>
             </div>
 
             {/* 5. Costo Prod. Total */}
-            <div className="bg-[#1c1d1f] p-2 rounded-lg border border-gray-800">
+            <div className="bg-th-1c1d1f p-2 rounded-lg border border-gray-800">
               <span className="text-[10px] text-gray-500 uppercase block font-semibold">Costo Prod. Total</span>
               <span className="font-mono font-bold text-gray-300 text-xs sm:text-sm">${costoTotal.toFixed(2)}</span>
             </div>
 
             {/* 6. Ganancia Proyectada */}
-            <div className="bg-[#1c1d1f] p-2 rounded-lg border border-gray-800">
+            <div className="bg-th-1c1d1f p-2 rounded-lg border border-gray-800">
               <span className="text-[10px] text-gray-500 uppercase block font-semibold">Ganancia Neta</span>
               <span className="font-mono font-bold text-emerald-400 text-xs sm:text-sm">${ganancia.toFixed(2)}</span>
             </div>
@@ -1161,7 +1161,7 @@ export default function ModalNuevoPedido({
                   step="any"
                   value={pagado}
                   onChange={(e) => setPagado(e.target.value)}
-                  className="bg-[#1c1d1f] text-emerald-400 font-mono font-bold px-3 py-1.5 rounded-lg border border-gray-700 w-32 text-xs"
+                  className="bg-th-1c1d1f text-emerald-400 font-mono font-bold px-3 py-1.5 rounded-lg border border-gray-700 w-32 text-xs"
                 />
               </div>
 

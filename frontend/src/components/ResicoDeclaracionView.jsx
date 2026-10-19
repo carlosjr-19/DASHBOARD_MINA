@@ -235,7 +235,7 @@ export default function ResicoDeclaracionView() {
   return (
     <div className="space-y-6">
       {/* Banner Informativo: Contabilidad Fiscal Estricta (Solo Facturas CFDI) */}
-      <div className="bg-[#141517] border border-orange-500/30 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+      <div className="bg-th-141517 border border-orange-500/30 rounded-2xl p-4 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
         <div className="flex items-start gap-3">
           <div className="w-9 h-9 rounded-xl bg-orange-600/20 border border-orange-500/40 flex items-center justify-center text-orange-400 shrink-0 font-extrabold text-sm">
             SAT
@@ -255,14 +255,14 @@ export default function ResicoDeclaracionView() {
       </div>
 
       {/* Barra superior de control y acciones */}
-      <div className="bg-[#161719] border border-gray-800 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-th-161719 border border-gray-800 rounded-2xl p-4 sm:p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase text-gray-400">Año:</span>
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="bg-[#121315] text-gray-200 border border-gray-700 rounded-lg px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-orange-500"
+              className="bg-th-121315 text-gray-200 border border-gray-700 rounded-lg px-2.5 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-orange-500"
             >
               {[currentYear - 1, currentYear, currentYear + 1].map(y => (
                 <option key={y} value={y}>{y}</option>
@@ -275,7 +275,7 @@ export default function ResicoDeclaracionView() {
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(Number(e.target.value))}
-              className="bg-[#121315] text-gray-200 border border-gray-700 rounded-lg px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-orange-500"
+              className="bg-th-121315 text-gray-200 border border-gray-700 rounded-lg px-3 py-1.5 text-xs font-bold focus:outline-none focus:ring-1 focus:ring-orange-500"
             >
               {[
                 { id: 1, name: 'Enero' },
@@ -321,7 +321,7 @@ export default function ResicoDeclaracionView() {
       </div>
 
       {/* GRÁFICA COMPARATIVA MENSUAL (Ventas vs Gastos vs Ganancia Neta) */}
-      <div className="bg-[#161719] border border-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <div className="bg-th-161719 border border-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800/80 pb-3">
           <div>
             <h3 className="text-sm sm:text-base font-bold text-gray-100 flex items-center gap-2">
@@ -402,12 +402,12 @@ export default function ResicoDeclaracionView() {
 
       {/* KPIS DEL MES SELECCIONADO */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-[#161719] border border-gray-800 rounded-2xl p-4 shadow-sm">
+        <div className="bg-th-161719 border border-gray-800 rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between text-gray-400 text-xs">
             <span>Ventas del Mes</span>
             <ArrowDownLeft className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-xl sm:text-2xl font-extrabold text-white mt-1">
+          <div className="text-xl sm:text-2xl font-extrabold text-gray-50 mt-1">
             {formatMoney(resicoData?.kpis?.ventasFacturadas || 0)}
           </div>
           <span className="text-[10px] text-gray-500 block mt-1">
@@ -415,12 +415,12 @@ export default function ResicoDeclaracionView() {
           </span>
         </div>
 
-        <div className="bg-[#161719] border border-gray-800 rounded-2xl p-4 shadow-sm">
+        <div className="bg-th-161719 border border-gray-800 rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between text-gray-400 text-xs">
             <span>Gastos del Mes</span>
             <ArrowUpRight className="w-4 h-4 text-rose-400" />
           </div>
-          <div className="text-xl sm:text-2xl font-extrabold text-white mt-1">
+          <div className="text-xl sm:text-2xl font-extrabold text-gray-50 mt-1">
             {formatMoney(resicoData?.kpis?.gastosFacturados || 0)}
           </div>
           <span className="text-[10px] text-gray-500 block mt-1">
@@ -428,7 +428,7 @@ export default function ResicoDeclaracionView() {
           </span>
         </div>
 
-        <div className="bg-[#161719] border border-gray-800 rounded-2xl p-4 shadow-sm">
+        <div className="bg-th-161719 border border-gray-800 rounded-2xl p-4 shadow-sm">
           <div className="flex items-center justify-between text-gray-400 text-xs">
             <span>Ganancia Neta</span>
             <DollarSign className="w-4 h-4 text-orange-400" />
@@ -443,12 +443,12 @@ export default function ResicoDeclaracionView() {
           </span>
         </div>
 
-        <div className="bg-[#161719] border border-gray-800 rounded-2xl p-4 shadow-sm bg-gradient-to-br from-[#161719] to-orange-950/20">
+        <div className="bg-th-161719 border border-gray-800 rounded-2xl p-4 shadow-sm bg-gradient-to-br from-th-161719 to-orange-950/20">
           <div className="flex items-center justify-between text-orange-300 text-xs font-semibold">
             <span>Total Impuestos Estimados SAT</span>
             <ShieldCheck className="w-4 h-4 text-orange-400" />
           </div>
-          <div className="text-xl sm:text-2xl font-extrabold text-white mt-1">
+          <div className="text-xl sm:text-2xl font-extrabold text-gray-50 mt-1">
             {formatMoney(resicoData?.kpis?.totalImpuestosEstimados || 0)}
           </div>
           <span className="text-[10px] text-orange-300/70 block mt-1">
@@ -460,7 +460,7 @@ export default function ResicoDeclaracionView() {
       {/* DESGLOSE FISCAL RESICO: ISR E IVA LADO A LADO */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* TARJETA 1: PAGO PROVISIONAL DE ISR RESICO */}
-        <div className="bg-[#161719] border border-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
+        <div className="bg-th-161719 border border-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
           <div className="flex items-center justify-between border-b border-gray-800/80 pb-3">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-orange-600/20 border border-orange-500/40 flex items-center justify-center text-orange-400 font-bold text-xs">
@@ -509,7 +509,7 @@ export default function ResicoDeclaracionView() {
               </span>
             </div>
 
-            <div className="flex items-center justify-between py-2 pt-3 bg-[#121315] px-3 rounded-xl border border-gray-800">
+            <div className="flex items-center justify-between py-2 pt-3 bg-th-121315 px-3 rounded-xl border border-gray-800">
               <span className="font-bold text-gray-200 text-xs">
                 = ISR Neto a Pagar al SAT:
               </span>
@@ -526,7 +526,7 @@ export default function ResicoDeclaracionView() {
           </div>
 
           {/* Consejo del Contador */}
-          <div className="bg-[#121315] border border-orange-900/30 p-3 rounded-xl text-[11px] text-gray-300 space-y-1">
+          <div className="bg-th-121315 border border-orange-900/30 p-3 rounded-xl text-[11px] text-gray-300 space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-orange-400">
               <Info className="w-3.5 h-3.5" />
               <span>Criterio Contable RESICO ISR:</span>
@@ -538,7 +538,7 @@ export default function ResicoDeclaracionView() {
         </div>
 
         {/* TARJETA 2: PAGO DEFINITIVO DE IVA */}
-        <div className="bg-[#161719] border border-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
+        <div className="bg-th-161719 border border-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
           <div className="flex items-center justify-between border-b border-gray-800/80 pb-3">
             <div className="flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-blue-600/20 border border-blue-500/40 flex items-center justify-center text-blue-400 font-bold text-xs">
@@ -580,7 +580,7 @@ export default function ResicoDeclaracionView() {
               </span>
             </div>
 
-            <div className="flex items-center justify-between py-2 pt-3 bg-[#121315] px-3 rounded-xl border border-gray-800">
+            <div className="flex items-center justify-between py-2 pt-3 bg-th-121315 px-3 rounded-xl border border-gray-800">
               <span className="font-bold text-gray-200 text-xs">
                 = IVA Neto a Pagar al SAT:
               </span>
@@ -593,13 +593,13 @@ export default function ResicoDeclaracionView() {
 
             {(resicoData?.ivaResico?.ivaSaldoFavor || 0) > 0 && (
               <div className="text-[11px] text-emerald-400 bg-emerald-950/20 border border-emerald-800/40 p-2 rounded-lg">
-                🎉 Tienes <strong className="text-white">{formatMoney(resicoData?.ivaResico?.ivaSaldoFavor)}</strong> de Saldo a Favor de IVA acumulado para acreditar el próximo mes.
+                🎉 Tienes <strong className="text-gray-50">{formatMoney(resicoData?.ivaResico?.ivaSaldoFavor)}</strong> de Saldo a Favor de IVA acumulado para acreditar el próximo mes.
               </div>
             )}
           </div>
 
           {/* Consejo del Contador */}
-          <div className="bg-[#121315] border border-blue-900/30 p-3 rounded-xl text-[11px] text-gray-300 space-y-1">
+          <div className="bg-th-121315 border border-blue-900/30 p-3 rounded-xl text-[11px] text-gray-300 space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-blue-400">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>Criterio Contable de Acreditamiento de IVA:</span>
@@ -612,7 +612,7 @@ export default function ResicoDeclaracionView() {
       </div>
 
       {/* GUÍA DEL CONTADOR: REGLAS DE ORO DE DEDUCIBILIDAD Y ACREDITAMIENTO */}
-      <div className="bg-[#161719] border border-gray-800 rounded-2xl p-5 shadow-sm space-y-3">
+      <div className="bg-th-161719 border border-gray-800 rounded-2xl p-5 shadow-sm space-y-3">
         <div className="flex items-center justify-between border-b border-gray-800/80 pb-2">
           <h4 className="text-xs sm:text-sm font-bold text-gray-200 flex items-center gap-2">
             <HelpCircle className="w-4 h-4 text-orange-400" />
@@ -623,7 +623,7 @@ export default function ResicoDeclaracionView() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
           {/* Alimentos */}
-          <div className="bg-[#121315] border border-gray-800/80 p-3.5 rounded-xl space-y-1.5">
+          <div className="bg-th-121315 border border-gray-800/80 p-3.5 rounded-xl space-y-1.5">
             <div className="flex items-center gap-2 text-orange-400 font-bold text-xs">
               <Utensils className="w-4 h-4" />
               <span>Alimentos / Restaurante</span>
@@ -634,7 +634,7 @@ export default function ResicoDeclaracionView() {
           </div>
 
           {/* Gasolina */}
-          <div className="bg-[#121315] border border-gray-800/80 p-3.5 rounded-xl space-y-1.5">
+          <div className="bg-th-121315 border border-gray-800/80 p-3.5 rounded-xl space-y-1.5">
             <div className="flex items-center gap-2 text-rose-400 font-bold text-xs">
               <Fuel className="w-4 h-4" />
               <span>Gasolina & Combustible</span>
@@ -645,7 +645,7 @@ export default function ResicoDeclaracionView() {
           </div>
 
           {/* Insumos Taller */}
-          <div className="bg-[#121315] border border-gray-800/80 p-3.5 rounded-xl space-y-1.5">
+          <div className="bg-th-121315 border border-gray-800/80 p-3.5 rounded-xl space-y-1.5">
             <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
               <Boxes className="w-4 h-4" />
               <span>Insumos y Materiales</span>
@@ -656,7 +656,7 @@ export default function ResicoDeclaracionView() {
           </div>
 
           {/* Retenciones PM */}
-          <div className="bg-[#121315] border border-gray-800/80 p-3.5 rounded-xl space-y-1.5">
+          <div className="bg-th-121315 border border-gray-800/80 p-3.5 rounded-xl space-y-1.5">
             <div className="flex items-center gap-2 text-blue-400 font-bold text-xs">
               <Building2 className="w-4 h-4" />
               <span>Facturación a Empresas</span>
@@ -669,7 +669,7 @@ export default function ResicoDeclaracionView() {
       </div>
 
       {/* LISTADO DE FACTURAS EMITIDAS Y RECIBIDAS */}
-      <div className="bg-[#161719] border border-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <div className="bg-th-161719 border border-gray-800 rounded-2xl p-5 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-800/80 pb-3">
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4 text-orange-400" />
@@ -696,7 +696,7 @@ export default function ResicoDeclaracionView() {
                   className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all ${
                     isSelected
                       ? 'bg-orange-600 text-white shadow-sm border border-orange-500'
-                      : 'bg-[#121315] text-gray-400 hover:text-gray-200 border border-gray-800'
+                      : 'bg-th-121315 text-gray-400 hover:text-gray-200 border border-gray-800'
                   }`}
                 >
                   {tab.label}
@@ -707,7 +707,7 @@ export default function ResicoDeclaracionView() {
         </div>
 
         {/* Tabla de Facturas */}
-        <div className="overflow-x-auto rounded-xl border border-gray-800 bg-[#121315]">
+        <div className="overflow-x-auto rounded-xl border border-gray-800 bg-th-121315">
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-gray-800 bg-gray-900/40 text-[10px] sm:text-[11px] font-bold text-gray-400 uppercase">
@@ -758,7 +758,7 @@ export default function ResicoDeclaracionView() {
                         </div>
                       </td>
                       <td className="py-3 px-3 text-center">
-                        <span className="bg-[#18191b] px-2 py-0.5 rounded text-[10px] border border-gray-800 text-gray-300 font-medium">
+                        <span className="bg-th-18191b px-2 py-0.5 rounded text-[10px] border border-gray-800 text-gray-300 font-medium">
                           {f.categoria}
                         </span>
                       </td>
@@ -771,7 +771,7 @@ export default function ResicoDeclaracionView() {
                       <td className="py-3 px-3 text-right font-mono text-orange-400">
                         {f.isrRetenido > 0 ? `-${formatMoney(f.isrRetenido)}` : '$0.00'}
                       </td>
-                      <td className="py-3 px-3 text-right font-mono font-bold text-white">
+                      <td className="py-3 px-3 text-right font-mono font-bold text-gray-50">
                         {formatMoney(f.total)}
                       </td>
                       <td className="py-3 px-2 text-center">
@@ -801,7 +801,7 @@ export default function ResicoDeclaracionView() {
       {/* MODAL: SUBIR ARCHIVOS XML (CFDI 4.0 / 3.3) */}
       {showUploadModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-[#18191b] border border-gray-800 rounded-2xl w-full max-w-lg p-5 space-y-4 shadow-2xl relative my-6">
+          <div className="bg-th-18191b border border-gray-800 rounded-2xl w-full max-w-lg p-5 space-y-4 shadow-2xl relative my-6">
             <div className="flex items-center justify-between border-b border-gray-800 pb-3">
               <div className="flex items-center gap-2">
                 <FileCheck className="w-5 h-5 text-orange-500" />
@@ -811,7 +811,7 @@ export default function ResicoDeclaracionView() {
               </div>
               <button
                 onClick={() => { setShowUploadModal(false); setUploadStatus(null); }}
-                className="text-gray-400 hover:text-white p-1"
+                className="text-gray-400 hover:text-gray-50 p-1"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -827,7 +827,7 @@ export default function ResicoDeclaracionView() {
                 <label className="text-[11px] font-semibold text-gray-300 block">
                   Tipo de Comprobante:
                 </label>
-                <div className="grid grid-cols-3 gap-1.5 bg-[#121315] p-1 rounded-xl border border-gray-800 text-xs">
+                <div className="grid grid-cols-3 gap-1.5 bg-th-121315 p-1 rounded-xl border border-gray-800 text-xs">
                   <button
                     type="button"
                     onClick={() => setXmlUploadTipo('AUTO')}
@@ -865,7 +865,7 @@ export default function ResicoDeclaracionView() {
               </div>
 
               {/* Dropzone */}
-              <label className="border-2 border-dashed border-gray-700 hover:border-orange-500 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-[#121315] hover:bg-gray-800/30 transition-all text-center">
+              <label className="border-2 border-dashed border-gray-700 hover:border-orange-500 rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer bg-th-121315 hover:bg-gray-800/30 transition-all text-center">
                 <Upload className="w-8 h-8 text-orange-500 mb-2" />
                 <span className="text-xs font-bold text-gray-200">
                   Seleccionar o arrastrar archivo XML
@@ -897,7 +897,7 @@ export default function ResicoDeclaracionView() {
                   </div>
 
                   {uploadStatus.lastFactura && (
-                    <div className="bg-[#121315] p-3 rounded-lg border border-gray-800 space-y-1.5 text-[11px]">
+                    <div className="bg-th-121315 p-3 rounded-lg border border-gray-800 space-y-1.5 text-[11px]">
                       <div className="flex items-center justify-between">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
                           uploadStatus.lastFactura.tipo === 'EMITIDA'
@@ -926,7 +926,7 @@ export default function ResicoDeclaracionView() {
                         </div>
                         <div>
                           <span className="text-[10px] text-gray-400 block">Total</span>
-                          <span className="font-bold text-white">{formatMoney(uploadStatus.lastFactura.total)}</span>
+                          <span className="font-bold text-gray-50">{formatMoney(uploadStatus.lastFactura.total)}</span>
                         </div>
                       </div>
 
@@ -982,7 +982,7 @@ export default function ResicoDeclaracionView() {
       {/* MODAL: REGISTRO MANUAL DE FACTURA */}
       {showManualModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-[#18191b] border border-gray-800 rounded-2xl w-full max-w-lg p-5 space-y-4 shadow-2xl relative my-6">
+          <div className="bg-th-18191b border border-gray-800 rounded-2xl w-full max-w-lg p-5 space-y-4 shadow-2xl relative my-6">
             <div className="flex items-center justify-between border-b border-gray-800 pb-3">
               <div className="flex items-center gap-2">
                 <Plus className="w-5 h-5 text-orange-500" />
@@ -992,7 +992,7 @@ export default function ResicoDeclaracionView() {
               </div>
               <button
                 onClick={() => setShowManualModal(false)}
-                className="text-gray-400 hover:text-white p-1"
+                className="text-gray-400 hover:text-gray-50 p-1"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1005,7 +1005,7 @@ export default function ResicoDeclaracionView() {
                   <select
                     value={manualForm.tipo}
                     onChange={(e) => setManualForm({ ...manualForm, tipo: e.target.value })}
-                    className="w-full bg-[#121315] text-gray-100 p-2.5 rounded-xl border border-gray-700 font-bold"
+                    className="w-full bg-th-121315 text-gray-100 p-2.5 rounded-xl border border-gray-700 font-bold"
                   >
                     <option value="RECIBIDA">Recibida (Gasto / Proveedor)</option>
                     <option value="EMITIDA">Emitida (Venta / Cliente)</option>
@@ -1018,7 +1018,7 @@ export default function ResicoDeclaracionView() {
                     type="date"
                     value={manualForm.fecha}
                     onChange={(e) => setManualForm({ ...manualForm, fecha: e.target.value })}
-                    className="w-full bg-[#121315] text-gray-100 p-2 rounded-xl border border-gray-700"
+                    className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700"
                     required
                   />
                 </div>
@@ -1032,7 +1032,7 @@ export default function ResicoDeclaracionView() {
                     value={manualForm.folio}
                     onChange={(e) => setManualForm({ ...manualForm, folio: e.target.value })}
                     placeholder="Ej. F-1045"
-                    className="w-full bg-[#121315] text-gray-100 p-2 rounded-xl border border-gray-700"
+                    className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700"
                   />
                 </div>
 
@@ -1041,7 +1041,7 @@ export default function ResicoDeclaracionView() {
                   <select
                     value={manualForm.categoria}
                     onChange={(e) => setManualForm({ ...manualForm, categoria: e.target.value })}
-                    className="w-full bg-[#121315] text-gray-100 p-2 rounded-xl border border-gray-700 font-semibold"
+                    className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700 font-semibold"
                   >
                     <option value="Insumos">Insumos (DTF, Vinil, etc.)</option>
                     <option value="Gasolina">Gasolina & Combustibles</option>
@@ -1060,7 +1060,7 @@ export default function ResicoDeclaracionView() {
                     value={manualForm.rfcEmisor}
                     onChange={(e) => setManualForm({ ...manualForm, rfcEmisor: e.target.value.toUpperCase() })}
                     placeholder="RFC Emisor"
-                    className="w-full bg-[#121315] text-gray-100 p-2 rounded-xl border border-gray-700 uppercase font-mono"
+                    className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700 uppercase font-mono"
                   />
                 </div>
 
@@ -1071,7 +1071,7 @@ export default function ResicoDeclaracionView() {
                     value={manualForm.nombreEmisor}
                     onChange={(e) => setManualForm({ ...manualForm, nombreEmisor: e.target.value })}
                     placeholder="Proveedor o Cliente"
-                    className="w-full bg-[#121315] text-gray-100 p-2 rounded-xl border border-gray-700"
+                    className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700"
                   />
                 </div>
               </div>
@@ -1093,7 +1093,7 @@ export default function ResicoDeclaracionView() {
                       });
                     }}
                     placeholder="0.00"
-                    className="w-full bg-[#121315] text-gray-100 p-2 rounded-xl border border-gray-700 font-mono font-bold"
+                    className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700 font-mono font-bold"
                     required
                   />
                 </div>
@@ -1106,7 +1106,7 @@ export default function ResicoDeclaracionView() {
                     value={manualForm.ivaTrasladado}
                     onChange={(e) => setManualForm({ ...manualForm, ivaTrasladado: e.target.value })}
                     placeholder="0.00"
-                    className="w-full bg-[#121315] text-gray-100 p-2 rounded-xl border border-gray-700 font-mono"
+                    className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700 font-mono"
                   />
                 </div>
 
@@ -1118,7 +1118,7 @@ export default function ResicoDeclaracionView() {
                     value={manualForm.isrRetenido}
                     onChange={(e) => setManualForm({ ...manualForm, isrRetenido: e.target.value })}
                     placeholder="0.00"
-                    className="w-full bg-[#121315] text-gray-100 p-2 rounded-xl border border-gray-700 font-mono"
+                    className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700 font-mono"
                   />
                 </div>
               </div>
@@ -1130,7 +1130,7 @@ export default function ResicoDeclaracionView() {
                   value={manualForm.descripcion}
                   onChange={(e) => setManualForm({ ...manualForm, descripcion: e.target.value })}
                   placeholder="Detalle de la compra o servicio"
-                  className="w-full bg-[#121315] text-gray-100 p-2 rounded-xl border border-gray-700"
+                  className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700"
                 />
               </div>
 

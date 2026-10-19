@@ -5,6 +5,7 @@ import {
   ArrowDownLeft,
   Menu
 } from 'lucide-react';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar({ 
   currentTab, 
@@ -29,7 +30,7 @@ export default function Navbar({
   const currentTabLabel = tabLabels[currentTab] || 'Dashboard';
 
   return (
-    <header className="sticky top-0 z-40 bg-[#18191b]/95 backdrop-blur border-b border-gray-800 no-print h-[57px] flex items-center">
+    <header className="sticky top-0 z-40 bg-th-18191b/95 backdrop-blur border-b border-gray-800 no-print h-[57px] flex items-center">
       <div className="w-full px-3 sm:px-6 flex items-center justify-between gap-2">
         {/* Left Side: Sidebar Toggle & Brand */}
         <div className="flex items-center gap-3">
@@ -39,7 +40,7 @@ export default function Navbar({
             className={`p-1.5 rounded-lg transition-all flex items-center justify-center active:scale-95 ${
               sidebarOpen
                 ? 'bg-orange-600/20 text-orange-400 border border-orange-500/40 hover:bg-orange-600/30'
-                : 'bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-white border border-gray-700/60'
+                : 'bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-gray-50 border border-gray-700/60'
             }`}
             title={sidebarOpen ? "Ocultar menú lateral" : "Mostrar menú lateral"}
             aria-label="Abrir o cerrar menú lateral"
@@ -53,7 +54,7 @@ export default function Navbar({
               M
             </div>
             <div>
-              <span className="font-bold text-sm tracking-wide text-white">MINA DESIGN</span>
+              <span className="font-bold text-sm tracking-wide text-gray-50">MINA DESIGN</span>
               <span className="text-[10px] text-orange-400 block -mt-0.5">ERP SYSTEM</span>
             </div>
           </div>
@@ -93,6 +94,8 @@ export default function Navbar({
             <ArrowUpRight className="w-4 h-4 text-white" />
             <span className="hidden sm:inline">Egreso</span>
           </button>
+
+          <ThemeToggle />
 
           {/* User Profile avatar pill */}
           <div className="relative flex items-center pl-1">

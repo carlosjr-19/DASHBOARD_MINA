@@ -253,7 +253,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#121314] text-gray-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-th-121314 text-gray-100 flex flex-col font-sans">
       {/* Top Fixed Header with fast action buttons and sidebar toggle */}
       <Navbar
         currentTab={currentTab}

@@ -116,7 +116,7 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
       <div 
-        className="bg-[#18191c] border border-gray-700/80 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95"
+        className="bg-th-18191c border border-gray-700/80 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95"
         onClick={() => dropdownOpen && setDropdownOpen(false)}
       >
         {/* Header con icono circular e indicativo */}
@@ -170,7 +170,7 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                     e.stopPropagation();
                     setDropdownOpen(!dropdownOpen);
                   }}
-                  className={`w-full bg-[#121314] text-gray-200 p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
+                  className={`w-full bg-th-121314 text-gray-200 p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
                     dropdownOpen ? 'border-emerald-500 ring-1 ring-emerald-500/30' : 'border-gray-700 hover:border-gray-600'
                   }`}
                 >
@@ -203,7 +203,7 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                 {dropdownOpen && (
                   <div 
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute left-0 right-0 top-full mt-1.5 bg-[#141518] border border-gray-700 rounded-xl overflow-hidden shadow-2xl z-50 max-h-56 overflow-y-auto divide-y divide-gray-800/80 animate-in fade-in"
+                    className="absolute left-0 right-0 top-full mt-1.5 bg-th-141518 border border-gray-700 rounded-xl overflow-hidden shadow-2xl z-50 max-h-56 overflow-y-auto divide-y divide-gray-800/80 animate-in fade-in"
                   >
                     {/* Opción 1: Ingreso Independiente */}
                     <div
@@ -273,12 +273,12 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                     value={detalle}
                     onChange={(e) => setDetalle(e.target.value)}
                     placeholder="Ej. Venta mostrador"
-                    className="w-full bg-[#121314] text-gray-100 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs"
+                    className="w-full bg-th-121314 text-gray-100 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs"
                   />
                 </div>
               ) : (
                 /* Badge informativo cuando está vinculado a un pedido */
-                <div className="bg-[#121314] p-3 rounded-xl border border-gray-800 flex items-center justify-between text-xs animate-in fade-in">
+                <div className="bg-th-121314 p-3 rounded-xl border border-gray-800 flex items-center justify-between text-xs animate-in fade-in">
                   <div>
                     <span className="text-[10px] uppercase font-bold text-gray-500 block">Pedido Vinculado</span>
                     <span className="font-bold text-gray-200">{selectedPedido.id} — {selectedPedido.cliente}</span>
@@ -308,7 +308,7 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                       value={monto}
                       onChange={(e) => setMonto(e.target.value)}
                       placeholder="0.00"
-                      className="w-full bg-[#121314] text-emerald-400 pl-7 pr-3 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-sm font-mono font-bold"
+                      className="w-full bg-th-121314 text-emerald-400 pl-7 pr-3 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-sm font-mono font-bold"
                     />
                   </div>
                 </div>
@@ -320,7 +320,7 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                   <select
                     value={cuenta}
                     onChange={(e) => setCuenta(e.target.value)}
-                    className="w-full bg-[#121314] text-gray-200 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold cursor-pointer"
+                    className="w-full bg-th-121314 text-gray-200 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold cursor-pointer"
                   >
                     {CUENTAS.map((c) => (
                       <option key={c} value={c}>{c}</option>
@@ -342,7 +342,7 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                   value={detalle}
                   onChange={(e) => setDetalle(e.target.value)}
                   placeholder="Ej. Compra de vinil, papelería, comida..."
-                  className="w-full bg-[#121314] text-gray-100 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-rose-500 text-xs"
+                  className="w-full bg-th-121314 text-gray-100 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-rose-500 text-xs"
                 />
               </div>
 
@@ -361,7 +361,7 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                       value={monto}
                       onChange={(e) => setMonto(e.target.value)}
                       placeholder="0.00"
-                      className="w-full bg-[#121314] text-rose-400 pl-7 pr-3 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-rose-500 text-sm font-mono font-bold"
+                      className="w-full bg-th-121314 text-rose-400 pl-7 pr-3 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-rose-500 text-sm font-mono font-bold"
                     />
                   </div>
                 </div>
@@ -373,7 +373,7 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                   <select
                     value={cuenta}
                     onChange={(e) => setCuenta(e.target.value)}
-                    className="w-full bg-[#121314] text-gray-200 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-rose-500 text-xs font-semibold cursor-pointer"
+                    className="w-full bg-th-121314 text-gray-200 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-rose-500 text-xs font-semibold cursor-pointer"
                   >
                     {CUENTAS.map((c) => (
                       <option key={c} value={c}>{c}</option>
@@ -390,7 +390,7 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                   <select
                     value={categoria}
                     onChange={(e) => setCategoria(e.target.value)}
-                    className="w-full bg-[#121314] text-gray-200 p-2 rounded-xl border border-gray-700 text-xs"
+                    className="w-full bg-th-121314 text-gray-200 p-2 rounded-xl border border-gray-700 text-xs"
                   >
                     <option value="Insumos">Insumos</option>
                     <option value="Gasolina">Gasolina</option>
@@ -408,7 +408,7 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                     value={nota}
                     onChange={(e) => setNota(e.target.value)}
                     placeholder="Ticket, factura o ref..."
-                    className="w-full bg-[#121314] text-gray-200 p-2 rounded-xl border border-gray-700 text-xs"
+                    className="w-full bg-th-121314 text-gray-200 p-2 rounded-xl border border-gray-700 text-xs"
                   />
                 </div>
               </div>

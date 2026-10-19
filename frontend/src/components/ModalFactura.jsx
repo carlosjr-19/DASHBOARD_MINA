@@ -38,7 +38,7 @@ export default function ModalFactura({ order, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-      <div className="bg-[#1e2022] border border-gray-700 w-full max-w-md rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
+      <div className="bg-th-1e2022 border border-gray-700 w-full max-w-md rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
         <div className="flex items-center justify-between p-4 border-b border-gray-800">
           <div>
             <h3 className="font-bold text-gray-100 text-sm">
@@ -53,7 +53,7 @@ export default function ModalFactura({ order, onClose, onSave }) {
 
         <div className="p-4 space-y-4">
           {/* Datos Fiscales del Cliente */}
-          <div className="bg-[#151617] p-3 rounded-lg border border-gray-800 space-y-1.5 text-xs">
+          <div className="bg-th-151617 p-3 rounded-lg border border-gray-800 space-y-1.5 text-xs">
             <span className="font-bold text-gray-400 uppercase text-[10px] tracking-wider block">
               Datos Fiscales Registrados
             </span>
@@ -75,7 +75,7 @@ export default function ModalFactura({ order, onClose, onSave }) {
               <select
                 value={estatus}
                 onChange={(e) => setEstatus(e.target.value)}
-                className="w-full bg-[#151617] text-gray-200 border border-gray-700 rounded-lg p-2 text-xs focus:ring-1 focus:ring-orange-500 focus:outline-none"
+                className="w-full bg-th-151617 text-gray-200 border border-gray-700 rounded-lg p-2 text-xs focus:ring-1 focus:ring-orange-500 focus:outline-none"
               >
                 <option value="Pendiente">Pendiente</option>
                 <option value="Facturado">Facturado (Emitida)</option>
@@ -90,7 +90,7 @@ export default function ModalFactura({ order, onClose, onSave }) {
                 type="date"
                 value={fecha}
                 onChange={(e) => setFecha(e.target.value)}
-                className="w-full bg-[#151617] text-gray-200 border border-gray-700 rounded-lg p-2 text-xs focus:ring-1 focus:ring-orange-500 focus:outline-none"
+                className="w-full bg-th-151617 text-gray-200 border border-gray-700 rounded-lg p-2 text-xs focus:ring-1 focus:ring-orange-500 focus:outline-none"
               />
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function ModalFactura({ order, onClose, onSave }) {
             <label className="text-xs font-semibold text-gray-400 uppercase block">
               Comprobante / Archivo Fiscal (PDF / XML)
             </label>
-            <div className="border-2 border-dashed border-gray-700 rounded-lg p-4 text-center hover:border-gray-600 transition-colors bg-[#151617]/50">
+            <div className="border-2 border-dashed border-gray-700 rounded-lg p-4 text-center hover:border-gray-600 transition-colors bg-th-151617/50">
               <input
                 type="file"
                 id="file-upload"
@@ -127,7 +127,7 @@ export default function ModalFactura({ order, onClose, onSave }) {
                 <a
                   href={archivoData}
                   download={archivoNombre || 'comprobante_fiscal'}
-                  className="p-1 hover:text-white"
+                  className="p-1 hover:text-gray-50"
                   title="Descargar comprobante"
                 >
                   <Download className="w-4 h-4" />
@@ -137,7 +137,7 @@ export default function ModalFactura({ order, onClose, onSave }) {
           </div>
         </div>
 
-        <div className="p-3 bg-[#17181a] border-t border-gray-800 flex justify-end gap-2">
+        <div className="p-3 bg-th-17181a border-t border-gray-800 flex justify-end gap-2">
           <button
             onClick={onClose}
             className="px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:text-gray-200 bg-gray-800"

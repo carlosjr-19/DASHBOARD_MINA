@@ -98,7 +98,7 @@ export default function CalculadoraView({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         
         {/* Left Column: Base de Materiales */}
-        <div className="lg:col-span-7 xl:col-span-7 bg-[#1c1d1f] p-4 sm:p-5 rounded-2xl border border-gray-800 shadow-sm space-y-4">
+        <div className="lg:col-span-7 xl:col-span-7 bg-th-1c1d1f p-4 sm:p-5 rounded-2xl border border-gray-800 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-2 border-b border-gray-800/80">
             <div>
               <h2 className="text-base sm:text-lg font-bold text-gray-100">
@@ -111,9 +111,9 @@ export default function CalculadoraView({
 
             <button
               onClick={() => setShowAddMat(true)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-[#17253a] hover:bg-orange-600 text-blue-300 hover:text-white border border-blue-900/60 hover:border-orange-500 shadow transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-th-17253a hover:bg-orange-600 text-blue-300 hover:text-white border border-blue-900/60 hover:border-orange-500 shadow transition-all active:scale-95"
             >
-              <Plus className="w-3.5 h-3.5 text-white" />
+              <Plus className="w-3.5 h-3.5 text-current" />
               <span>Agregar Material</span>
             </button>
           </div>
@@ -158,7 +158,7 @@ export default function CalculadoraView({
                           {m.proveedor || 'Propio'}
                         </td>
                         <td className="py-3 px-3 text-center text-gray-300">
-                          <span className="bg-[#141517] px-2 py-0.5 rounded text-[11px] border border-gray-800 font-medium">
+                          <span className="bg-th-141517 px-2 py-0.5 rounded text-[11px] border border-gray-800 font-medium">
                             {m.ancho || 0}x{m.alto || 0}
                           </span>
                         </td>
@@ -196,7 +196,7 @@ export default function CalculadoraView({
         </div>
 
         {/* Right Column: Calculadora Rápida */}
-        <div className="lg:col-span-5 xl:col-span-5 bg-[#1c1d1f] p-4 sm:p-5 rounded-2xl border border-gray-800 shadow-sm space-y-4">
+        <div className="lg:col-span-5 xl:col-span-5 bg-th-1c1d1f p-4 sm:p-5 rounded-2xl border border-gray-800 shadow-sm space-y-4">
           <div className="flex items-center gap-2.5 pb-2 border-b border-gray-800/80">
             <div className="w-7 h-7 rounded-lg bg-blue-950/60 border border-blue-800/60 flex items-center justify-center text-blue-400 shadow">
               <Calculator className="w-4 h-4" />
@@ -215,7 +215,7 @@ export default function CalculadoraView({
               <select
                 value={selectedMatId || currentMat?.id || ''}
                 onChange={(e) => setSelectedMatId(e.target.value)}
-                className="w-full bg-[#151617] text-gray-100 p-3 rounded-xl border border-gray-700 text-xs sm:text-sm font-medium focus:ring-1 focus:ring-orange-500 focus:outline-none appearance-none pr-9 cursor-pointer"
+                className="w-full bg-th-151617 text-gray-100 p-3 rounded-xl border border-gray-700 text-xs sm:text-sm font-medium focus:ring-1 focus:ring-orange-500 focus:outline-none appearance-none pr-9 cursor-pointer"
               >
                 {materiales.map((m) => (
                   <option key={m.id} value={m.id}>
@@ -250,7 +250,7 @@ export default function CalculadoraView({
                 step="any"
                 value={anchoCm}
                 onChange={(e) => setAnchoCm(e.target.value)}
-                className="w-full bg-[#151617] text-gray-100 p-3 rounded-xl border border-gray-700 font-bold text-center text-sm focus:ring-1 focus:ring-orange-500"
+                className="w-full bg-th-151617 text-gray-100 p-3 rounded-xl border border-gray-700 font-bold text-center text-sm focus:ring-1 focus:ring-orange-500"
               />
             </div>
 
@@ -264,17 +264,17 @@ export default function CalculadoraView({
                 step="any"
                 value={altoCm}
                 onChange={(e) => setAltoCm(e.target.value)}
-                className="w-full bg-[#151617] text-gray-100 p-3 rounded-xl border border-gray-700 font-bold text-center text-sm focus:ring-1 focus:ring-orange-500"
+                className="w-full bg-th-151617 text-gray-100 p-3 rounded-xl border border-gray-700 font-bold text-center text-sm focus:ring-1 focus:ring-orange-500"
               />
             </div>
           </div>
 
           {/* Tarjeta de Resultado Principal (Costo Proporcional del Área) */}
-          <div className="rounded-2xl bg-gradient-to-br from-[#122238] to-[#0d1624] border border-blue-900/60 p-5 text-center shadow-lg relative overflow-hidden">
+          <div className="rounded-2xl bg-gradient-to-br from-th-122238 to-th-0d1624 border border-blue-900/60 p-5 text-center shadow-lg relative overflow-hidden">
             <span className="text-[10px] sm:text-[11px] uppercase font-bold text-blue-300 tracking-wider block mb-1">
               Costo Proporcional del Área
             </span>
-            <div className="text-3xl sm:text-4xl font-extrabold text-white mt-1">
+            <div className="text-3xl sm:text-4xl font-extrabold text-gray-50 mt-1">
               {formatMoney(costoTotal)}
             </div>
             <div className="text-[11px] text-blue-200/60 mt-2 flex items-center justify-center gap-2">
@@ -300,13 +300,13 @@ export default function CalculadoraView({
       {/* Modal para Agregar Material */}
       {showAddMat && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-[#1c1d1f] border border-gray-700 w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl animate-in fade-in">
+          <div className="bg-th-1c1d1f border border-gray-700 w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl animate-in fade-in">
             <div className="flex items-center justify-between border-b border-gray-800 pb-3">
               <h3 className="font-bold text-gray-100 text-base">Nuevo Material / Sustrato</h3>
               <button
                 type="button"
                 onClick={() => setShowAddMat(false)}
-                className="text-gray-400 hover:text-white"
+                className="text-gray-400 hover:text-gray-50"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -321,7 +321,7 @@ export default function CalculadoraView({
                   placeholder="Ej. Lona Front 13oz, DTF textil, Vinil..."
                   value={newNombre}
                   onChange={(e) => setNewNombre(e.target.value)}
-                  className="w-full bg-[#151617] text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
               </div>
 
@@ -332,7 +332,7 @@ export default function CalculadoraView({
                   placeholder="Ej. Gráficos SA, Tintas Mex..."
                   value={newProveedor}
                   onChange={(e) => setNewProveedor(e.target.value)}
-                  className="w-full bg-[#151617] text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
                 />
               </div>
 
@@ -346,7 +346,7 @@ export default function CalculadoraView({
                     placeholder="100"
                     value={newAncho}
                     onChange={(e) => setNewAncho(e.target.value)}
-                    className="w-full bg-[#151617] text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center font-bold"
+                    className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center font-bold"
                   />
                 </div>
                 <div>
@@ -358,7 +358,7 @@ export default function CalculadoraView({
                     placeholder="100"
                     value={newAlto}
                     onChange={(e) => setNewAlto(e.target.value)}
-                    className="w-full bg-[#151617] text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center font-bold"
+                    className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center font-bold"
                   />
                 </div>
               </div>
@@ -372,7 +372,7 @@ export default function CalculadoraView({
                   placeholder="100.00"
                   value={newCosto}
                   onChange={(e) => setNewCosto(e.target.value)}
-                  className="w-full bg-[#151617] text-gray-100 p-2.5 rounded-lg border border-gray-700 text-emerald-400 font-bold"
+                  className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 text-emerald-400 font-bold"
                 />
               </div>
 
@@ -380,7 +380,7 @@ export default function CalculadoraView({
                 <button
                   type="button"
                   onClick={() => setShowAddMat(false)}
-                  className="px-3.5 py-2 rounded-lg text-gray-400 hover:text-white bg-gray-800 transition-colors"
+                  className="px-3.5 py-2 rounded-lg text-gray-400 hover:text-gray-50 bg-gray-800 transition-colors"
                 >
                   Cancelar
                 </button>

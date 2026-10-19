@@ -46,7 +46,7 @@ export default function CotizacionesView({
     <div className="space-y-4">
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Cotizaciones Emitidas</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-lg sm:text-2xl font-bold text-gray-100">{listCotizaciones.length}</span>
@@ -54,7 +54,7 @@ export default function CotizacionesView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Pendientes de Aprobación</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-lg sm:text-2xl font-bold text-amber-400">{pendientesCount}</span>
@@ -62,7 +62,7 @@ export default function CotizacionesView({
           </div>
         </div>
 
-        <div className="bg-[#1c1d1f] border border-gray-800 p-3 sm:p-4 rounded-xl col-span-2 sm:col-span-1">
+        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl col-span-2 sm:col-span-1">
           <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Monto Presupuestado</span>
           <div className="flex items-center justify-between mt-1">
             <span className="text-sm sm:text-xl font-bold font-mono text-blue-400 truncate">{formatMoney(totalPresupuestado)}</span>
@@ -72,7 +72,7 @@ export default function CotizacionesView({
       </div>
 
       {/* Search Toolbar */}
-      <div className="flex items-center justify-between gap-2.5 bg-[#18191b] p-3 rounded-xl border border-gray-800">
+      <div className="flex items-center justify-between gap-2.5 bg-th-18191b p-3 rounded-xl border border-gray-800">
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
           <input
@@ -80,7 +80,7 @@ export default function CotizacionesView({
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Buscar cotización por cliente o folio (CMD-...)"
-            className="w-full bg-[#121314] text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full bg-th-121314 text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
@@ -94,10 +94,10 @@ export default function CotizacionesView({
       </div>
 
       {/* Cotizaciones Table Container matching reference image */}
-      <div className="overflow-x-auto rounded-xl border border-gray-800 bg-[#161719] shadow-sm">
+      <div className="overflow-x-auto rounded-xl border border-gray-800 bg-th-161719 shadow-sm">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-gray-800 bg-[#131416] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+            <tr className="border-b border-gray-800 bg-th-131416 text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
               <th className="py-3 px-2 w-8"></th>
               <th className="py-3 px-3 min-w-[95px]">ID</th>
               <th className="py-3 px-3 min-w-[100px]">FECHA</th>

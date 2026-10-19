@@ -202,9 +202,9 @@ export default function ModalNuevoProducto({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-[#18191c] border border-gray-800 rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+      <div className="bg-th-18191c border border-gray-800 rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
         {/* Modal Header */}
-        <div className="px-5 py-4 border-b border-gray-800 flex items-center justify-between bg-[#151618] shrink-0">
+        <div className="px-5 py-4 border-b border-gray-800 flex items-center justify-between bg-th-151618 shrink-0">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
               <Layers className="w-5 h-5" />
@@ -229,7 +229,7 @@ export default function ModalNuevoProducto({
         {/* Modal Body (Scrollable) */}
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5">
           {/* Section 1: Basic Info */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-[#141517] p-3.5 rounded-xl border border-gray-800/80">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-th-141517 p-3.5 rounded-xl border border-gray-800/80">
             <div>
               <label className="block text-xs font-semibold text-gray-300 mb-1">
                 Nombre del Producto / Servicio <span className="text-orange-400">*</span>
@@ -240,7 +240,7 @@ export default function ModalNuevoProducto({
                 onChange={(e) => setNombre(e.target.value)}
                 placeholder="Ej. Taza Mágica 11oz, Letrero Neón, Playera DTF..."
                 required
-                className="w-full bg-[#1b1c1e] text-xs text-gray-100 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
+                className="w-full bg-th-1b1c1e text-xs text-gray-100 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
               />
             </div>
 
@@ -253,7 +253,7 @@ export default function ModalNuevoProducto({
                 value={proveedor}
                 onChange={(e) => setProveedor(e.target.value)}
                 placeholder="Ej. Propio, Cerámicas G, Tintas Mex..."
-                className="w-full bg-[#1b1c1e] text-xs text-gray-100 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full bg-th-1b1c1e text-xs text-gray-100 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
               />
             </div>
           </div>
@@ -274,16 +274,16 @@ export default function ModalNuevoProducto({
                 onClick={addInsumo}
                 className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 border border-orange-500/30 text-xs font-semibold transition-all active:scale-95"
               >
-                <Plus className="w-3.5 h-3.5 text-white" />
+                <Plus className="w-3.5 h-3.5 text-gray-50" />
                 <span>Agregar Insumo</span>
               </button>
             </div>
 
             {/* Insumos List / Table */}
-            <div className="overflow-x-auto rounded-xl border border-gray-800 bg-[#141517]">
+            <div className="overflow-x-auto rounded-xl border border-gray-800 bg-th-141517">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-gray-800 bg-[#18191c] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+                  <tr className="border-b border-gray-800 bg-th-18191c text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
                     <th className="py-2.5 px-3 min-w-[190px]">Nombre Insumo</th>
                     <th className="py-2.5 px-2 min-w-[130px]">Detalle / Medida</th>
                     <th className="py-2.5 px-2 min-w-[120px]">Proveedor</th>
@@ -309,7 +309,7 @@ export default function ModalNuevoProducto({
                             value={ins.nombre}
                             onChange={(e) => handleInsumoChange(idx, 'nombre', e.target.value)}
                             placeholder="Nombre del insumo..."
-                            className="w-full bg-[#1b1c1e] text-xs text-gray-100 px-2.5 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
+                            className="w-full bg-th-1b1c1e text-xs text-gray-100 px-2.5 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
                           />
                           <datalist id={`inv-list-${idx}`}>
                             {inventario.map((item, iIdx) => (
@@ -327,7 +327,7 @@ export default function ModalNuevoProducto({
                             value={ins.detalle}
                             onChange={(e) => handleInsumoChange(idx, 'detalle', e.target.value)}
                             placeholder="11oz, A4, etc."
-                            className="w-full bg-[#1b1c1e] text-xs text-gray-300 px-2 py-1.5 rounded-lg border border-gray-700/80 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                            className="w-full bg-th-1b1c1e text-xs text-gray-300 px-2 py-1.5 rounded-lg border border-gray-700/80 focus:outline-none focus:ring-1 focus:ring-orange-500"
                           />
                         </td>
 
@@ -338,7 +338,7 @@ export default function ModalNuevoProducto({
                             value={ins.proveedor}
                             onChange={(e) => handleInsumoChange(idx, 'proveedor', e.target.value)}
                             placeholder="Proveedor"
-                            className="w-full bg-[#1b1c1e] text-xs text-gray-300 px-2 py-1.5 rounded-lg border border-gray-700/80 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                            className="w-full bg-th-1b1c1e text-xs text-gray-300 px-2 py-1.5 rounded-lg border border-gray-700/80 focus:outline-none focus:ring-1 focus:ring-orange-500"
                           />
                         </td>
 
@@ -350,7 +350,7 @@ export default function ModalNuevoProducto({
                             min="0"
                             value={ins.cant}
                             onChange={(e) => handleInsumoChange(idx, 'cant', e.target.value)}
-                            className="w-16 bg-[#1b1c1e] text-xs text-gray-100 px-1.5 py-1.5 rounded-lg border border-gray-700 text-center font-mono focus:outline-none focus:ring-1 focus:ring-orange-500"
+                            className="w-16 bg-th-1b1c1e text-xs text-gray-100 px-1.5 py-1.5 rounded-lg border border-gray-700 text-center font-mono focus:outline-none focus:ring-1 focus:ring-orange-500"
                           />
                         </td>
 
@@ -362,7 +362,7 @@ export default function ModalNuevoProducto({
                             min="0"
                             value={ins.costoUnitario}
                             onChange={(e) => handleInsumoChange(idx, 'costoUnitario', e.target.value)}
-                            className="w-20 bg-[#1b1c1e] text-xs text-gray-100 px-1.5 py-1.5 rounded-lg border border-gray-700 text-right font-mono focus:outline-none focus:ring-1 focus:ring-orange-500"
+                            className="w-20 bg-th-1b1c1e text-xs text-gray-100 px-1.5 py-1.5 rounded-lg border border-gray-700 text-right font-mono focus:outline-none focus:ring-1 focus:ring-orange-500"
                           />
                         </td>
 
@@ -394,14 +394,14 @@ export default function ModalNuevoProducto({
           </div>
 
           {/* Section 3: Costo Real, Ganancia y Precio Final */}
-          <div className="bg-[#141517] p-4 rounded-xl border border-gray-800 space-y-3.5">
+          <div className="bg-th-141517 p-4 rounded-xl border border-gray-800 space-y-3.5">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-300 block">
               Cálculo de Costo Real, Precio y Margen de Ganancia
             </span>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Costo Real */}
-              <div className="bg-[#1c1d20] p-3 rounded-xl border border-gray-700/80">
+              <div className="bg-th-1c1d20 p-3 rounded-xl border border-gray-700/80">
                 <span className="text-[10px] uppercase font-bold text-gray-400 block">Costo Real de Insumos</span>
                 <span className="text-xl font-bold font-mono text-gray-100 mt-1 block">
                   {formatMoney(costoReal)}
@@ -410,7 +410,7 @@ export default function ModalNuevoProducto({
               </div>
 
               {/* Opción A: Margen de Ganancia Deseado (%) */}
-              <div className="bg-[#1c1d20] p-3 rounded-xl border border-gray-700/80">
+              <div className="bg-th-1c1d20 p-3 rounded-xl border border-gray-700/80">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase font-bold text-gray-400">Margen Deseado (%)</span>
                   <Percent className="w-3.5 h-3.5 text-blue-400" />
@@ -422,7 +422,7 @@ export default function ModalNuevoProducto({
                     value={margenPorcentaje}
                     onChange={(e) => handleMargenChange(e.target.value)}
                     placeholder="Ej. 50"
-                    className="w-full bg-[#141517] text-base font-bold text-blue-400 px-2.5 py-1.5 rounded-lg border border-blue-500/40 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-th-141517 text-base font-bold text-blue-400 px-2.5 py-1.5 rounded-lg border border-blue-500/40 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                   <span className="absolute right-2.5 top-2 text-xs text-blue-400/80 font-bold">%</span>
                 </div>
@@ -430,7 +430,7 @@ export default function ModalNuevoProducto({
               </div>
 
               {/* Opción B: Precio Final de Venta ($) */}
-              <div className="bg-[#1c1d20] p-3 rounded-xl border border-gray-700/80">
+              <div className="bg-th-1c1d20 p-3 rounded-xl border border-gray-700/80">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] uppercase font-bold text-gray-400">Precio Final de Venta ($)</span>
                   <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
@@ -444,7 +444,7 @@ export default function ModalNuevoProducto({
                     onChange={(e) => handlePrecioVentaChange(e.target.value)}
                     placeholder="0.00"
                     required
-                    className="w-full bg-[#141517] text-base font-bold text-emerald-400 px-2.5 py-1.5 rounded-lg border border-emerald-500/40 font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full bg-th-141517 text-base font-bold text-emerald-400 px-2.5 py-1.5 rounded-lg border border-emerald-500/40 font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
                   <span className="absolute right-2.5 top-2 text-xs text-emerald-400/80 font-bold">MXN</span>
                 </div>
@@ -453,7 +453,7 @@ export default function ModalNuevoProducto({
             </div>
 
             {/* Ganancia Neta Calculada Banner */}
-            <div className="bg-[#191b1e] border border-gray-800 p-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="bg-th-191b1e border border-gray-800 p-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
                 <span className="text-xs text-gray-300 font-medium">
@@ -474,7 +474,7 @@ export default function ModalNuevoProducto({
           </div>
 
           {/* Sticky Bottom Bar */}
-          <div className="sticky bottom-0 bg-[#151618] border-t border-gray-800 pt-3 pb-1 flex items-center justify-end gap-2.5 shrink-0">
+          <div className="sticky bottom-0 bg-th-151618 border-t border-gray-800 pt-3 pb-1 flex items-center justify-end gap-2.5 shrink-0">
             <button
               type="button"
               onClick={onClose}
