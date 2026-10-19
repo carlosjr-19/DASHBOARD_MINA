@@ -1,0 +1,43 @@
+# ===== Node portable de Windows (no se sube, pesa ~80 MB) =====
+node_full/
+nodejs_portable/
+node.zip
+
+# ===== Frontend =====
+node_modules/
+frontend/dist/
+frontend/.vite/
+*.local
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# ===== Variables de entorno / secretos =====
+.env
+.env.*
+!.env.example
+comandos.txt
+
+# ===== Bases de datos locales =====
+*.db
+*.db.bak
+*.sqlite3
+*.bak
+
+# ===== Sistema operativo / editores =====
+desktop.ini
+Thumbs.db
+*.bat
+.DS_Store
+.vscode/
+.idea/
+
+# ===== Logs =====
+*.log
+npm-debug.log*
+

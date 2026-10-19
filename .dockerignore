@@ -1,0 +1,37 @@
+# Control de versiones / editores
+.git
+.gitignore
+.gitattributes
+.vscode
+.idea
+
+# Node portable de Windows y dependencias (se instalan dentro de la imagen)
+node_full
+nodejs_portable
+node.zip
+**/node_modules
+
+# Build local del frontend (se recompila dentro de la imagen)
+frontend/dist
+
+# Python
+**/__pycache__
+**/*.py[cod]
+**/.venv
+**/venv
+**/.env
+
+# Bases de datos locales (la de producción vive en el volumen /data)
+*.db
+*.db.bak
+*.sqlite3
+**/*.bak
+
+# Scripts y archivos locales de Windows
+*.bat
+comandos.txt
+**/desktop.ini
+Dockerfile.old.bak
+.dockerignore.old.bak
+README.md
+

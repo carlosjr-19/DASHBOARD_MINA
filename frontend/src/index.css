@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after {
+    font-family: 'Comfortaa', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, cursive, sans-serif;
+  }
+
+  body {
+    font-family: 'Comfortaa', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, cursive, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background-color: #121314;
+    color: #e5e7eb;
+    font-weight: 400;
+  }
+
+  /* Prevent auto zoom on iOS inputs and force Comfortaa on all form controls */
+  input, select, textarea, button {
+    font-size: 16px !important;
+    font-family: 'Comfortaa', cursive, sans-serif !important;
+  }
+}
+
+.font-mono, code, kbd, samp, pre {
+  font-family: 'Comfortaa', cursive, sans-serif !important;
+}
+
+/* Hide number spinner up/down arrows in all forms across the dashboard */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #18191b;
+}
+::-webkit-scrollbar-thumb {
+  background: #333639;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4a4d52;
+}
+
+/* Print styles for A4 Cotizaciones */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  @page {
+    size: letter portrait;
+    margin: 12mm;
+  }
+}
