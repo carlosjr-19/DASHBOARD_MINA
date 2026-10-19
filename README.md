@@ -74,5 +74,16 @@ git push -u origin main
 
 ## Desarrollo local (Windows)
 
-- `iniciar_sistema.bat`: arranca el backend en http://localhost:8000
-- `iniciar_desarrollo.bat`: backend + Vite con hot reload en http://localhost:5173
+Solo doble clic, no hace falta configurar nada:
+
+- **`iniciar_desarrollo.bat`**: backend (http://localhost:8000) + frontend con recarga
+  en caliente (http://localhost:5173). Úsalo mientras programas.
+- **`iniciar_sistema.bat`**: compila el frontend y lo sirve desde FastAPI en
+  http://localhost:8000, igual que en producción.
+
+La primera vez cada script crea `backend/.venv`, instala las dependencias de Python
+y ejecuta `npm install` en `frontend` (tarda unos minutos). Después arranca en segundos.
+Usa Node.js del sistema si está instalado; si no, el portable de `node_full/`.
+En local siempre se usa SQLite (`backend/app/db/mina_design.db`).
+
+Requisitos: Python 3.10+ instalado. Node.js es opcional (se usa `node_full/` si falta).
