@@ -5,6 +5,7 @@ from typing import List, Optional
 class InsumoSchema(BaseModel):
     nombre: str
     detalle: Optional[str] = ""
+    medida: Optional[str] = ""
     nota: Optional[str] = ""
     proveedor: Optional[str] = ""
     metodoPago: Optional[str] = "STOCK"
@@ -43,6 +44,7 @@ class PedidoCreateSchema(BaseModel):
     retencionIsr: float = 0.0
     total: float = 0.0
     pagado: float = 0.0
+    metodoPagoAnticipo: Optional[str] = "NU MINA"
     costoTotal: float = 0.0
     costoMermasTotal: float = 0.0
     ganancia: float = 0.0

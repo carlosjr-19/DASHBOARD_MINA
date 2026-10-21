@@ -57,6 +57,7 @@ export default function ModalNuevoPedido({
   const [regimenFiscal, setRegimenFiscal] = useState(initialData?.regimenFiscal || '612 Personas Físicas con Actividades Empresariales');
   const [usoCfdi, setUsoCfdi] = useState(initialData?.usoCfdi || 'G03 Gastos en general');
   const [pagado, setPagado] = useState(initialData?.pagado || 0);
+  const [metodoPagoAnticipo, setMetodoPagoAnticipo] = useState(initialData?.metodoPagoAnticipo || 'NU MINA');
   const [collapsedInsumos, setCollapsedInsumos] = useState({});
   const [collapsedMermas, setCollapsedMermas] = useState({});
 
@@ -220,6 +221,7 @@ export default function ModalNuevoPedido({
     updated[pIndex].insumos.push({
       nombre: '',
       detalle: '',
+      medida: '',
       nota: '',
       proveedor: '',
       metodoPago: 'STOCK',
@@ -248,6 +250,7 @@ export default function ModalNuevoPedido({
         ins.costoUnitario = parseFloat(match.precio) || 0;
         if (match.proveedor) ins.proveedor = match.proveedor;
         if (match.medida && !ins.detalle) ins.detalle = match.medida;
+        if (match.medida && !ins.medida) ins.medida = match.medida;
         ins.metodoPago = 'STOCK';
       }
     }
@@ -272,6 +275,7 @@ export default function ModalNuevoPedido({
         ins.costoUnitario = parseFloat(match.precio) || 0;
         if (match.proveedor) ins.proveedor = match.proveedor;
         if (match.medida) ins.detalle = match.medida;
+        if (match.medida) ins.medida = match.medida;
         ins.metodoPago = 'STOCK';
       } else {
         ins.nombre = stockItemName;
@@ -372,6 +376,7 @@ export default function ModalNuevoPedido({
         retencionIsr,
         total,
         pagado: parseFloat(pagado) || 0,
+        metodoPagoAnticipo: metodoPagoAnticipo || 'NU MINA',
         costoTotal,
         costoMermasTotal,
         ganancia,
@@ -396,6 +401,7 @@ export default function ModalNuevoPedido({
             insumos: p.insumos.map((i) => ({
               nombre: i.nombre,
               detalle: i.detalle || '',
+              medida: i.medida || '',
               nota: i.nota || '',
               proveedor: i.proveedor || '',
               metodoPago: i.metodoPago || 'STOCK',
@@ -426,7 +432,7 @@ export default function ModalNuevoPedido({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-sm overflow-y-auto">
       {/* Modal Container más amplio (max-w-5xl) para que no esté amontonado */}
-      <div className="bg-th-1b1c1e border border-gray-700 w-full max-w-5xl rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[95vh] flex flex-col animate-in fade-in zoom-in-95">
+      <div className="bg-th-1b1c1e border border-gray-700 w-full max-w-7xl w-[96vw] rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[95vh] flex flex-col animate-in fade-in zoom-in-95">
         
         {/* Header Superior Fijo */}
         <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-th-151618 shrink-0">
@@ -713,13 +719,16 @@ export default function ModalNuevoPedido({
 
                     <div className="sm:col-span-1">
                       <label className="text-gray-400 block mb-1 text-center">P. Unit ($)</label>
-                      <input
-                        type="number"
-                        step="any"
-                        value={prod.precioUnitario}
-                        onChange={(e) => updateProducto(pIdx, 'precioUnitario', e.target.value)}
-                        className="w-full bg-th-1c1d1f text-gray-100 font-mono p-2.5 rounded-lg border border-gray-700 text-center"
-                      />
+                      <div className="relative flex items-center">
+                        <span className="absolute left-2 text-gray-400 font-mono text-xs select-none">$</span>
+                        <input
+                          type="number"
+                          step="any"
+                          value={prod.precioUnitario}
+                          onChange={(e) => updateProducto(pIdx, 'precioUnitario', e.target.value)}
+                          className="w-full bg-th-1c1d1f text-gray-100 font-mono py-2.5 pl-5 pr-1.5 rounded-lg border border-gray-700 text-center font-bold"
+                        />
+                      </div>
                     </div>
 
                     {/* Precio Total al final calculado automáticamente */}
@@ -765,20 +774,21 @@ export default function ModalNuevoPedido({
 
                     {/* Encabezado de columnas de Insumos */}
                     {prod.insumos && prod.insumos.length > 0 && (
-                      <div className="hidden sm:grid sm:grid-cols-12 gap-2 text-[10px] font-bold uppercase text-gray-400 px-2 pb-1">
-                        <div className="sm:col-span-3 text-center">Insumo Requerido</div>
-                        <div className={pedidoTipo === 'COTIZACION' ? 'sm:col-span-3 text-center' : 'sm:col-span-2 text-center'}>
-                          Detalle / Nota
-                        </div>
-                        <div className="sm:col-span-2 text-center">Proveedor</div>
-                        <div className="sm:col-span-1 text-center">Cant</div>
-                        <div className="sm:col-span-1 text-center">P. Unit</div>
-                        <div className="sm:col-span-1 text-center">P. Total</div>
-                        {pedidoTipo === 'PEDIDO' ? (
-                          <div className="sm:col-span-2 text-center">Método Pago</div>
-                        ) : (
-                          <div className="sm:col-span-1 text-center"></div>
-                        )}
+                      <div className={`hidden sm:grid ${
+                        pedidoTipo === 'PEDIDO' 
+                          ? 'sm:grid-cols-[minmax(140px,2fr)_minmax(95px,1.1fr)_minmax(85px,1fr)_minmax(95px,1.1fr)_minmax(95px,1.1fr)_52px_72px_80px_115px_28px]' 
+                          : 'sm:grid-cols-[minmax(150px,2.2fr)_minmax(105px,1.2fr)_minmax(90px,1fr)_minmax(105px,1.2fr)_minmax(105px,1.2fr)_55px_75px_85px_28px]'
+                      } gap-1.5 text-[10px] font-bold uppercase text-gray-400 px-2 pb-1 text-center`}>
+                        <div>Insumo Requerido</div>
+                        <div>Detalle</div>
+                        <div>Medida</div>
+                        <div>Nota</div>
+                        <div>Proveedor</div>
+                        <div>Cant</div>
+                        <div>P. Unit</div>
+                        <div>P. Total</div>
+                        {pedidoTipo === 'PEDIDO' && <div>Método Pago</div>}
+                        <div></div>
                       </div>
                     )}
 
@@ -786,13 +796,20 @@ export default function ModalNuevoPedido({
                       const totalInsumo = (parseFloat(ins.cant) || 1) * (parseFloat(ins.costoUnitario) || 0);
 
                       return (
-                        <div key={iIdx} className="bg-th-1c1d1f p-2.5 rounded-lg border border-gray-800 grid grid-cols-1 sm:grid-cols-12 gap-2 items-center text-xs">
-                          {/* Insumo: único renglón con desplegable o texto libre */}
-                          <div className="sm:col-span-3">
+                        <div 
+                          key={iIdx} 
+                          className={`bg-th-1c1d1f p-2 rounded-lg border border-gray-800 grid grid-cols-1 ${
+                            pedidoTipo === 'PEDIDO' 
+                              ? 'sm:grid-cols-[minmax(140px,2fr)_minmax(95px,1.1fr)_minmax(85px,1fr)_minmax(95px,1.1fr)_minmax(95px,1.1fr)_52px_72px_80px_115px_28px]' 
+                              : 'sm:grid-cols-[minmax(150px,2.2fr)_minmax(105px,1.2fr)_minmax(90px,1fr)_minmax(105px,1.2fr)_minmax(105px,1.2fr)_55px_75px_85px_28px]'
+                          } gap-1.5 items-center text-[11px]`}
+                        >
+                          {/* Insumo */}
+                          <div>
                             <input
                               type="text"
                               list={`insumos-stock-list-${pIdx}-${iIdx}`}
-                              placeholder="Escribe o elige insumo..."
+                              placeholder="Escribe o elige..."
                               value={ins.nombre}
                               onChange={(e) => {
                                 const val = e.target.value;
@@ -803,7 +820,7 @@ export default function ModalNuevoPedido({
                                   updateInsumo(pIdx, iIdx, 'nombre', val);
                                 }
                               }}
-                              className="w-full bg-th-121314 text-gray-200 px-2.5 py-2 rounded border border-gray-700 text-xs focus:ring-1 focus:ring-orange-500 font-medium text-center"
+                              className="w-full bg-th-121314 text-gray-200 px-2 py-1.5 rounded border border-gray-700 text-[11px] focus:ring-1 focus:ring-orange-500 font-medium text-center"
                             />
                             <datalist id={`insumos-stock-list-${pIdx}-${iIdx}`}>
                               {inventario.map((inv) => (
@@ -815,32 +832,51 @@ export default function ModalNuevoPedido({
                           </div>
 
                           {/* Detalle */}
-                          <div className={pedidoTipo === 'COTIZACION' ? 'sm:col-span-3' : 'sm:col-span-2'}>
+                          <div>
                             <input
                               type="text"
-                              placeholder="Color, talla, etc."
-                              value={ins.detalle || ins.nota}
-                              onChange={(e) => {
-                                updateInsumo(pIdx, iIdx, 'detalle', e.target.value);
-                                updateInsumo(pIdx, iIdx, 'nota', e.target.value);
-                              }}
-                              className="w-full bg-th-121314 text-gray-200 p-2 rounded border border-gray-700 text-xs text-center"
+                              placeholder="Detalle..."
+                              value={ins.detalle || ''}
+                              onChange={(e) => updateInsumo(pIdx, iIdx, 'detalle', e.target.value)}
+                              className="w-full bg-th-121314 text-gray-200 px-1.5 py-1.5 rounded border border-gray-700 text-[11px] text-center"
+                            />
+                          </div>
+
+                          {/* Medida */}
+                          <div>
+                            <input
+                              type="text"
+                              placeholder="Medida (ej. 58x100)"
+                              value={ins.medida || ''}
+                              onChange={(e) => updateInsumo(pIdx, iIdx, 'medida', e.target.value)}
+                              className="w-full bg-th-121314 text-gray-200 px-1.5 py-1.5 rounded border border-gray-700 text-[11px] text-center font-mono"
+                            />
+                          </div>
+
+                          {/* Nota */}
+                          <div>
+                            <input
+                              type="text"
+                              placeholder="Nota..."
+                              value={ins.nota || ''}
+                              onChange={(e) => updateInsumo(pIdx, iIdx, 'nota', e.target.value)}
+                              className="w-full bg-th-121314 text-gray-200 px-1.5 py-1.5 rounded border border-gray-700 text-[11px] text-center"
                             />
                           </div>
 
                           {/* Proveedor */}
-                          <div className="sm:col-span-2">
+                          <div>
                             <input
                               type="text"
                               placeholder="Proveedor"
-                              value={ins.proveedor}
+                              value={ins.proveedor || ''}
                               onChange={(e) => updateInsumo(pIdx, iIdx, 'proveedor', e.target.value)}
-                              className="w-full bg-th-121314 text-gray-200 p-2 rounded border border-gray-700 text-xs text-center"
+                              className="w-full bg-th-121314 text-gray-200 px-1.5 py-1.5 rounded border border-gray-700 text-[11px] text-center"
                             />
                           </div>
 
                           {/* Cantidad */}
-                          <div className="sm:col-span-1">
+                          <div>
                             <input
                               type="number"
                               min="1"
@@ -848,66 +884,58 @@ export default function ModalNuevoPedido({
                               placeholder="Cant"
                               value={ins.cant}
                               onChange={(e) => updateInsumo(pIdx, iIdx, 'cant', e.target.value)}
-                              className="w-full bg-th-121314 text-gray-200 p-2 rounded border border-gray-700 text-xs text-center font-bold"
+                              className="w-full bg-th-121314 text-gray-200 px-1 py-1.5 rounded border border-gray-700 text-[11px] text-center font-bold"
                             />
                           </div>
 
                           {/* Precio Unitario */}
-                          <div className="sm:col-span-1">
+                          <div>
                             <input
                               type="number"
                               step="any"
                               placeholder="P. Unit"
                               value={ins.costoUnitario}
                               onChange={(e) => updateInsumo(pIdx, iIdx, 'costoUnitario', e.target.value)}
-                              className="w-full bg-th-121314 text-gray-200 p-2 rounded border border-gray-700 text-xs text-center font-bold"
+                              className="w-full bg-th-121314 text-gray-200 px-1 py-1.5 rounded border border-gray-700 text-[11px] text-center font-mono font-medium"
                             />
                           </div>
 
-                          {/* Precio Total (con idéntico estilo de caja e input que P. Unit) */}
-                          <div className="sm:col-span-1">
+                          {/* Precio Total (sin truncate, tamaño legible completo) */}
+                          <div>
                             <input
                               type="text"
                               readOnly
                               value={`$${totalInsumo.toFixed(2)}`}
-                              className="w-full bg-th-121314 text-gray-200 p-2 rounded border border-gray-700 text-xs text-center font-bold focus:outline-none cursor-default truncate"
+                              className="w-full bg-th-121314 text-emerald-400 font-mono font-bold px-1 py-1.5 rounded border border-gray-700 text-[11px] text-center focus:outline-none cursor-default whitespace-nowrap"
                             />
                           </div>
 
-                          {/* Método Pago y Borrar (Solo en Pedido) */}
-                          {pedidoTipo === 'PEDIDO' ? (
-                            <div className="sm:col-span-2 flex items-center gap-1.5">
+                          {/* Método Pago (si PEDIDO) */}
+                          {pedidoTipo === 'PEDIDO' && (
+                            <div>
                               <select
-                                value={ins.metodoPago}
+                                value={ins.metodoPago || 'STOCK'}
                                 onChange={(e) => updateInsumo(pIdx, iIdx, 'metodoPago', e.target.value)}
-                                className="w-full bg-th-121314 text-gray-200 p-2 rounded border border-gray-700 text-xs text-center font-medium"
+                                className="w-full bg-th-121314 text-gray-200 px-1 py-1.5 rounded border border-gray-700 text-[10px] text-center font-medium"
                               >
                                 {METODOS_PAGO.map((m) => (
                                   <option key={m} value={m}>{m}</option>
                                 ))}
                               </select>
-
-                              <button
-                                type="button"
-                                onClick={() => removeInsumo(pIdx, iIdx)}
-                                className="text-gray-500 hover:text-rose-400 p-1 transition-colors"
-                                title="Eliminar insumo"
-                              >
-                                <X className="w-4 h-4 text-gray-50" />
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="sm:col-span-1 flex items-center justify-center">
-                              <button
-                                type="button"
-                                onClick={() => removeInsumo(pIdx, iIdx)}
-                                className="text-gray-500 hover:text-rose-400 p-1 transition-colors"
-                                title="Eliminar insumo"
-                              >
-                                <X className="w-4 h-4 text-gray-50" />
-                              </button>
                             </div>
                           )}
+
+                          {/* Botón Borrar Insumo */}
+                          <div className="flex justify-center">
+                            <button
+                              type="button"
+                              onClick={() => removeInsumo(pIdx, iIdx)}
+                              className="p-1 text-gray-500 hover:text-rose-400 hover:bg-rose-950/40 rounded transition-colors"
+                              title="Eliminar insumo"
+                            >
+                              <X className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
                       );
                     })}
@@ -1153,21 +1181,44 @@ export default function ModalNuevoPedido({
 
           {/* Fila de Anticipo, Saldo y Botones de Acción directos */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1 border-t border-gray-800/80">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3.5">
               <div>
-                <span className="text-[10px] text-gray-400 block font-semibold">Anticipo / Cobrado ($):</span>
-                <input
-                  type="number"
-                  step="any"
-                  value={pagado}
-                  onChange={(e) => setPagado(e.target.value)}
-                  className="bg-th-1c1d1f text-emerald-400 font-mono font-bold px-3 py-1.5 rounded-lg border border-gray-700 w-32 text-xs"
-                />
+                <span className="text-[10px] text-gray-400 block font-semibold mb-0.5">Anticipo / Cobrado:</span>
+                <div className="relative flex items-center">
+                  <span className="absolute left-2.5 text-emerald-400 font-mono font-bold text-xs select-none">$</span>
+                  <input
+                    type="number"
+                    step="any"
+                    min="0"
+                    value={pagado}
+                    onChange={(e) => setPagado(e.target.value)}
+                    className="bg-th-1c1d1f text-emerald-400 font-mono font-bold pl-6 pr-2.5 py-1.5 rounded-lg border border-gray-700 w-32 text-xs focus:outline-none focus:border-orange-500"
+                    placeholder="0.00"
+                  />
+                </div>
               </div>
 
+              {parseFloat(pagado) > 0 && (
+                <div className="animate-in fade-in zoom-in-95 duration-150">
+                  <span className="text-[10px] text-orange-400 block font-semibold mb-0.5">Método de Pago Anticipo:</span>
+                  <select
+                    value={metodoPagoAnticipo}
+                    onChange={(e) => setMetodoPagoAnticipo(e.target.value)}
+                    className="bg-th-1c1d1f text-orange-300 text-xs px-2.5 py-1.5 rounded-lg border border-orange-500/70 focus:outline-none font-semibold shadow-sm"
+                  >
+                    <option value="NU MINA">NU MINA</option>
+                    <option value="NU EMI">NU EMI</option>
+                    <option value="MERCADO PAGO">MERCADO PAGO</option>
+                    <option value="EFECTIVO">EFECTIVO</option>
+                    <option value="NU TDC">NU TDC</option>
+                    <option value="PLATA TDC">PLATA TDC</option>
+                  </select>
+                </div>
+              )}
+
               <div>
-                <span className="text-[10px] text-gray-400 block font-semibold">Saldo Pendiente:</span>
-                <div className="font-mono font-bold text-rose-400 text-sm px-2 py-1.5">
+                <span className="text-[10px] text-gray-400 block font-semibold mb-0.5">Saldo Pendiente:</span>
+                <div className="font-mono font-bold text-rose-400 text-sm px-1 py-1">
                   ${Math.max(0, total - (parseFloat(pagado) || 0)).toFixed(2)}
                 </div>
               </div>

@@ -320,9 +320,9 @@ export default function MobileOrderCard({
 
                     return (
                       <React.Fragment key={idx}>
-                        {/* Product Header Row - Col 1 is product info, Cols 2-7 are column titles */}
+                        {/* Product Header Row - 9 Columns: Insumo, Detalle, Medida, Nota, Proveedor, Cant, Costo Unit, Subtotal, Método Pago */}
                         <tr className="bg-th-1b1c20 border-t-2 border-b border-gray-700/80 font-medium">
-                          <td className="py-2.5 px-3 min-w-[180px]">
+                          <td className="py-2.5 px-3 min-w-[170px]">
                             <div className="font-bold text-gray-100 text-xs sm:text-sm">
                               {cantProd}x {prod.nombre}
                             </div>
@@ -332,22 +332,28 @@ export default function MobileOrderCard({
                               </div>
                             )}
                           </td>
-                          <td className="py-2.5 px-2.5 text-center min-w-[130px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+                          <td className="py-2.5 px-2 text-center min-w-[110px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+                            DETALLE
+                          </td>
+                          <td className="py-2.5 px-2 text-center min-w-[95px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+                            MEDIDA
+                          </td>
+                          <td className="py-2.5 px-2 text-center min-w-[110px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
                             NOTA
                           </td>
-                          <td className="py-2.5 px-2.5 text-center min-w-[130px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
-                            MEDIDA / DETALLE
+                          <td className="py-2.5 px-2 text-center min-w-[100px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+                            PROVEEDOR
                           </td>
-                          <td className="py-2.5 px-2.5 text-center w-24 min-w-[85px] max-w-[95px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+                          <td className="py-2.5 px-2 text-center w-20 min-w-[65px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
                             CANT.
                           </td>
-                          <td className="py-2.5 px-2 text-center w-24 min-w-[85px] max-w-[95px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+                          <td className="py-2.5 px-2 text-center w-24 min-w-[80px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
                             COSTO UNIT.
                           </td>
-                          <td className="py-2.5 px-2 text-center w-24 min-w-[85px] max-w-[95px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+                          <td className="py-2.5 px-2 text-center w-24 min-w-[85px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
                             SUBTOTAL COSTO
                           </td>
-                          <td className="py-2.5 px-2 text-center w-24 min-w-[85px] max-w-[95px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+                          <td className="py-2.5 px-2 text-center w-28 min-w-[95px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
                             MÉTODO DE PAGO
                           </td>
                         </tr>
@@ -361,21 +367,26 @@ export default function MobileOrderCard({
 
                             return (
                               <tr key={iIdx} className="hover:bg-gray-800/30 text-gray-300 text-[11px] transition-colors">
-                                {/* CONCEPTO / INSUMO */}
+                                {/* INSUMO */}
                                 <td className="py-2 px-3 pl-4">
                                   <div className="flex items-start gap-1.5">
                                     <span className="text-gray-500 font-bold">•</span>
-                                    <div>
-                                      <span className="font-medium text-gray-200">{ins.nombre}</span>
-                                      {ins.proveedor && (
-                                        <div className="text-[10px] text-gray-500">{ins.proveedor}</div>
-                                      )}
-                                    </div>
+                                    <span className="font-medium text-gray-200">{ins.nombre}</span>
                                   </div>
                                 </td>
 
+                                {/* DETALLE */}
+                                <td className="py-2 px-2 text-center text-gray-300">
+                                  {ins.detalle || <span className="text-gray-600">-</span>}
+                                </td>
+
+                                {/* MEDIDA */}
+                                <td className="py-2 px-2 text-center text-gray-300 font-mono text-[11px]">
+                                  {ins.medida || <span className="text-gray-600">-</span>}
+                                </td>
+
                                 {/* NOTA */}
-                                <td className="py-2 px-2.5 text-center text-gray-400">
+                                <td className="py-2 px-2 text-center text-gray-400">
                                   {ins.nota ? (
                                     <span className="text-amber-400/90">{ins.nota}</span>
                                   ) : (
@@ -383,28 +394,28 @@ export default function MobileOrderCard({
                                   )}
                                 </td>
 
-                                {/* MEDIDA / DETALLE */}
-                                <td className="py-2 px-2.5 text-center text-gray-300">
-                                  {ins.detalle || <span className="text-gray-600">-</span>}
+                                {/* PROVEEDOR */}
+                                <td className="py-2 px-2 text-center text-gray-400">
+                                  {ins.proveedor || <span className="text-gray-600">-</span>}
                                 </td>
 
                                 {/* CANT. */}
-                                <td className="py-2 px-2 text-center w-24 min-w-[85px] max-w-[95px] font-mono font-medium text-gray-200">
+                                <td className="py-2 px-2 text-center w-20 min-w-[65px] font-mono font-medium text-gray-200">
                                   {cantIns}
                                 </td>
 
                                 {/* COSTO UNIT. */}
-                                <td className="py-2 px-2 text-center w-24 min-w-[85px] max-w-[95px] font-mono text-gray-300">
+                                <td className="py-2 px-2 text-center w-24 min-w-[80px] font-mono text-gray-300">
                                   {formatMoney(cuIns)}
                                 </td>
 
                                 {/* SUBTOTAL COSTO */}
-                                <td className="py-2 px-2 text-center w-24 min-w-[85px] max-w-[95px] font-mono font-bold text-gray-100">
+                                <td className="py-2 px-2 text-center w-24 min-w-[85px] font-mono font-bold text-gray-100">
                                   {formatMoney(subtotalIns)}
                                 </td>
 
                                 {/* MÉTODO DE PAGO */}
-                                <td className="py-2 px-2 text-center w-24 min-w-[85px] max-w-[95px]">
+                                <td className="py-2 px-2 text-center w-28 min-w-[95px]">
                                   <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-gray-800/80 border border-gray-700/80 text-gray-300 inline-block">
                                     {ins.metodoPago || 'STOCK'}
                                   </span>
@@ -414,7 +425,7 @@ export default function MobileOrderCard({
                           })
                         ) : (
                           <tr>
-                            <td colSpan={7} className="py-2 px-4 text-[11px] text-gray-500 italic pl-6">
+                            <td colSpan={9} className="py-2 px-4 text-[11px] text-gray-500 italic pl-6">
                               Sin insumos registrados para este producto
                             </td>
                           </tr>
@@ -427,25 +438,40 @@ export default function MobileOrderCard({
                           const subtotalMerma = cantMerma * cuMerma;
                           return (
                             <tr key={`merma-${mIdx}`} className="bg-rose-950/20 text-rose-300 text-[11px]">
+                              {/* INSUMO */}
                               <td className="py-2 px-3 pl-4">
                                 <span className="font-semibold text-rose-400">• [Merma] {merma.material}</span>
                               </td>
-                              <td className="py-2 px-2.5 text-center text-rose-400/90">
-                                {merma.motivo || '-'}
-                              </td>
-                              <td className="py-2 px-2.5 text-center text-rose-400/70">
+                              {/* DETALLE */}
+                              <td className="py-2 px-2 text-center text-rose-400/70">
                                 Desperdicio
                               </td>
-                              <td className="py-2 px-2 text-center w-24 min-w-[85px] max-w-[95px] font-mono">
+                              {/* MEDIDA */}
+                              <td className="py-2 px-2 text-center text-gray-600">
+                                -
+                              </td>
+                              {/* NOTA */}
+                              <td className="py-2 px-2 text-center text-rose-400/90">
+                                {merma.motivo || '-'}
+                              </td>
+                              {/* PROVEEDOR */}
+                              <td className="py-2 px-2 text-center text-rose-400/70">
+                                Propio
+                              </td>
+                              {/* CANT. */}
+                              <td className="py-2 px-2 text-center w-20 min-w-[65px] font-mono">
                                 {cantMerma}
                               </td>
-                              <td className="py-2 px-2 text-center w-24 min-w-[85px] max-w-[95px] font-mono">
+                              {/* COSTO UNIT. */}
+                              <td className="py-2 px-2 text-center w-24 min-w-[80px] font-mono">
                                 {formatMoney(cuMerma)}
                               </td>
-                              <td className="py-2 px-2 text-center w-24 min-w-[85px] max-w-[95px] font-mono font-semibold">
+                              {/* SUBTOTAL COSTO */}
+                              <td className="py-2 px-2 text-center w-24 min-w-[85px] font-mono font-semibold">
                                 {formatMoney(subtotalMerma)}
                               </td>
-                              <td className="py-2 px-2 text-center w-24 min-w-[85px] max-w-[95px]">
+                              {/* MÉTODO DE PAGO */}
+                              <td className="py-2 px-2 text-center w-28 min-w-[95px]">
                                 <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-rose-950/80 border border-rose-800/80 text-rose-300 inline-block">
                                   {merma.metodoPago || 'STOCK'}
                                 </span>
@@ -456,7 +482,7 @@ export default function MobileOrderCard({
 
                         {/* Product Financial Metrics Footer (Recuadro Naranja movido a la parte de abajo) */}
                         <tr className="bg-th-17181b border-b border-gray-800">
-                          <td colSpan={7} className="py-2 px-3">
+                          <td colSpan={9} className="py-2 px-3">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                               <span className="text-[10px] uppercase font-bold text-gray-400">
                                 Resumen de {prod.nombre}
@@ -483,7 +509,7 @@ export default function MobileOrderCard({
                   })
                 ) : (
                   <tr>
-                    <td colSpan={7} className="py-4 text-center text-gray-500 italic">
+                    <td colSpan={9} className="py-4 text-center text-gray-500 italic">
                       No hay productos registrados en este pedido
                     </td>
                   </tr>
@@ -492,7 +518,7 @@ export default function MobileOrderCard({
                 {/* Gastos de Recolección / Logística en una sola línea */}
                 {order.recolecciones && order.recolecciones.length > 0 && order.recolecciones.map((rec, rIdx) => (
                   <tr key={rIdx} className="bg-th-181613 border-t border-amber-900/40 text-[11px]">
-                    <td colSpan={7} className="py-2.5 px-3">
+                    <td colSpan={9} className="py-2.5 px-3">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-gray-300">
                         <div className="flex items-center gap-2 flex-wrap">
                           <Truck className="w-3.5 h-3.5 text-amber-400 shrink-0" />

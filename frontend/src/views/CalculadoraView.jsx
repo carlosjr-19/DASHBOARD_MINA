@@ -18,6 +18,7 @@ export default function CalculadoraView({
   const [anchoCm, setAnchoCm] = useState(35);
   const [altoCm, setAltoCm] = useState(35);
   const [cantidad, setCantidad] = useState(1);
+  const [precioVenta, setPrecioVenta] = useState('');
 
   // New material modal
   const [showAddMat, setShowAddMat] = useState(false);
@@ -47,6 +48,11 @@ export default function CalculadoraView({
   const costoPorPieza = areaPiezaM2 * costoPorM2;
   const costoTotal = areaTotalM2 * costoPorM2;
 
+  // Costo de venta al cliente y ganancia
+  const precioVentaNum = parseFloat(precioVenta) || 0;
+  const gananciaEstimada = precioVentaNum > 0 ? (precioVentaNum - costoTotal) : 0;
+  const margenPorcentaje = precioVentaNum > 0 ? ((gananciaEstimada / precioVentaNum) * 100) : 0;
+
   const formatMoney = (val) => `$${(val || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   const handleCreateMaterial = async (e) => {
@@ -71,10 +77,11 @@ export default function CalculadoraView({
 
   const exportar = () => {
     if (onExportarAPedido) {
+      const precioFinal = precioVentaNum > 0 ? precioVentaNum : costoPorPieza;
       onExportarAPedido({
         nombre: `${currentMat?.nombre || 'Cálculo de Área'} (${anchoCm}x${altoCm} cm)`,
         cant: cantNum,
-        precioUnitario: costoPorPieza,
+        precioUnitario: precioFinal,
         costoUnitario: costoPorPieza,
         proveedor: currentMat?.proveedor || 'Propio',
         insumos: [
@@ -238,10 +245,10 @@ export default function CalculadoraView({
             )}
           </div>
 
-          {/* Inputs Ancho y Alto lado a lado (idéntico a Imagen 2 y 3) */}
+          {/* Inputs Ancho y Alto lado a lado */}
           <div className="grid grid-cols-2 gap-3 pt-1">
             <div>
-              <label className="text-xs text-gray-400 text-center block mb-1">
+              <label className="text-xs text-gray-400 text-center block mb-1 font-semibold">
                 Ancho (cm)
               </label>
               <input
@@ -255,7 +262,7 @@ export default function CalculadoraView({
             </div>
 
             <div>
-              <label className="text-xs text-gray-400 text-center block mb-1">
+              <label className="text-xs text-gray-400 text-center block mb-1 font-semibold">
                 Alto (cm)
               </label>
               <input
@@ -269,18 +276,72 @@ export default function CalculadoraView({
             </div>
           </div>
 
-          {/* Tarjeta de Resultado Principal (Costo Proporcional del Área) */}
-          <div className="rounded-2xl bg-gradient-to-br from-th-122238 to-th-0d1624 border border-blue-900/60 p-5 text-center shadow-lg relative overflow-hidden">
-            <span className="text-[10px] sm:text-[11px] uppercase font-bold text-blue-300 tracking-wider block mb-1">
-              Costo Proporcional del Área
-            </span>
-            <div className="text-3xl sm:text-4xl font-extrabold text-gray-50 mt-1">
-              {formatMoney(costoTotal)}
+          {/* Campo Costo de Venta / Precio al Cliente */}
+          <div>
+            <label className="text-xs text-gray-400 text-center block mb-1 font-semibold">
+              Costo de Venta / Precio al Cliente ($)
+            </label>
+            <input
+              type="number"
+              min="0"
+              step="any"
+              value={precioVenta}
+              onChange={(e) => setPrecioVenta(e.target.value)}
+              placeholder="Ej. 100.00"
+              className="w-full bg-th-151617 text-gray-100 p-3 rounded-xl border border-gray-700 font-bold text-center text-sm focus:ring-1 focus:ring-orange-500 placeholder:text-gray-600"
+            />
+          </div>
+
+          {/* Tarjeta de Resultado: Costo Real vs Costo al Cliente y Ganancia */}
+          <div className="rounded-2xl bg-gradient-to-br from-th-122238 to-th-0d1624 border border-blue-900/60 p-4 sm:p-5 shadow-lg relative overflow-hidden space-y-3.5">
+            {/* Grid 2 Columnas: Costo Real vs Costo al Cliente */}
+            <div className="grid grid-cols-2 gap-3 text-center">
+              <div className="bg-blue-950/40 p-3 rounded-xl border border-blue-900/40">
+                <span className="text-[10px] sm:text-[11px] uppercase font-bold text-blue-300 tracking-wider block mb-1">
+                  Costo Real (Área)
+                </span>
+                <div className="text-xl sm:text-2xl font-extrabold text-gray-50">
+                  {formatMoney(costoTotal)}
+                </div>
+                <span className="text-[10px] text-blue-200/60 block mt-0.5">
+                  Lo que a ti te sale
+                </span>
+              </div>
+
+              <div className="bg-blue-950/40 p-3 rounded-xl border border-blue-900/40">
+                <span className="text-[10px] sm:text-[11px] uppercase font-bold text-emerald-400 tracking-wider block mb-1">
+                  Costo al Cliente
+                </span>
+                <div className="text-xl sm:text-2xl font-extrabold text-emerald-400">
+                  {precioVentaNum > 0 ? formatMoney(precioVentaNum) : '$0.00'}
+                </div>
+                <span className="text-[10px] text-emerald-300/60 block mt-0.5">
+                  Precio de venta
+                </span>
+              </div>
             </div>
-            <div className="text-[11px] text-blue-200/60 mt-2 flex items-center justify-center gap-2">
-              <span>Área: {areaTotalM2.toFixed(3)} m²</span>
-              <span>•</span>
-              <span>Costo m²: {formatMoney(costoPorM2)}</span>
+
+            {/* Ganancia Estimada */}
+            <div className="pt-2 border-t border-blue-900/40 text-center">
+              <span className="text-[10px] sm:text-[11px] uppercase font-bold text-blue-200 tracking-wider block mb-1">
+                Tu Ganancia Estimada
+              </span>
+              <div className={`text-2xl sm:text-3xl font-black ${
+                gananciaEstimada > 0 
+                  ? 'text-white' 
+                  : gananciaEstimada < 0 
+                    ? 'text-rose-400' 
+                    : 'text-gray-400'
+              }`}>
+                {precioVentaNum > 0 ? formatMoney(gananciaEstimada) : '$0.00'}
+              </div>
+              <div className="text-[11px] text-blue-200/70 mt-1.5 flex items-center justify-center gap-2 flex-wrap">
+                <span>Área: {areaTotalM2.toFixed(3)} m²</span>
+                <span>•</span>
+                <span>Margen: <strong className={gananciaEstimada > 0 ? 'text-emerald-400' : 'text-gray-300'}>{margenPorcentaje.toFixed(1)}%</strong></span>
+                <span>•</span>
+                <span>Costo m²: {formatMoney(costoPorM2)}</span>
+              </div>
             </div>
           </div>
 

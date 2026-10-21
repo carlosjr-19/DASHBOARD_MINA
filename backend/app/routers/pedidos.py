@@ -9,6 +9,26 @@ import json
 
 router = APIRouter(prefix="/pedidos", tags=["pedidos"])
 
+def init_pedidos_db():
+    try:
+        from sqlalchemy import inspect
+        from ..database import engine
+        models.Base.metadata.create_all(bind=engine)
+        inspector = inspect(engine)
+        ped_cols = [c["name"] for c in inspector.get_columns("pedidos")]
+        with engine.connect() as conn:
+            if "metodo_pago_anticipo" not in ped_cols:
+                conn.exec_driver_sql("ALTER TABLE pedidos ADD COLUMN metodo_pago_anticipo VARCHAR DEFAULT 'NU MINA'")
+            ins_cols = [c["name"] for c in inspector.get_columns("pedido_insumos")]
+            if "medida" not in ins_cols:
+                conn.exec_driver_sql("ALTER TABLE pedido_insumos ADD COLUMN medida VARCHAR DEFAULT ''")
+            conn.commit()
+    except Exception as e:
+        print("Pedidos DB migration warning:", e)
+
+init_pedidos_db()
+
+
 @router.get("")
 def listar_pedidos(db: Session = Depends(get_db)):
     pedidos = db.query(models.Pedido).order_by(models.Pedido.id.desc()).all()
@@ -17,7 +37,7 @@ def listar_pedidos(db: Session = Depends(get_db)):
         prods = []
         for prod in p.productos:
             insumos = [{
-                "nombre": i.nombre, "detalle": i.detalle or "", "nota": i.nota or "",
+                "nombre": i.nombre, "detalle": i.detalle or "", "medida": getattr(i, "medida", "") or "", "nota": i.nota or "",
                 "proveedor": i.proveedor, "metodoPago": i.metodo_pago,
                 "cant": getattr(i, "cant", 1.0) or 1.0,
                 "costoUnitario": getattr(i, "costo_unitario", 0.0) or (i.costo / (getattr(i, "cant", 1.0) or 1.0)),
@@ -74,6 +94,7 @@ def listar_pedidos(db: Session = Depends(get_db)):
             "retencionIsr": p.retencion_isr,
             "total": p.total,
             "pagado": p.pagado,
+            "metodoPagoAnticipo": getattr(p, "metodo_pago_anticipo", "NU MINA") or "NU MINA",
             "costoTotal": costo_base,
             "costoMermasTotal": p.costo_mermas,
             "ganancia": ganancia_real,
@@ -109,6 +130,7 @@ def guardar_pedido(data: schemas.PedidoCreateSchema, db: Session = Depends(get_d
         pedido_existente.retencion_isr = data.retencionIsr
         pedido_existente.total = data.total
         pedido_existente.pagado = data.pagado
+        pedido_existente.metodo_pago_anticipo = getattr(data, "metodoPagoAnticipo", "NU MINA") or "NU MINA"
         pedido_existente.costo_insumos = data.costoTotal
         pedido_existente.costo_mermas = data.costoMermasTotal
         pedido_existente.ganancia_neta = data.ganancia
@@ -139,6 +161,7 @@ def guardar_pedido(data: schemas.PedidoCreateSchema, db: Session = Depends(get_d
             retencion_isr=data.retencionIsr,
             total=data.total,
             pagado=data.pagado,
+            metodo_pago_anticipo=getattr(data, "metodoPagoAnticipo", "NU MINA") or "NU MINA",
             costo_insumos=data.costoTotal,
             costo_mermas=data.costoMermasTotal,
             ganancia_neta=data.ganancia,
@@ -191,6 +214,7 @@ def guardar_pedido(data: schemas.PedidoCreateSchema, db: Session = Depends(get_d
                 pedido_id=pedido_obj.id,
                 nombre=ins_data.nombre,
                 detalle=ins_data.detalle,
+                medida=getattr(ins_data, "medida", "") or "",
                 nota=ins_data.nota,
                 proveedor=ins_data.proveedor,
                 metodo_pago=ins_data.metodoPago,
@@ -337,6 +361,36 @@ def guardar_pedido(data: schemas.PedidoCreateSchema, db: Session = Depends(get_d
                 cat_prod.precio = precio_unit
                 cat_prod.margen = margen_pct
                 cat_prod.insumos_json = json.dumps(insumos_list)
+
+
+    # Sincronización de anticipo con Cuentas (MovimientoCaja)
+    if pedido_obj.tipo == "PEDIDO" or pedido_obj.id.startswith("PMD-"):
+        monto_anticipo = float(data.pagado or 0.0)
+        cta_anticipo = getattr(data, "metodoPagoAnticipo", None) or getattr(pedido_obj, "metodo_pago_anticipo", "NU MINA") or "NU MINA"
+        mov_anticipo = db.query(models.MovimientoCaja).filter(
+            models.MovimientoCaja.id == f"ING-{pedido_obj.id}-ANTICIPO"
+        ).first()
+
+        if monto_anticipo > 0:
+            if mov_anticipo:
+                mov_anticipo.fecha = pedido_obj.fecha or datetime.date.today().isoformat()
+                mov_anticipo.cuenta = cta_anticipo
+                mov_anticipo.monto = monto_anticipo
+                mov_anticipo.detalle = f"Anticipo Pedido | {pedido_obj.id} | {pedido_obj.cliente}"
+                mov_anticipo.categoria = "Cobro Pedido"
+            else:
+                db.add(models.MovimientoCaja(
+                    id=f"ING-{pedido_obj.id}-ANTICIPO",
+                    fecha=pedido_obj.fecha or datetime.date.today().isoformat(),
+                    tipo="INGRESO",
+                    cuenta=cta_anticipo,
+                    monto=monto_anticipo,
+                    detalle=f"Anticipo Pedido | {pedido_obj.id} | {pedido_obj.cliente}",
+                    pedido_id=pedido_obj.id,
+                    categoria="Cobro Pedido"
+                ))
+        elif mov_anticipo:
+            db.delete(mov_anticipo)
 
     # Actualizar o crear cliente
     cl = db.query(models.Cliente).filter(models.Cliente.nombre == data.cliente).first()
@@ -603,6 +657,7 @@ def eliminar_pedido(pedido_id: str, db: Session = Depends(get_db)):
     db.query(models.PedidoInsumo).filter(models.PedidoInsumo.pedido_id == pedido_id).delete(synchronize_session=False)
     db.query(models.PedidoProducto).filter(models.PedidoProducto.pedido_id == pedido_id).delete(synchronize_session=False)
     
+    db.query(models.MovimientoCaja).filter(models.MovimientoCaja.pedido_id == pedido_id).delete(synchronize_session=False)
     db.delete(pedido)
     db.commit()
     return {"status": "success", "id": pedido_id}
