@@ -271,12 +271,16 @@ export default function MobileOrderCard({
                 DESGLOSE DE COSTOS E INSUMOS
               </span>
               {(() => {
+                const totalPiezas = (order.productos || []).reduce((acc, p) => acc + (parseFloat(p.cant) || 1), 0);
                 const ventaNum = parseFloat(order.total) || 0;
                 const costoInsumosNum = parseFloat(order.costoTotal) || 0;
                 const recoleccionNum = parseFloat(order.costoRecoleccion) || (order.recolecciones ? order.recolecciones.reduce((acc, r) => acc + (r.porcion || 0), 0) : 0);
                 const gananciaNetaReal = ventaNum - costoInsumosNum - recoleccionNum;
                 return (
                   <div className="flex items-center gap-2 sm:gap-3.5 text-xs flex-wrap font-mono">
+                    <span className="text-gray-400">
+                      Total Productos: <strong className="text-gray-100">{totalPiezas} {totalPiezas === 1 ? 'pieza' : 'piezas'}</strong>
+                    </span>
                     <span className="text-gray-400">
                       Venta Total: <strong className="text-gray-100">{formatMoney(ventaNum)}</strong>
                     </span>
