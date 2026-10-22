@@ -124,7 +124,6 @@ export default function InventarioView({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar material o proveedor..."
             className="w-full bg-th-121314 text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
@@ -361,7 +360,6 @@ export default function InventarioView({
                   required
                   value={nombre}
                   onChange={(e) => setNombre(e.target.value)}
-                  placeholder="Ej. Vinil Textil Blanco, Taza Blanca 11oz..."
                   className="w-full bg-th-151617 text-gray-200 p-2 rounded-lg border border-gray-700 text-xs focus:ring-1 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
@@ -372,7 +370,6 @@ export default function InventarioView({
                   type="text"
                   value={proveedor}
                   onChange={(e) => setProveedor(e.target.value)}
-                  placeholder="Ej. Papelera del Centro, Propio..."
                   className="w-full bg-th-151617 text-gray-200 p-2 rounded-lg border border-gray-700 text-xs text-center focus:ring-1 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
@@ -386,7 +383,6 @@ export default function InventarioView({
                     required
                     value={precio}
                     onChange={(e) => setPrecio(e.target.value)}
-                    placeholder="0.00"
                     className="w-full bg-th-151617 text-gray-200 p-2 rounded-lg border border-gray-700 text-xs font-mono font-bold"
                   />
                 </div>
@@ -399,7 +395,6 @@ export default function InventarioView({
                     required
                     value={stock}
                     onChange={(e) => setStock(e.target.value)}
-                    placeholder="0"
                     className="w-full bg-th-151617 text-gray-200 p-2 rounded-lg border border-gray-700 text-xs font-mono font-bold text-emerald-400"
                   />
                 </div>
@@ -411,7 +406,6 @@ export default function InventarioView({
                   type="number"
                   value={alerta}
                   onChange={(e) => setAlerta(e.target.value)}
-                  placeholder="5"
                   className="w-full bg-th-151617 text-gray-200 p-2 rounded-lg border border-gray-700 text-xs font-mono"
                 />
               </div>

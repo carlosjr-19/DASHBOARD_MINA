@@ -1031,7 +1031,6 @@ export default function ResicoDeclaracionView() {
                     type="text"
                     value={manualForm.folio}
                     onChange={(e) => setManualForm({ ...manualForm, folio: e.target.value })}
-                    placeholder="Ej. F-1045"
                     className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700"
                   />
                 </div>
@@ -1059,7 +1058,6 @@ export default function ResicoDeclaracionView() {
                     type="text"
                     value={manualForm.rfcEmisor}
                     onChange={(e) => setManualForm({ ...manualForm, rfcEmisor: e.target.value.toUpperCase() })}
-                    placeholder="RFC Emisor"
                     className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700 uppercase font-mono"
                   />
                 </div>
@@ -1070,7 +1068,6 @@ export default function ResicoDeclaracionView() {
                     type="text"
                     value={manualForm.nombreEmisor}
                     onChange={(e) => setManualForm({ ...manualForm, nombreEmisor: e.target.value })}
-                    placeholder="Proveedor o Cliente"
                     className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700"
                   />
                 </div>
@@ -1092,7 +1089,6 @@ export default function ResicoDeclaracionView() {
                         total: (s * 1.16).toFixed(2)
                       });
                     }}
-                    placeholder="0.00"
                     className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700 font-mono font-bold"
                     required
                   />
@@ -1105,7 +1101,6 @@ export default function ResicoDeclaracionView() {
                     step="any"
                     value={manualForm.ivaTrasladado}
                     onChange={(e) => setManualForm({ ...manualForm, ivaTrasladado: e.target.value })}
-                    placeholder="0.00"
                     className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700 font-mono"
                   />
                 </div>
@@ -1117,7 +1112,6 @@ export default function ResicoDeclaracionView() {
                     step="any"
                     value={manualForm.isrRetenido}
                     onChange={(e) => setManualForm({ ...manualForm, isrRetenido: e.target.value })}
-                    placeholder="0.00"
                     className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700 font-mono"
                   />
                 </div>
@@ -1129,7 +1123,6 @@ export default function ResicoDeclaracionView() {
                   type="text"
                   value={manualForm.descripcion}
                   onChange={(e) => setManualForm({ ...manualForm, descripcion: e.target.value })}
-                  placeholder="Detalle de la compra o servicio"
                   className="w-full bg-th-121315 text-gray-100 p-2 rounded-xl border border-gray-700"
                 />
               </div>

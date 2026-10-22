@@ -79,7 +79,6 @@ export default function CotizacionesView({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar cotización por cliente o folio (CMD-...)"
             className="w-full bg-th-121314 text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
@@ -105,6 +104,7 @@ export default function CotizacionesView({
               <th className="py-3 px-3 min-w-[180px]">DETALLE</th>
               <th className="py-3 px-3 text-right min-w-[95px]">TOTAL</th>
               <th className="py-3 px-3 text-right min-w-[95px]">RESTANTE</th>
+              <th className="py-3 px-3 text-right min-w-[95px] text-emerald-500 dark:text-emerald-400">GANANCIA</th>
               <th className="py-3 px-3 text-center min-w-[130px]">ESTATUS</th>
               <th className="py-3 px-3 text-center min-w-[110px]">FACTURA</th>
               <th className="py-3 px-3 text-center min-w-[110px]">ACCIONES</th>
@@ -126,7 +126,7 @@ export default function CotizacionesView({
               ))
             ) : (
               <tr>
-                <td colSpan={10} className="py-12 text-center text-gray-500">
+                <td colSpan={11} className="py-12 text-center text-gray-500">
                   <FileText className="w-10 h-10 mx-auto text-gray-600 mb-2" />
                   <p className="text-sm font-semibold">No hay cotizaciones registradas</p>
                   <p className="text-xs mt-1">Crea una cotización para enviarla en PDF al cliente.</p>

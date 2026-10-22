@@ -98,7 +98,6 @@ export default function ModalCambiarEstatus({ order, onClose, onSave }) {
               <textarea
                 value={motivoCancelacion}
                 onChange={(e) => setMotivoCancelacion(e.target.value)}
-                placeholder="Escribe la razón (el stock se restituirá automáticamente)..."
                 rows={2}
                 className="w-full bg-th-121314 text-xs text-gray-200 border border-rose-900/60 rounded p-2 focus:ring-1 focus:ring-rose-500 focus:outline-none"
               />

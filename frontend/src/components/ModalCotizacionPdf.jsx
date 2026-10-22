@@ -4,6 +4,8 @@ import { X, Printer, Download } from 'lucide-react';
 export default function ModalCotizacionPdf({ order, onClose }) {
   if (!order) return null;
 
+  const totalPiezas = (order.productos || []).reduce((acc, p) => acc + (parseFloat(p.cant) || 1), 0);
+
   const formatMoney = (val) => {
     const num = parseFloat(val) || 0;
     return `$${num.toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -120,6 +122,17 @@ export default function ModalCotizacionPdf({ order, onClose }) {
                   </tr>
                 ))}
               </tbody>
+              <tfoot>
+                <tr className="bg-gray-50/90 border-t-2 border-gray-200 text-xs font-semibold">
+                  <td className="py-2.5 px-2 text-center text-gray-900 font-mono">
+                    <span className="text-[10px] text-gray-500 uppercase block font-bold leading-tight">Total</span>
+                    <span>{totalPiezas} {totalPiezas === 1 ? 'pza' : 'piezas'}</span>
+                  </td>
+                  <td colSpan={3} className="py-2.5 px-3 text-gray-500 text-xs font-normal">
+                    Total de artículos / piezas en la cotización ({order.productos?.length || 0} {order.productos?.length === 1 ? 'producto' : 'productos'})
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
 

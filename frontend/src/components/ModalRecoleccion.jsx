@@ -301,7 +301,6 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                 <input
                   type="number"
                   step="any"
-                  placeholder="0.00"
                   value={gastoGasolina}
                   onChange={(e) => setGastoGasolina(e.target.value)}
                   className="w-full bg-th-121314 text-gray-100 font-mono p-1.5 rounded border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
@@ -328,7 +327,6 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                 <input
                   type="number"
                   step="any"
-                  placeholder="0.00"
                   value={gastoDesayuno}
                   onChange={(e) => setGastoDesayuno(e.target.value)}
                   className="w-full bg-th-121314 text-gray-100 font-mono p-1.5 rounded border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
@@ -355,7 +353,6 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                 <input
                   type="number"
                   step="any"
-                  placeholder="0.00"
                   value={gastoOtros}
                   onChange={(e) => setGastoOtros(e.target.value)}
                   className="w-full bg-th-121314 text-gray-100 font-mono p-1.5 rounded border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
@@ -378,7 +375,6 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                 type="text"
                 value={nota}
                 onChange={(e) => setNota(e.target.value)}
-                placeholder="Ej. Viaje al centro por vinil y almorzamos..."
                 className="w-full bg-th-1a1b1e text-gray-200 p-2 rounded border border-gray-700 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500"
               />
             </div>

@@ -18,6 +18,7 @@ class Pedido(Base):
     retencion_isr = Column(Float, default=0.0)
     total = Column(Float, default=0.0)
     pagado = Column(Float, default=0.0)
+    metodo_pago_anticipo = Column(String, default="NU MINA")
     costo_insumos = Column(Float, default=0.0)
     costo_mermas = Column(Float, default=0.0)
     ganancia_neta = Column(Float, default=0.0)
@@ -68,6 +69,7 @@ class PedidoInsumo(Base):
     pedido_id = Column(String, index=True)
     nombre = Column(String)
     detalle = Column(String, nullable=True)
+    medida = Column(String, default="")
     nota = Column(String, nullable=True)
     proveedor = Column(String, nullable=True)
     metodo_pago = Column(String, default="STOCK") # STOCK, NU MINA, NU EMI, MERCADO PAGO, EFECTIVO, NU TDC, PLATA TDC
