@@ -85,6 +85,7 @@ export default function MobileOrderCard({
   };
 
   const restante = Math.max(0, (parseFloat(order.total) || 0) - (parseFloat(order.pagado) || 0));
+  const gananciaPedido = order.gananciaReal !== undefined ? parseFloat(order.gananciaReal) : (order.ganancia !== undefined ? parseFloat(order.ganancia) : ((parseFloat(order.total) || 0) - (parseFloat(order.costoTotal) || 0) - (parseFloat(order.costoRecoleccion) || 0)));
 
   const detalleText = order.productos && order.productos.length > 1
     ? `Varios (${order.productos.length})`
@@ -151,11 +152,16 @@ export default function MobileOrderCard({
 
         {/* 7. RESTANTE */}
         <td className={`py-3 px-3 text-right font-mono font-bold whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-600' : ''}`}>
-          {restante > 0 ? (
-            <span className={isCancelled ? 'text-gray-600 line-through' : 'text-rose-400'}>{formatMoney(restante)}</span>
+          {restante > 0.001 ? (
+            <span className={isCancelled ? 'text-gray-600 line-through' : 'text-rose-500 font-bold'}>{formatMoney(restante)}</span>
           ) : (
-            <span className={isCancelled ? 'text-gray-600 line-through' : 'text-emerald-400'}>$0.00</span>
+            <span className={isCancelled ? 'text-gray-600 line-through' : 'text-gray-900 dark:text-gray-300 font-bold'}>$0.00</span>
           )}
+        </td>
+
+        {/* 8. GANANCIA DIRECTA */}
+        <td className={`py-3 px-3 text-right font-mono font-bold whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-500' : 'text-emerald-500 dark:text-emerald-400'}`}>
+          {formatMoney(gananciaPedido)}
         </td>
 
         {/* 8. ESTATUS */}
@@ -264,7 +270,7 @@ export default function MobileOrderCard({
       {/* Expanded Details Section */}
       {expanded && (
         <tr className="bg-th-151618">
-          <td colSpan={10} className="p-3.5 sm:p-4 border-b border-gray-800">
+          <td colSpan={11} className="p-3.5 sm:p-4 border-b border-gray-800">
             {/* Header of Desglose: DESGLOSE DE COSTOS E INSUMOS + Financial metrics */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-gray-800/80">
               <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-200">

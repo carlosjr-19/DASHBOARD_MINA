@@ -153,6 +153,7 @@ export default function PedidosView({
               <th className="py-3 px-3 min-w-[180px]">DETALLE</th>
               <th className="py-3 px-3 text-right min-w-[95px]">TOTAL</th>
               <th className="py-3 px-3 text-right min-w-[95px]">RESTANTE</th>
+              <th className="py-3 px-3 text-right min-w-[95px] text-emerald-500 dark:text-emerald-400">GANANCIA</th>
               <th className="py-3 px-3 text-center min-w-[130px]">ESTATUS</th>
               <th className="py-3 px-3 text-center min-w-[110px]">FACTURA</th>
               <th className="py-3 px-3 text-center min-w-[110px]">ACCIONES</th>
@@ -173,7 +174,7 @@ export default function PedidosView({
               ))
             ) : (
               <tr>
-                <td colSpan={10} className="py-12 text-center text-gray-500">
+                <td colSpan={11} className="py-12 text-center text-gray-500">
                   <Package className="w-10 h-10 mx-auto text-gray-600 mb-2" />
                   <p className="text-sm font-semibold">No se encontraron pedidos</p>
                   <p className="text-xs mt-1">Crea uno nuevo con el botón superior "+ Pedido".</p>
