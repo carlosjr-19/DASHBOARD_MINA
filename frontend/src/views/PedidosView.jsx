@@ -95,7 +95,6 @@ export default function PedidosView({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar cliente o folio..."
             className="w-full bg-th-121314 text-[11px] text-gray-100 pl-8 pr-2.5 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>

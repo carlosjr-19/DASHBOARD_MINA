@@ -53,7 +53,6 @@ export default function LoginView({ onLogin }) {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin o ventas.minadesign@gmail.com"
                 className="w-full bg-th-151617 text-gray-100 pl-9 pr-3 py-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm"
               />
             </div>
@@ -72,7 +71,6 @@ export default function LoginView({ onLogin }) {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••"
                 className="w-full bg-th-151617 text-gray-100 pl-9 pr-3 py-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 text-sm"
               />
             </div>

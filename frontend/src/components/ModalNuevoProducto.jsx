@@ -238,7 +238,6 @@ export default function ModalNuevoProducto({
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                placeholder="Ej. Taza Mágica 11oz, Letrero Neón, Playera DTF..."
                 required
                 className="w-full bg-th-1b1c1e text-xs text-gray-100 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
               />
@@ -252,7 +251,6 @@ export default function ModalNuevoProducto({
                 type="text"
                 value={proveedor}
                 onChange={(e) => setProveedor(e.target.value)}
-                placeholder="Ej. Propio, Cerámicas G, Tintas Mex..."
                 className="w-full bg-th-1b1c1e text-xs text-gray-100 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
               />
             </div>
@@ -308,7 +306,6 @@ export default function ModalNuevoProducto({
                             list={`inv-list-${idx}`}
                             value={ins.nombre}
                             onChange={(e) => handleInsumoChange(idx, 'nombre', e.target.value)}
-                            placeholder="Nombre del insumo..."
                             className="w-full bg-th-1b1c1e text-xs text-gray-100 px-2.5 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
                           />
                           <datalist id={`inv-list-${idx}`}>
@@ -326,7 +323,6 @@ export default function ModalNuevoProducto({
                             type="text"
                             value={ins.detalle}
                             onChange={(e) => handleInsumoChange(idx, 'detalle', e.target.value)}
-                            placeholder="11oz, A4, etc."
                             className="w-full bg-th-1b1c1e text-xs text-gray-300 px-2 py-1.5 rounded-lg border border-gray-700/80 focus:outline-none focus:ring-1 focus:ring-orange-500"
                           />
                         </td>
@@ -337,7 +333,6 @@ export default function ModalNuevoProducto({
                             type="text"
                             value={ins.proveedor}
                             onChange={(e) => handleInsumoChange(idx, 'proveedor', e.target.value)}
-                            placeholder="Proveedor"
                             className="w-full bg-th-1b1c1e text-xs text-gray-300 px-2 py-1.5 rounded-lg border border-gray-700/80 focus:outline-none focus:ring-1 focus:ring-orange-500"
                           />
                         </td>
@@ -421,7 +416,6 @@ export default function ModalNuevoProducto({
                     step="any"
                     value={margenPorcentaje}
                     onChange={(e) => handleMargenChange(e.target.value)}
-                    placeholder="Ej. 50"
                     className="w-full bg-th-141517 text-base font-bold text-blue-400 px-2.5 py-1.5 rounded-lg border border-blue-500/40 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
                   />
                   <span className="absolute right-2.5 top-2 text-xs text-blue-400/80 font-bold">%</span>
@@ -442,7 +436,6 @@ export default function ModalNuevoProducto({
                     min="0"
                     value={precioVenta}
                     onChange={(e) => handlePrecioVentaChange(e.target.value)}
-                    placeholder="0.00"
                     required
                     className="w-full bg-th-141517 text-base font-bold text-emerald-400 px-2.5 py-1.5 rounded-lg border border-emerald-500/40 font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />

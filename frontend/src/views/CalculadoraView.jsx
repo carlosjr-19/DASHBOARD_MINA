@@ -15,10 +15,10 @@ export default function CalculadoraView({
   onExportarAPedido 
 }) {
   const [selectedMatId, setSelectedMatId] = useState(materiales[0]?.id || '');
-  const [anchoCm, setAnchoCm] = useState(35);
-  const [altoCm, setAltoCm] = useState(35);
+  const [anchoCm, setAnchoCm] = useState(100);
+  const [altoCm, setAltoCm] = useState(100);
   const [cantidad, setCantidad] = useState(1);
-  const [precioVenta, setPrecioVenta] = useState('');
+  const [costoBaseCliente, setCostoBaseCliente] = useState('160');
 
   // New material modal
   const [showAddMat, setShowAddMat] = useState(false);
@@ -30,28 +30,39 @@ export default function CalculadoraView({
 
   const currentMat = materiales.find(m => String(m.id) === String(selectedMatId)) || materiales[0];
 
-  // Dimensiones del sustrato base en m2
-  const anchoBaseM = ((currentMat?.ancho || 100) / 100);
-  const altoBaseM = ((currentMat?.alto || 100) / 100);
-  const areaBaseM2 = anchoBaseM * altoBaseM;
-  const costoPorM2 = areaBaseM2 > 0 ? ((currentMat?.costo || 0) / areaBaseM2) : 0;
+  // Dimensiones del material base
+  const baseAncho = parseFloat(currentMat?.ancho) || 100;
+  const baseAlto = parseFloat(currentMat?.alto) || 100;
+  const baseAreaCm2 = baseAncho * baseAlto;
+  const baseAreaM2 = baseAreaCm2 / 10000;
 
-  // Dimensiones requeridas por pieza
-  const anchoReqM = (parseFloat(anchoCm) || 0) / 100;
-  const altoReqM = (parseFloat(altoCm) || 0) / 100;
+  // Medidas especificadas por el usuario
+  const reqAncho = parseFloat(anchoCm) || 0;
+  const reqAlto = parseFloat(altoCm) || 0;
   const cantNum = Math.max(1, parseFloat(cantidad) || 1);
 
-  const areaPiezaM2 = anchoReqM * altoReqM;
+  const reqAreaCm2 = reqAncho * reqAlto;
+  const areaPiezaM2 = reqAreaCm2 / 10000;
   const areaTotalM2 = areaPiezaM2 * cantNum;
 
-  // Costo proporcional exacto
-  const costoPorPieza = areaPiezaM2 * costoPorM2;
-  const costoTotal = areaTotalM2 * costoPorM2;
+  // Factor de proporción de área respecto al material base
+  const factorProporcion = baseAreaCm2 > 0 ? (reqAreaCm2 / baseAreaCm2) : 0;
 
-  // Costo de venta al cliente y ganancia
-  const precioVentaNum = parseFloat(precioVenta) || 0;
-  const gananciaEstimada = precioVentaNum > 0 ? (precioVentaNum - costoTotal) : 0;
-  const margenPorcentaje = precioVentaNum > 0 ? ((gananciaEstimada / precioVentaNum) * 100) : 0;
+  // 1. Costo Real (lo que a ti te cuesta proporcionalmente al costo base del proveedor)
+  const costoBaseProveedor = parseFloat(currentMat?.costo) || 0;
+  const costoRealPieza = costoBaseProveedor * factorProporcion;
+  const costoRealTotal = costoRealPieza * cantNum;
+
+  // 2. Costo al Cliente (calculado proporcionalmente según el costo base de venta que tú definas)
+  const costoBaseClienteNum = parseFloat(costoBaseCliente) || 0;
+  const precioClientePieza = costoBaseClienteNum * factorProporcion;
+  const precioClienteTotal = precioClientePieza * cantNum;
+
+  // 3. Ganancia Estimada y Métricas
+  const gananciaEstimada = precioClienteTotal > 0 ? (precioClienteTotal - costoRealTotal) : 0;
+  const margenPorcentaje = precioClienteTotal > 0 ? ((gananciaEstimada / precioClienteTotal) * 100) : 0;
+  const costoPorM2Real = baseAreaM2 > 0 ? (costoBaseProveedor / baseAreaM2) : 0;
+  const costoPorM2Cliente = baseAreaM2 > 0 ? (costoBaseClienteNum / baseAreaM2) : 0;
 
   const formatMoney = (val) => `$${(val || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
@@ -77,20 +88,22 @@ export default function CalculadoraView({
 
   const exportar = () => {
     if (onExportarAPedido) {
-      const precioFinal = precioVentaNum > 0 ? precioVentaNum : costoPorPieza;
+      const precioUnit = cantNum > 0 ? (precioClienteTotal / cantNum) : precioClienteTotal;
+      const costoUnit = cantNum > 0 ? (costoRealTotal / cantNum) : costoRealTotal;
       onExportarAPedido({
-        nombre: `${currentMat?.nombre || 'Cálculo de Área'} (${anchoCm}x${altoCm} cm)`,
+        nombre: `${currentMat?.nombre || 'Cálculo de Área'} (${reqAncho}x${reqAlto} cm)`,
         cant: cantNum,
-        precioUnitario: precioFinal,
-        costoUnitario: costoPorPieza,
+        precioUnitario: precioUnit,
+        costoUnitario: costoUnit,
         proveedor: currentMat?.proveedor || 'Propio',
         insumos: [
           {
             nombre: currentMat?.nombre || 'Material',
-            detalle: `${anchoCm}x${altoCm} cm (${areaTotalM2.toFixed(3)} m²)`,
+            detalle: `${reqAncho}x${reqAlto} cm`,
+            medida: `${reqAncho}x${reqAlto} cm`,
             cant: cantNum,
-            costoUnitario: costoPorPieza,
-            costo: costoTotal,
+            costoUnitario: costoUnit,
+            costo: costoRealTotal,
             metodoPago: 'STOCK',
             proveedor: currentMat?.proveedor || 'Propio'
           }
@@ -203,7 +216,7 @@ export default function CalculadoraView({
         </div>
 
         {/* Right Column: Calculadora Rápida */}
-        <div className="lg:col-span-5 xl:col-span-5 bg-th-1c1d1f p-4 sm:p-5 rounded-2xl border border-gray-800 shadow-sm space-y-4">
+        <div className="lg:col-span-5 xl:col-span-5 bg-th-1c1d1f p-4 sm:p-5 rounded-2xl border border-gray-800 shadow-sm space-y-3.5">
           <div className="flex items-center gap-2.5 pb-2 border-b border-gray-800/80">
             <div className="w-7 h-7 rounded-lg bg-blue-950/60 border border-blue-800/60 flex items-center justify-center text-blue-400 shadow">
               <Calculator className="w-4 h-4" />
@@ -214,7 +227,7 @@ export default function CalculadoraView({
           </div>
 
           {/* Selector de Material */}
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             <label className="text-xs font-semibold text-gray-300 block">
               Seleccionar Material
             </label>
@@ -222,7 +235,7 @@ export default function CalculadoraView({
               <select
                 value={selectedMatId || currentMat?.id || ''}
                 onChange={(e) => setSelectedMatId(e.target.value)}
-                className="w-full bg-th-151617 text-gray-100 p-3 rounded-xl border border-gray-700 text-xs sm:text-sm font-medium focus:ring-1 focus:ring-orange-500 focus:outline-none appearance-none pr-9 cursor-pointer"
+                className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-xl border border-gray-700 text-xs sm:text-sm font-medium focus:ring-1 focus:ring-orange-500 focus:outline-none appearance-none pr-9 cursor-pointer"
               >
                 {materiales.map((m) => (
                   <option key={m.id} value={m.id}>
@@ -230,7 +243,7 @@ export default function CalculadoraView({
                   </option>
                 ))}
               </select>
-              <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-3.5 pointer-events-none" />
+              <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none" />
             </div>
 
             {currentMat && (
@@ -245,10 +258,10 @@ export default function CalculadoraView({
             )}
           </div>
 
-          {/* Inputs Ancho y Alto lado a lado */}
-          <div className="grid grid-cols-2 gap-3 pt-1">
+          {/* Fila 1: Tres columnas: Ancho, Alto y Costo Real */}
+          <div className="grid grid-cols-3 gap-2.5 pt-1">
             <div>
-              <label className="text-xs text-gray-400 text-center block mb-1 font-semibold">
+              <label className="text-[11px] text-gray-400 text-center block mb-1 font-semibold">
                 Ancho (cm)
               </label>
               <input
@@ -257,12 +270,12 @@ export default function CalculadoraView({
                 step="any"
                 value={anchoCm}
                 onChange={(e) => setAnchoCm(e.target.value)}
-                className="w-full bg-th-151617 text-gray-100 p-3 rounded-xl border border-gray-700 font-bold text-center text-sm focus:ring-1 focus:ring-orange-500"
+                className="w-full bg-th-151617 text-gray-100 py-2 px-2 rounded-xl border border-gray-700 font-bold text-center text-xs sm:text-sm focus:ring-1 focus:ring-orange-500"
               />
             </div>
 
             <div>
-              <label className="text-xs text-gray-400 text-center block mb-1 font-semibold">
+              <label className="text-[11px] text-gray-400 text-center block mb-1 font-semibold">
                 Alto (cm)
               </label>
               <input
@@ -271,77 +284,83 @@ export default function CalculadoraView({
                 step="any"
                 value={altoCm}
                 onChange={(e) => setAltoCm(e.target.value)}
-                className="w-full bg-th-151617 text-gray-100 p-3 rounded-xl border border-gray-700 font-bold text-center text-sm focus:ring-1 focus:ring-orange-500"
+                className="w-full bg-th-151617 text-gray-100 py-2 px-2 rounded-xl border border-gray-700 font-bold text-center text-xs sm:text-sm focus:ring-1 focus:ring-orange-500"
+              />
+            </div>
+
+            <div className="bg-th-122238/50 border border-blue-900/50 rounded-xl p-1.5 flex flex-col justify-center items-center text-center">
+              <span className="text-[10px] uppercase font-bold text-blue-300 block leading-tight">
+                Costo Real
+              </span>
+              <span className="text-sm sm:text-base font-extrabold text-gray-100 font-mono mt-0.5">
+                {formatMoney(costoRealTotal)}
+              </span>
+              <span className="text-[9px] text-blue-300/60 block">
+                Lo que te cuesta
+              </span>
+            </div>
+          </div>
+
+          {/* Fila 2: Costo Base al Cliente */}
+          <div className="pt-1">
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-xs text-gray-300 font-semibold">
+                Costo Base al Cliente ($)
+              </label>
+              <span className="text-[10px] text-gray-400">
+                (Por {baseAncho} x {baseAlto} cm)
+              </span>
+            </div>
+            <div className="relative flex items-center">
+              <span className="absolute left-3 text-orange-400 font-mono font-bold text-xs select-none">$</span>
+              <input
+                type="number"
+                min="0"
+                step="any"
+                value={costoBaseCliente}
+                onChange={(e) => setCostoBaseCliente(e.target.value)}
+                className="w-full bg-th-151617 text-orange-400 pl-7 pr-3 py-2 rounded-xl border border-gray-700 font-bold text-sm focus:ring-1 focus:ring-orange-500"
               />
             </div>
           </div>
 
-          {/* Campo Costo de Venta / Precio al Cliente */}
-          <div>
-            <label className="text-xs text-gray-400 text-center block mb-1 font-semibold">
-              Costo de Venta / Precio al Cliente ($)
-            </label>
-            <input
-              type="number"
-              min="0"
-              step="any"
-              value={precioVenta}
-              onChange={(e) => setPrecioVenta(e.target.value)}
-              placeholder="Ej. 100.00"
-              className="w-full bg-th-151617 text-gray-100 p-3 rounded-xl border border-gray-700 font-bold text-center text-sm focus:ring-1 focus:ring-orange-500 placeholder:text-gray-600"
-            />
-          </div>
-
-          {/* Tarjeta de Resultado: Costo Real vs Costo al Cliente y Ganancia */}
-          <div className="rounded-2xl bg-gradient-to-br from-th-122238 to-th-0d1624 border border-blue-900/60 p-4 sm:p-5 shadow-lg relative overflow-hidden space-y-3.5">
-            {/* Grid 2 Columnas: Costo Real vs Costo al Cliente */}
-            <div className="grid grid-cols-2 gap-3 text-center">
-              <div className="bg-blue-950/40 p-3 rounded-xl border border-blue-900/40">
-                <span className="text-[10px] sm:text-[11px] uppercase font-bold text-blue-300 tracking-wider block mb-1">
-                  Costo Real (Área)
+          {/* Tarjeta de Resultados Compacta: Precio Final Cliente (Naranja), Ganancia (Verde), Área y Costo m2 */}
+          <div className="rounded-xl bg-gradient-to-br from-th-122238 to-th-0d1624 border border-blue-900/60 p-3.5 shadow-md space-y-2.5">
+            <div className="grid grid-cols-2 gap-2.5 text-center">
+              {/* Precio Final al Cliente (en NARANJA) */}
+              <div className="bg-orange-950/30 p-2.5 rounded-lg border border-orange-900/40">
+                <span className="text-[10px] uppercase font-bold text-orange-300 tracking-wider block mb-0.5">
+                  Precio Final Cliente
                 </span>
-                <div className="text-xl sm:text-2xl font-extrabold text-gray-50">
-                  {formatMoney(costoTotal)}
+                <div className="text-lg sm:text-xl font-extrabold text-orange-500 font-mono">
+                  {costoBaseClienteNum > 0 ? formatMoney(precioClienteTotal) : '$0.00'}
                 </div>
-                <span className="text-[10px] text-blue-200/60 block mt-0.5">
-                  Lo que a ti te sale
+                <span className="text-[9px] text-orange-300/70 block mt-0.5">
+                  Para {reqAncho} x {reqAlto} cm
                 </span>
               </div>
 
-              <div className="bg-blue-950/40 p-3 rounded-xl border border-blue-900/40">
-                <span className="text-[10px] sm:text-[11px] uppercase font-bold text-emerald-400 tracking-wider block mb-1">
-                  Costo al Cliente
+              {/* Tu Ganancia Estimada (en VERDE) */}
+              <div className="bg-emerald-950/30 p-2.5 rounded-lg border border-emerald-900/40">
+                <span className="text-[10px] uppercase font-bold text-emerald-300 tracking-wider block mb-0.5">
+                  Ganancia Estimada
                 </span>
-                <div className="text-xl sm:text-2xl font-extrabold text-emerald-400">
-                  {precioVentaNum > 0 ? formatMoney(precioVentaNum) : '$0.00'}
+                <div className="text-lg sm:text-xl font-extrabold text-emerald-500 font-mono">
+                  {costoBaseClienteNum > 0 ? formatMoney(gananciaEstimada) : '$0.00'}
                 </div>
-                <span className="text-[10px] text-emerald-300/60 block mt-0.5">
-                  Precio de venta
+                <span className="text-[9px] text-emerald-300/70 block mt-0.5">
+                  Margen: {margenPorcentaje.toFixed(1)}%
                 </span>
               </div>
             </div>
 
-            {/* Ganancia Estimada */}
-            <div className="pt-2 border-t border-blue-900/40 text-center">
-              <span className="text-[10px] sm:text-[11px] uppercase font-bold text-blue-200 tracking-wider block mb-1">
-                Tu Ganancia Estimada
-              </span>
-              <div className={`text-2xl sm:text-3xl font-black ${
-                gananciaEstimada > 0 
-                  ? 'text-white' 
-                  : gananciaEstimada < 0 
-                    ? 'text-rose-400' 
-                    : 'text-gray-400'
-              }`}>
-                {precioVentaNum > 0 ? formatMoney(gananciaEstimada) : '$0.00'}
-              </div>
-              <div className="text-[11px] text-blue-200/70 mt-1.5 flex items-center justify-center gap-2 flex-wrap">
-                <span>Área: {areaTotalM2.toFixed(3)} m²</span>
-                <span>•</span>
-                <span>Margen: <strong className={gananciaEstimada > 0 ? 'text-emerald-400' : 'text-gray-300'}>{margenPorcentaje.toFixed(1)}%</strong></span>
-                <span>•</span>
-                <span>Costo m²: {formatMoney(costoPorM2)}</span>
-              </div>
+            {/* Fila de Métricas Técnicas: Área y Costo por m2 */}
+            <div className="pt-2 border-t border-blue-900/40 flex items-center justify-around text-[10px] sm:text-[11px] text-blue-200/80 font-mono flex-wrap gap-1">
+              <span>Área: <strong className="text-gray-100">{areaTotalM2.toFixed(3)} m²</strong></span>
+              <span>•</span>
+              <span>Costo Real: <strong className="text-gray-100">{formatMoney(costoPorM2Real)}/m²</strong></span>
+              <span>•</span>
+              <span>Costo Cliente: <strong className="text-orange-400">{formatMoney(costoPorM2Cliente)}/m²</strong></span>
             </div>
           </div>
 
@@ -379,7 +398,6 @@ export default function CalculadoraView({
                 <input
                   type="text"
                   required
-                  placeholder="Ej. Lona Front 13oz, DTF textil, Vinil..."
                   value={newNombre}
                   onChange={(e) => setNewNombre(e.target.value)}
                   className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
@@ -390,7 +408,6 @@ export default function CalculadoraView({
                 <label className="text-gray-400 block mb-1">Proveedor</label>
                 <input
                   type="text"
-                  placeholder="Ej. Gráficos SA, Tintas Mex..."
                   value={newProveedor}
                   onChange={(e) => setNewProveedor(e.target.value)}
                   className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
@@ -404,7 +421,6 @@ export default function CalculadoraView({
                     type="number"
                     step="any"
                     required
-                    placeholder="100"
                     value={newAncho}
                     onChange={(e) => setNewAncho(e.target.value)}
                     className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center font-bold"
@@ -416,7 +432,6 @@ export default function CalculadoraView({
                     type="number"
                     step="any"
                     required
-                    placeholder="100"
                     value={newAlto}
                     onChange={(e) => setNewAlto(e.target.value)}
                     className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center font-bold"
@@ -430,7 +445,6 @@ export default function CalculadoraView({
                   type="number"
                   step="any"
                   required
-                  placeholder="100.00"
                   value={newCosto}
                   onChange={(e) => setNewCosto(e.target.value)}
                   className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 text-emerald-400 font-bold"

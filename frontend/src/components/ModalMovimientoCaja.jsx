@@ -272,7 +272,6 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                     required
                     value={detalle}
                     onChange={(e) => setDetalle(e.target.value)}
-                    placeholder="Ej. Venta mostrador"
                     className="w-full bg-th-121314 text-gray-100 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs"
                   />
                 </div>
@@ -307,7 +306,6 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                       required
                       value={monto}
                       onChange={(e) => setMonto(e.target.value)}
-                      placeholder="0.00"
                       className="w-full bg-th-121314 text-emerald-400 pl-7 pr-3 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-sm font-mono font-bold"
                     />
                   </div>
@@ -341,7 +339,6 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                   required
                   value={detalle}
                   onChange={(e) => setDetalle(e.target.value)}
-                  placeholder="Ej. Compra de vinil, papelería, comida..."
                   className="w-full bg-th-121314 text-gray-100 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-rose-500 text-xs"
                 />
               </div>
@@ -360,7 +357,6 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                       required
                       value={monto}
                       onChange={(e) => setMonto(e.target.value)}
-                      placeholder="0.00"
                       className="w-full bg-th-121314 text-rose-400 pl-7 pr-3 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-rose-500 text-sm font-mono font-bold"
                     />
                   </div>
@@ -407,7 +403,6 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                     type="text"
                     value={nota}
                     onChange={(e) => setNota(e.target.value)}
-                    placeholder="Ticket, factura o ref..."
                     className="w-full bg-th-121314 text-gray-200 p-2 rounded-xl border border-gray-700 text-xs"
                   />
                 </div>

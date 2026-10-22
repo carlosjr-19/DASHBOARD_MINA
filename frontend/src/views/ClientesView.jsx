@@ -169,7 +169,6 @@ export default function ClientesView({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar por nombre, RFC o teléfono..."
             className="w-full bg-th-121314 text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
@@ -483,14 +482,12 @@ export default function ClientesView({
                 <div className="grid grid-cols-2 gap-2">
                   <input
                     type="text"
-                    placeholder="RFC"
                     value={rfc}
                     onChange={(e) => setRfc(e.target.value.toUpperCase())}
                     className="bg-th-151617 text-gray-200 p-2 rounded border border-gray-700 uppercase font-mono"
                   />
                   <input
                     type="text"
-                    placeholder="Código Postal"
                     value={cp}
                     onChange={(e) => setCp(e.target.value)}
                     className="bg-th-151617 text-gray-200 p-2 rounded border border-gray-700"

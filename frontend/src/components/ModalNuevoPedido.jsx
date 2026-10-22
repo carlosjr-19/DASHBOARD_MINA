@@ -492,7 +492,6 @@ export default function ModalNuevoPedido({
                   list="clientes-list"
                   value={clienteNombre}
                   onChange={(e) => handleSelectCliente(e.target.value)}
-                  placeholder="Escribe o selecciona..."
                   className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                 />
                 <datalist id="clientes-list">
@@ -508,7 +507,6 @@ export default function ModalNuevoPedido({
                   type="text"
                   value={telefono}
                   onChange={(e) => setTelefono(e.target.value)}
-                  placeholder="10 dígitos"
                   className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:ring-1 focus:ring-orange-500 focus:outline-none"
                 />
               </div>
@@ -579,7 +577,6 @@ export default function ModalNuevoPedido({
                       type="text"
                       value={rfc}
                       onChange={(e) => setRfc(e.target.value.toUpperCase())}
-                      placeholder="XAXX010101000"
                       className="w-full bg-th-1c1d1f text-gray-100 p-2 rounded border border-gray-700 uppercase font-mono"
                     />
                   </div>
@@ -589,7 +586,6 @@ export default function ModalNuevoPedido({
                       type="text"
                       value={razonSocial}
                       onChange={(e) => setRazonSocial(e.target.value)}
-                      placeholder="Nombre fiscal de la empresa"
                       className="w-full bg-th-1c1d1f text-gray-100 p-2 rounded border border-gray-700"
                     />
                   </div>
@@ -599,7 +595,6 @@ export default function ModalNuevoPedido({
                       type="text"
                       value={cp}
                       onChange={(e) => setCp(e.target.value)}
-                      placeholder="72000"
                       className="w-full bg-th-1c1d1f text-gray-100 p-2 rounded border border-gray-700 font-mono"
                     />
                   </div>
@@ -672,7 +667,6 @@ export default function ModalNuevoPedido({
                         list={`catalogo-list-${pIdx}`}
                         value={prod.nombre}
                         onChange={(e) => updateProducto(pIdx, 'nombre', e.target.value)}
-                        placeholder="Escribe o selecciona del catálogo..."
                         className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
                       />
                       <datalist id={`catalogo-list-${pIdx}`}>
@@ -690,7 +684,6 @@ export default function ModalNuevoPedido({
                         type="text"
                         value={prod.proveedor}
                         onChange={(e) => updateProducto(pIdx, 'proveedor', e.target.value)}
-                        placeholder="Ej. Papelera / Propio"
                         className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center"
                       />
                     </div>
@@ -701,7 +694,6 @@ export default function ModalNuevoPedido({
                         type="text"
                         value={prod.nota}
                         onChange={(e) => updateProducto(pIdx, 'nota', e.target.value)}
-                        placeholder="Talla, color, etc."
                         className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 text-center"
                       />
                     </div>
@@ -809,7 +801,6 @@ export default function ModalNuevoPedido({
                             <input
                               type="text"
                               list={`insumos-stock-list-${pIdx}-${iIdx}`}
-                              placeholder="Escribe o elige..."
                               value={ins.nombre}
                               onChange={(e) => {
                                 const val = e.target.value;
@@ -835,7 +826,6 @@ export default function ModalNuevoPedido({
                           <div>
                             <input
                               type="text"
-                              placeholder="Detalle..."
                               value={ins.detalle || ''}
                               onChange={(e) => updateInsumo(pIdx, iIdx, 'detalle', e.target.value)}
                               className="w-full bg-th-121314 text-gray-200 px-1.5 py-1.5 rounded border border-gray-700 text-[11px] text-center"
@@ -846,7 +836,6 @@ export default function ModalNuevoPedido({
                           <div>
                             <input
                               type="text"
-                              placeholder="Medida (ej. 58x100)"
                               value={ins.medida || ''}
                               onChange={(e) => updateInsumo(pIdx, iIdx, 'medida', e.target.value)}
                               className="w-full bg-th-121314 text-gray-200 px-1.5 py-1.5 rounded border border-gray-700 text-[11px] text-center font-mono"
@@ -857,7 +846,6 @@ export default function ModalNuevoPedido({
                           <div>
                             <input
                               type="text"
-                              placeholder="Nota..."
                               value={ins.nota || ''}
                               onChange={(e) => updateInsumo(pIdx, iIdx, 'nota', e.target.value)}
                               className="w-full bg-th-121314 text-gray-200 px-1.5 py-1.5 rounded border border-gray-700 text-[11px] text-center"
@@ -868,7 +856,6 @@ export default function ModalNuevoPedido({
                           <div>
                             <input
                               type="text"
-                              placeholder="Proveedor"
                               value={ins.proveedor || ''}
                               onChange={(e) => updateInsumo(pIdx, iIdx, 'proveedor', e.target.value)}
                               className="w-full bg-th-121314 text-gray-200 px-1.5 py-1.5 rounded border border-gray-700 text-[11px] text-center"
@@ -881,7 +868,6 @@ export default function ModalNuevoPedido({
                               type="number"
                               min="1"
                               step="any"
-                              placeholder="Cant"
                               value={ins.cant}
                               onChange={(e) => updateInsumo(pIdx, iIdx, 'cant', e.target.value)}
                               className="w-full bg-th-121314 text-gray-200 px-1 py-1.5 rounded border border-gray-700 text-[11px] text-center font-bold"
@@ -889,14 +875,14 @@ export default function ModalNuevoPedido({
                           </div>
 
                           {/* Precio Unitario */}
-                          <div>
+                          <div className="relative flex items-center">
+                            <span className="absolute left-1.5 text-gray-400 font-mono text-[11px] select-none">$</span>
                             <input
                               type="number"
                               step="any"
-                              placeholder="P. Unit"
                               value={ins.costoUnitario}
                               onChange={(e) => updateInsumo(pIdx, iIdx, 'costoUnitario', e.target.value)}
-                              className="w-full bg-th-121314 text-gray-200 px-1 py-1.5 rounded border border-gray-700 text-[11px] text-center font-mono font-medium"
+                              className="w-full bg-th-121314 text-gray-200 py-1.5 pl-4 pr-1 rounded border border-gray-700 text-[11px] text-center font-mono font-medium"
                             />
                           </div>
 
@@ -998,7 +984,6 @@ export default function ModalNuevoPedido({
                                 <input
                                   type="text"
                                   list={`merma-stock-list-${pIdx}-${mIdx}`}
-                                  placeholder="Escribe o elige del stock..."
                                   value={merma.material}
                                   onChange={(e) => {
                                     const val = e.target.value;
@@ -1026,7 +1011,6 @@ export default function ModalNuevoPedido({
                               <div className={pedidoTipo === 'PEDIDO' ? 'sm:col-span-2' : 'sm:col-span-3'}>
                                 <input
                                   type="text"
-                                  placeholder="Motivo (ej. Error corte)"
                                   value={merma.motivo}
                                   onChange={(e) => updateMerma(pIdx, mIdx, 'motivo', e.target.value)}
                                   className="w-full bg-th-121314 text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center"
@@ -1039,7 +1023,6 @@ export default function ModalNuevoPedido({
                                   type="number"
                                   min="1"
                                   step="any"
-                                  placeholder="Cant"
                                   value={merma.cant}
                                   onChange={(e) => updateMerma(pIdx, mIdx, 'cant', e.target.value)}
                                   className="w-full bg-th-121314 text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center font-bold"
@@ -1051,7 +1034,6 @@ export default function ModalNuevoPedido({
                                 <input
                                   type="number"
                                   step="any"
-                                  placeholder="Costo U."
                                   value={merma.costoUnitario}
                                   onChange={(e) => updateMerma(pIdx, mIdx, 'costoUnitario', e.target.value)}
                                   className="w-full bg-th-121314 text-rose-200 p-2 rounded border border-rose-900/60 text-xs text-center font-bold"
@@ -1193,7 +1175,6 @@ export default function ModalNuevoPedido({
                     value={pagado}
                     onChange={(e) => setPagado(e.target.value)}
                     className="bg-th-1c1d1f text-emerald-400 font-mono font-bold pl-6 pr-2.5 py-1.5 rounded-lg border border-gray-700 w-32 text-xs focus:outline-none focus:border-orange-500"
-                    placeholder="0.00"
                   />
                 </div>
               </div>
