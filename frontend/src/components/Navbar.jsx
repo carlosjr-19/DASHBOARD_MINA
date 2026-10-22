@@ -97,16 +97,6 @@ export default function Navbar({
 
           <ThemeToggle />
 
-          {/* User Profile avatar pill */}
-          <div className="relative flex items-center pl-1">
-            <button
-              onClick={onLogout}
-              className="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 flex items-center justify-center text-xs font-bold text-orange-400 shadow transition-colors"
-              title={`Usuario: ${user?.nombre || 'Admin'} - Clic para cerrar sesión`}
-            >
-              {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'M'}
-            </button>
-          </div>
         </div>
       </div>
     </header>
