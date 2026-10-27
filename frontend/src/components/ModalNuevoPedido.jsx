@@ -77,6 +77,7 @@ export default function ModalNuevoPedido({
           return {
             nombre: i.nombre || '',
             detalle: i.detalle || '',
+            medida: i.medida || '',
             nota: i.nota || '',
             proveedor: i.proveedor || '',
             metodoPago: i.metodoPago || 'STOCK',
@@ -183,6 +184,7 @@ export default function ModalNuevoPedido({
           updated[pIndex].insumos = matchCat.insumos.map(i => ({
             nombre: i.nombre || '',
             detalle: i.detalle || '',
+            medida: i.medida || '',
             nota: i.nota || '',
             proveedor: i.proveedor || '',
             metodoPago: i.metodoPago || 'STOCK',
@@ -203,6 +205,7 @@ export default function ModalNuevoPedido({
     updated[pIndex].insumos = catItem.insumos.map(i => ({
       nombre: i.nombre || '',
       detalle: i.detalle || '',
+      medida: i.medida || '',
       nota: i.nota || '',
       proveedor: i.proveedor || '',
       metodoPago: i.metodoPago || 'STOCK',

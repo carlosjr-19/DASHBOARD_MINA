@@ -35,6 +35,7 @@ export default function ModalNuevoProducto({
         ? editingProduct.insumos.map(i => ({
             nombre: i.nombre || '',
             detalle: i.detalle || '',
+            medida: i.medida || '',
             nota: i.nota || '',
             proveedor: i.proveedor || '',
             metodoPago: i.metodoPago || 'STOCK',
@@ -141,6 +142,7 @@ export default function ModalNuevoProducto({
       {
         nombre: '',
         detalle: '',
+        medida: '',
         nota: '',
         proveedor: '',
         metodoPago: 'STOCK',
@@ -186,6 +188,7 @@ export default function ModalNuevoProducto({
       insumos: insumos.map(i => ({
         nombre: i.nombre.trim(),
         detalle: i.detalle?.trim() || '',
+        medida: i.medida?.trim() || '',
         nota: i.nota?.trim() || '',
         proveedor: i.proveedor?.trim() || '',
         metodoPago: i.metodoPago || 'STOCK',
