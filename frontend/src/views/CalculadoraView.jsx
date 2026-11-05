@@ -14,11 +14,11 @@ export default function CalculadoraView({
   onDeleteMaterial,
   onExportarAPedido 
 }) {
-  const [selectedMatId, setSelectedMatId] = useState(materiales[0]?.id || '');
+  const [selectedMatId, setSelectedMatId] = useState('');
   const [anchoCm, setAnchoCm] = useState(100);
   const [altoCm, setAltoCm] = useState(100);
   const [cantidad, setCantidad] = useState(1);
-  const [costoBaseCliente, setCostoBaseCliente] = useState('160');
+  const [costoBaseCliente, setCostoBaseCliente] = useState('');
 
   // New material modal
   const [showAddMat, setShowAddMat] = useState(false);
@@ -27,8 +27,24 @@ export default function CalculadoraView({
   const [newAncho, setNewAncho] = useState(100);
   const [newAlto, setNewAlto] = useState(100);
   const [newCosto, setNewCosto] = useState(100);
+  const [newPrecioCliente, setNewPrecioCliente] = useState('');
 
-  const currentMat = materiales.find(m => String(m.id) === String(selectedMatId)) || materiales[0];
+  const currentMat = selectedMatId 
+    ? (materiales.find(m => String(m.id) === String(selectedMatId)) || null) 
+    : null;
+
+  const handleSelectMaterial = (mat) => {
+    if (!mat) {
+      setSelectedMatId('');
+      setCostoBaseCliente('');
+      return;
+    }
+    setSelectedMatId(mat.id);
+    const pCli = mat.precioCliente ?? mat.precio_cliente;
+    setCostoBaseCliente(pCli && pCli > 0 ? String(pCli) : '');
+    if (mat.ancho) setAnchoCm(mat.ancho);
+    if (mat.alto) setAltoCm(mat.alto);
+  };
 
   // Dimensiones del material base
   const baseAncho = parseFloat(currentMat?.ancho) || 100;
@@ -46,7 +62,7 @@ export default function CalculadoraView({
   const areaTotalM2 = areaPiezaM2 * cantNum;
 
   // Factor de proporción de área respecto al material base
-  const factorProporcion = baseAreaCm2 > 0 ? (reqAreaCm2 / baseAreaCm2) : 0;
+  const factorProporcion = (currentMat && baseAreaCm2 > 0) ? (reqAreaCm2 / baseAreaCm2) : 0;
 
   // 1. Costo Real (lo que a ti te cuesta proporcionalmente al costo base del proveedor)
   const costoBaseProveedor = parseFloat(currentMat?.costo) || 0;
@@ -61,8 +77,8 @@ export default function CalculadoraView({
   // 3. Ganancia Estimada y Métricas
   const gananciaEstimada = precioClienteTotal > 0 ? (precioClienteTotal - costoRealTotal) : 0;
   const margenPorcentaje = precioClienteTotal > 0 ? ((gananciaEstimada / precioClienteTotal) * 100) : 0;
-  const costoPorM2Real = baseAreaM2 > 0 ? (costoBaseProveedor / baseAreaM2) : 0;
-  const costoPorM2Cliente = baseAreaM2 > 0 ? (costoBaseClienteNum / baseAreaM2) : 0;
+  const costoPorM2Real = (currentMat && baseAreaM2 > 0) ? (costoBaseProveedor / baseAreaM2) : 0;
+  const costoPorM2Cliente = (currentMat && baseAreaM2 > 0) ? (costoBaseClienteNum / baseAreaM2) : 0;
 
   const formatMoney = (val) => `$${(val || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
@@ -70,23 +86,28 @@ export default function CalculadoraView({
     e.preventDefault();
     if (!newNombre.trim()) return;
     try {
-      await onSaveMaterial({
+      const nuevoMat = {
         nombre: newNombre.trim(),
         proveedor: newProveedor.trim() || 'Propio',
         ancho: parseFloat(newAncho) || 100,
         alto: parseFloat(newAlto) || 100,
-        costo: parseFloat(newCosto) || 0
-      });
+        costo: parseFloat(newCosto) || 0,
+        precioCliente: parseFloat(newPrecioCliente) || 0,
+        precio_cliente: parseFloat(newPrecioCliente) || 0
+      };
+      await onSaveMaterial(nuevoMat);
       setShowAddMat(false);
       setNewNombre('');
       setNewProveedor('');
       setNewCosto(100);
+      setNewPrecioCliente('');
     } catch (err) {
       alert(err.message || 'Error al guardar material');
     }
   };
 
   const exportar = () => {
+    if (!currentMat) return;
     if (onExportarAPedido) {
       const precioUnit = cantNum > 0 ? (precioClienteTotal / cantNum) : precioClienteTotal;
       const costoUnit = cantNum > 0 ? (costoRealTotal / cantNum) : costoRealTotal;
@@ -114,7 +135,7 @@ export default function CalculadoraView({
 
   return (
     <div className="space-y-4">
-      {/* 2-Column Grid matching structure from Images 2 & 3 */}
+      {/* 2-Column Grid matching structure */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         
         {/* Left Column: Base de Materiales */}
@@ -147,18 +168,20 @@ export default function CalculadoraView({
                   <th className="py-2.5 px-3 text-center">PROVEEDOR</th>
                   <th className="py-2.5 px-3 text-center">MEDIDA (CM)</th>
                   <th className="py-2.5 px-3 text-right">COSTO BASE</th>
+                  <th className="py-2.5 px-3 text-right">PRECIO CLIENTE</th>
                   <th className="py-2.5 px-2 w-8"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800/40">
                 {materiales.length > 0 ? (
                   materiales.map((m) => {
-                    const isSelected = String(m.id) === String(selectedMatId || currentMat?.id);
+                    const isSelected = Boolean(selectedMatId && String(m.id) === String(selectedMatId));
+                    const precCli = m.precioCliente ?? m.precio_cliente;
 
                     return (
                       <tr
                         key={m.id}
-                        onClick={() => setSelectedMatId(m.id)}
+                        onClick={() => handleSelectMaterial(m)}
                         className={`cursor-pointer transition-colors ${
                           isSelected
                             ? 'bg-orange-600/15 text-orange-200'
@@ -185,12 +208,18 @@ export default function CalculadoraView({
                         <td className="py-3 px-3 text-right font-bold text-gray-100">
                           {formatMoney(m.costo)}
                         </td>
+                        <td className="py-3 px-3 text-right font-bold text-orange-400">
+                          {precCli && precCli > 0 ? formatMoney(precCli) : <span className="text-gray-600">-</span>}
+                        </td>
                         <td className="py-3 px-2 text-center">
                           {onDeleteMaterial && (
                             <button
                               type="button"
                               onClick={(e) => {
                                 e.stopPropagation();
+                                if (selectedMatId && String(m.id) === String(selectedMatId)) {
+                                  handleSelectMaterial(null);
+                                }
                                 onDeleteMaterial(m.id);
                               }}
                               className="text-gray-500 hover:text-rose-400 p-1 transition-colors"
@@ -205,7 +234,7 @@ export default function CalculadoraView({
                   })
                 ) : (
                   <tr>
-                    <td colSpan={5} className="py-8 text-center text-gray-500">
+                    <td colSpan={6} className="py-8 text-center text-gray-500">
                       No hay materiales registrados. Agrega uno con el botón superior.
                     </td>
                   </tr>
@@ -233,10 +262,14 @@ export default function CalculadoraView({
             </label>
             <div className="relative">
               <select
-                value={selectedMatId || currentMat?.id || ''}
-                onChange={(e) => setSelectedMatId(e.target.value)}
+                value={selectedMatId || ''}
+                onChange={(e) => {
+                  const found = materiales.find(m => String(m.id) === String(e.target.value));
+                  handleSelectMaterial(found || null);
+                }}
                 className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-xl border border-gray-700 text-xs sm:text-sm font-medium focus:ring-1 focus:ring-orange-500 focus:outline-none appearance-none pr-9 cursor-pointer"
               >
+                <option value="">-- Seleccionar Material --</option>
                 {materiales.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.nombre} | {m.proveedor || 'Propio'}
@@ -246,7 +279,7 @@ export default function CalculadoraView({
               <ChevronDown className="w-4 h-4 text-gray-400 absolute right-3 top-3 pointer-events-none" />
             </div>
 
-            {currentMat && (
+            {currentMat ? (
               <div className="flex items-center justify-between text-[11px] text-gray-400 px-1 pt-0.5">
                 <span>
                   Medida del material: <span className="font-semibold text-gray-200">{currentMat.ancho || 0} CM X {currentMat.alto || 0} CM</span>
@@ -254,6 +287,10 @@ export default function CalculadoraView({
                 <span>
                   Costo base: <span className="font-semibold text-gray-200">{formatMoney(currentMat.costo)}</span>
                 </span>
+              </div>
+            ) : (
+              <div className="text-[11px] text-gray-500 italic px-1 pt-0.5">
+                Selecciona un material de la lista o de la tabla izquierda para comenzar a calcular
               </div>
             )}
           </div>
@@ -295,7 +332,7 @@ export default function CalculadoraView({
               <input
                 type="text"
                 readOnly
-                value={formatMoney(costoRealTotal)}
+                value={formatMoney(currentMat ? costoRealTotal : 0)}
                 className="w-full bg-th-151617 text-blue-400 py-2 px-2 rounded-xl border border-gray-700 font-bold text-center text-xs sm:text-sm font-mono focus:outline-none cursor-default select-none"
               />
             </div>
@@ -307,9 +344,11 @@ export default function CalculadoraView({
               <label className="text-xs text-gray-300 font-semibold">
                 Costo Base al Cliente ($)
               </label>
-              <span className="text-[10px] text-gray-400">
-                (Por {baseAncho} x {baseAlto} cm)
-              </span>
+              {currentMat && (
+                <span className="text-[10px] text-gray-400">
+                  (Por {baseAncho} x {baseAlto} cm)
+                </span>
+              )}
             </div>
             <div className="relative flex items-center">
               <span className="absolute left-3 text-orange-400 font-mono font-bold text-xs select-none">$</span>
@@ -333,10 +372,10 @@ export default function CalculadoraView({
                   Precio Final Cliente
                 </span>
                 <div className="text-lg sm:text-xl font-extrabold text-orange-500 font-mono">
-                  {costoBaseClienteNum > 0 ? formatMoney(precioClienteTotal) : '$0.00'}
+                  {currentMat && costoBaseClienteNum > 0 ? formatMoney(precioClienteTotal) : '$0.00'}
                 </div>
                 <span className="text-[9px] text-orange-300/70 block mt-0.5">
-                  Para {reqAncho} x {reqAlto} cm
+                  {currentMat ? `Para ${reqAncho} x ${reqAlto} cm` : 'Sin material seleccionado'}
                 </span>
               </div>
 
@@ -346,21 +385,21 @@ export default function CalculadoraView({
                   Ganancia Estimada
                 </span>
                 <div className="text-lg sm:text-xl font-extrabold text-emerald-500 font-mono">
-                  {costoBaseClienteNum > 0 ? formatMoney(gananciaEstimada) : '$0.00'}
+                  {currentMat && costoBaseClienteNum > 0 ? formatMoney(gananciaEstimada) : '$0.00'}
                 </div>
                 <span className="text-[9px] text-emerald-300/70 block mt-0.5">
-                  Margen: {margenPorcentaje.toFixed(1)}%
+                  Margen: {currentMat && precioClienteTotal > 0 ? margenPorcentaje.toFixed(1) : '0.0'}%
                 </span>
               </div>
             </div>
 
             {/* Fila de Métricas Técnicas: Área y Costo por m2 */}
             <div className="pt-2 border-t border-blue-900/40 flex items-center justify-around text-[10px] sm:text-[11px] text-blue-200/80 font-mono flex-wrap gap-1">
-              <span>Área: <strong className="text-gray-100">{areaTotalM2.toFixed(3)} m²</strong></span>
+              <span>Área: <strong className="text-gray-100">{currentMat ? areaTotalM2.toFixed(3) : '0.000'} m²</strong></span>
               <span>•</span>
-              <span>Costo Real: <strong className="text-gray-100">{formatMoney(costoPorM2Real)}/m²</strong></span>
+              <span>Costo Real: <strong className="text-gray-100">{formatMoney(currentMat ? costoPorM2Real : 0)}/m²</strong></span>
               <span>•</span>
-              <span>Costo Cliente: <strong className="text-orange-400">{formatMoney(costoPorM2Cliente)}/m²</strong></span>
+              <span>Costo Cliente: <strong className="text-orange-400">{formatMoney(currentMat ? costoPorM2Cliente : 0)}/m²</strong></span>
             </div>
           </div>
 
@@ -368,9 +407,14 @@ export default function CalculadoraView({
           {onExportarAPedido && (
             <button
               onClick={exportar}
-              className="w-full py-2.5 px-4 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold shadow transition-all active:scale-95 flex items-center justify-center gap-2"
+              disabled={!currentMat}
+              className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold shadow transition-all flex items-center justify-center gap-2 ${
+                currentMat 
+                  ? 'bg-orange-600 hover:bg-orange-500 text-white active:scale-95 cursor-pointer' 
+                  : 'bg-gray-800 text-gray-500 cursor-not-allowed opacity-60'
+              }`}
             >
-              <ShoppingBag className="w-4 h-4 text-white" />
+              <ShoppingBag className="w-4 h-4 text-current" />
               <span>Exportar a Pedido Activo</span>
             </button>
           )}
@@ -439,16 +483,28 @@ export default function CalculadoraView({
                 </div>
               </div>
 
-              <div>
-                <label className="text-gray-400 block mb-1">Costo Base total ($ MXN) *</label>
-                <input
-                  type="number"
-                  step="any"
-                  required
-                  value={newCosto}
-                  onChange={(e) => setNewCosto(e.target.value)}
-                  className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 text-emerald-400 font-bold"
-                />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="text-gray-400 block mb-1">Costo Base Proveedor ($ MXN) *</label>
+                  <input
+                    type="number"
+                    step="any"
+                    required
+                    value={newCosto}
+                    onChange={(e) => setNewCosto(e.target.value)}
+                    className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 text-blue-400 font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="text-gray-400 block mb-1">Precio Base al Cliente ($ MXN)</label>
+                  <input
+                    type="number"
+                    step="any"
+                    value={newPrecioCliente}
+                    onChange={(e) => setNewPrecioCliente(e.target.value)}
+                    className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 text-orange-400 font-bold"
+                  />
+                </div>
               </div>
 
               <div className="flex justify-end gap-2 pt-3 border-t border-gray-800">

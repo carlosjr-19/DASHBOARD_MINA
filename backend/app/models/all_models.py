@@ -192,6 +192,7 @@ class MaterialCalculadora(Base):
     ancho = Column(Float, default=100.0)
     alto = Column(Float, default=100.0)
     costo = Column(Float, default=0.0)
+    precio_cliente = Column(Float, default=0.0)
 
 
 class ProductoCatalogo(Base):

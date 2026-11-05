@@ -127,6 +127,8 @@ class MaterialCalculadoraSchema(BaseModel):
     ancho: float = 100.0
     alto: float = 100.0
     costo: float = 0.0
+    precioCliente: Optional[float] = 0.0
+    precio_cliente: Optional[float] = 0.0
 
 # --- PRODUCTO CATALOGO ---
 class ProductoCatalogoSchema(BaseModel):
