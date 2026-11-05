@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from .database import engine, Base
-from .routers import pedidos, inventario, finanzas, calculadora, clientes, auth, catalogo
+from .routers import pedidos, inventario, finanzas, calculadora, clientes, auth, catalogo, pendientes
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -29,6 +29,7 @@ app.include_router(finanzas.router, prefix="/api")
 app.include_router(calculadora.router, prefix="/api")
 app.include_router(clientes.router, prefix="/api")
 app.include_router(catalogo.router, prefix="/api")
+app.include_router(pendientes.router, prefix="/api")
 
 @app.get("/api/health")
 def health_check():

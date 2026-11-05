@@ -239,3 +239,20 @@ class FacturaCFDI(Base):
     porcentaje_deducible = Column(Float, default=100.0) # 8.5 para Alimentos, 100 para Insumos
     comentario_contador = Column(Text, default="")
 
+
+class Pendiente(Base):
+    __tablename__ = "pendientes"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    descripcion = Column(Text, nullable=False)
+    urgencia = Column(String, default="Media") # Baja, Media, Alta, Urgente
+    quien_pide = Column(String, default="")
+    para_quien = Column(String, default="")
+    de_quien_depende = Column(String, default="")
+    fecha_solicitud = Column(String, default=lambda: datetime.date.today().isoformat())
+    fecha_entrega = Column(String, default="")
+    estatus = Column(String, default="Pendiente") # Pendiente, En Proceso, Atendido, Cancelado
+    comentarios_json = Column(Text, default="[]")
+    created_at = Column(String, default=lambda: datetime.datetime.now().isoformat())
+    updated_at = Column(String, default=lambda: datetime.datetime.now().isoformat())
+

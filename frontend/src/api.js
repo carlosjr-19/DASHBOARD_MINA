@@ -221,6 +221,52 @@ export const api = {
     });
     if (!res.ok) throw new Error('Error al eliminar producto del catálogo');
     return res.json();
+  },
+// Pendientes
+  async getPendientes() {
+    const res = await fetch(`${BASE_URL}/pendientes`);
+    if (!res.ok) throw new Error('Error al cargar pendientes');
+    return res.json();
+  },
+
+  async savePendiente(pendiente) {
+    const res = await fetch(`${BASE_URL}/pendientes`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(pendiente)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Error al guardar pendiente');
+    }
+    return res.json();
+  },
+
+  async updateEstatusPendiente(id, estatus) {
+    const res = await fetch(`${BASE_URL}/pendientes/${id}/estatus`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ estatus })
+    });
+    if (!res.ok) throw new Error('Error al actualizar estatus de pendiente');
+    return res.json();
+  },
+
+  async addComentarioPendiente(id, comentarioData) {
+    const res = await fetch(`${BASE_URL}/pendientes/${id}/comentarios`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(comentarioData)
+    });
+    if (!res.ok) throw new Error('Error al agregar comentario');
+    return res.json();
+  },
+
+  async deletePendiente(id) {
+    const res = await fetch(`${BASE_URL}/pendientes/${id}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) throw new Error('Error al eliminar pendiente');
+    return res.json();
   }
 };
-

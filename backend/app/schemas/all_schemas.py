@@ -174,3 +174,30 @@ class FacturaXMLUploadSchema(BaseModel):
     xmlContent: str
     archivoNombre: Optional[str] = "factura.xml"
 
+
+# --- PENDIENTES ---
+class ComentarioPendienteSchema(BaseModel):
+    id: Optional[str] = None
+    fecha: Optional[str] = None
+    autor: Optional[str] = "Usuario"
+    texto: str
+
+class PendienteCreateSchema(BaseModel):
+    id: Optional[int] = None
+    descripcion: str
+    urgencia: Optional[str] = "Media"
+    quien_pide: Optional[str] = ""
+    para_quien: Optional[str] = ""
+    de_quien_depende: Optional[str] = ""
+    fecha_solicitud: Optional[str] = ""
+    fecha_entrega: Optional[str] = ""
+    estatus: Optional[str] = "Pendiente"
+    comentarios: Optional[List[ComentarioPendienteSchema]] = []
+
+class PendienteEstatusUpdate(BaseModel):
+    estatus: str
+
+class NuevoComentarioSchema(BaseModel):
+    texto: str
+    autor: Optional[str] = "Usuario"
+

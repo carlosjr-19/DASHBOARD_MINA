@@ -9,6 +9,7 @@ import InventarioView from './views/InventarioView';
 import FinanzasView from './views/FinanzasView';
 import CalculadoraView from './views/CalculadoraView';
 import ClientesView from './views/ClientesView';
+import PendientesView from './views/PendientesView';
 import LoginView from './views/LoginView';
 
 import ModalCambiarEstatus from './components/ModalCambiarEstatus';
@@ -59,6 +60,7 @@ export default function App() {
   const [clientes, setClientes] = useState([]);
   const [catalogo, setCatalogo] = useState([]);
   const [recolecciones, setRecolecciones] = useState([]);
+  const [pendientes, setPendientes] = useState([]);
   const [loading, setLoading] = useState(false);
 
   // Modal States
@@ -77,7 +79,7 @@ export default function App() {
   // Fetch all live data
   const fetchData = async () => {
     try {
-      const [pedRes, invRes, movRes, salRes, matRes, cliRes, catRes, recRes] = await Promise.all([
+      const [pedRes, invRes, movRes, salRes, matRes, cliRes, catRes, recRes, penRes] = await Promise.all([
         api.getPedidos().catch(() => []),
         api.getInventario().catch(() => []),
         api.getMovimientos().catch(() => []),
@@ -85,7 +87,8 @@ export default function App() {
         api.getMaterialesCalculadora().catch(() => []),
         api.getClientes().catch(() => []),
         api.getCatalogo().catch(() => []),
-        api.getRecolecciones().catch(() => [])
+        api.getRecolecciones().catch(() => []),
+        api.getPendientes().catch(() => [])
       ]);
 
       setPedidos(pedRes);
@@ -96,6 +99,7 @@ export default function App() {
       setClientes(cliRes);
       setCatalogo(catRes);
       setRecolecciones(recRes);
+      setPendientes(penRes);
     } catch (err) {
       console.error('Error fetching data:', err);
     }
@@ -234,6 +238,27 @@ export default function App() {
     }
   };
 
+  // Pendientes Handlers
+  const handleSavePendiente = async (pen) => {
+    await api.savePendiente(pen);
+    await fetchData();
+  };
+
+  const handleDeletePendiente = async (id) => {
+    await api.deletePendiente(id);
+    await fetchData();
+  };
+
+  const handleUpdateEstatusPendiente = async (id, estatus) => {
+    await api.updateEstatusPendiente(id, estatus);
+    await fetchData();
+  };
+
+  const handleAddComentarioPendiente = async (id, comentario) => {
+    await api.addComentarioPendiente(id, comentario);
+    await fetchData();
+  };
+
   const handleExportarCalculadoraAPedido = (calculatedProd) => {
     setEditingOrder({
       id: null,
@@ -289,12 +314,24 @@ export default function App() {
             }
           }}
           pedidos={pedidos}
+          pendientes={pendientes}
           user={user}
           onLogout={handleLogout}
         />
 
         {/* Main Content Area */}
         <main className={`flex-1 min-w-0 p-3 sm:p-6 pb-20 overflow-y-auto transition-all duration-300 ${sidebarOpen ? 'w-full' : 'max-w-7xl mx-auto w-full'}`}>
+        {currentTab === 'pendientes' && (
+          <PendientesView
+            pendientes={pendientes}
+            onSavePendiente={handleSavePendiente}
+            onDeletePendiente={handleDeletePendiente}
+            onUpdateEstatus={handleUpdateEstatusPendiente}
+            onAddComentario={handleAddComentarioPendiente}
+            user={user}
+          />
+        )}
+
         {currentTab === 'pedidos' && (
           <PedidosView
             pedidos={pedidos}
