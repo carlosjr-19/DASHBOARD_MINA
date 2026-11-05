@@ -167,8 +167,9 @@ export default function CalculadoraView({
                   <th className="py-2.5 px-3">MATERIAL</th>
                   <th className="py-2.5 px-3 text-center">PROVEEDOR</th>
                   <th className="py-2.5 px-3 text-center">MEDIDA (CM)</th>
-                  <th className="py-2.5 px-3 text-right">COSTO BASE</th>
-                  <th className="py-2.5 px-3 text-right">PRECIO CLIENTE</th>
+                  <th className="py-2.5 px-3 text-center">COSTO BASE PROVEEDOR ($)</th>
+                  <th className="py-2.5 px-3 text-center">COSTO BASE CLIENTE ($)</th>
+                  <th className="py-2.5 px-3 text-center">GANANCIA ($)</th>
                   <th className="py-2.5 px-2 w-8"></th>
                 </tr>
               </thead>
@@ -177,6 +178,8 @@ export default function CalculadoraView({
                   materiales.map((m) => {
                     const isSelected = Boolean(selectedMatId && String(m.id) === String(selectedMatId));
                     const precCli = m.precioCliente ?? m.precio_cliente;
+                    const costoNum = parseFloat(m.costo) || 0;
+                    const ganancia = precCli && precCli > 0 ? (precCli - costoNum) : null;
 
                     return (
                       <tr
@@ -205,11 +208,23 @@ export default function CalculadoraView({
                             {m.ancho || 0}x{m.alto || 0}
                           </span>
                         </td>
-                        <td className="py-3 px-3 text-right font-bold text-gray-100">
+                        {/* Costo Base Proveedor ($) Centrado */}
+                        <td className="py-3 px-3 text-center font-bold text-gray-100 font-mono">
                           {formatMoney(m.costo)}
                         </td>
-                        <td className="py-3 px-3 text-right font-bold text-orange-400">
+                        {/* Costo Base Cliente ($) Centrado */}
+                        <td className="py-3 px-3 text-center font-bold text-orange-400 font-mono">
                           {precCli && precCli > 0 ? formatMoney(precCli) : <span className="text-gray-600">-</span>}
+                        </td>
+                        {/* Ganancia ($) en Verde Centrada */}
+                        <td className="py-3 px-3 text-center font-bold text-emerald-400 font-mono">
+                          {ganancia !== null ? (
+                            <span className="inline-block px-2 py-0.5 rounded bg-emerald-950/40 border border-emerald-900/50">
+                              {formatMoney(ganancia)}
+                            </span>
+                          ) : (
+                            <span className="text-gray-600">-</span>
+                          )}
                         </td>
                         <td className="py-3 px-2 text-center">
                           {onDeleteMaterial && (
@@ -234,7 +249,7 @@ export default function CalculadoraView({
                   })
                 ) : (
                   <tr>
-                    <td colSpan={6} className="py-8 text-center text-gray-500">
+                    <td colSpan={7} className="py-8 text-center text-gray-500">
                       No hay materiales registrados. Agrega uno con el botón superior.
                     </td>
                   </tr>
@@ -486,24 +501,30 @@ export default function CalculadoraView({
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-gray-400 block mb-1">Costo Base Proveedor ($ MXN) *</label>
-                  <input
-                    type="number"
-                    step="any"
-                    required
-                    value={newCosto}
-                    onChange={(e) => setNewCosto(e.target.value)}
-                    className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 text-blue-400 font-bold"
-                  />
+                  <div className="relative flex items-center">
+                    <span className="absolute left-3 text-blue-400 font-mono font-bold text-xs select-none">$</span>
+                    <input
+                      type="number"
+                      step="any"
+                      required
+                      value={newCosto}
+                      onChange={(e) => setNewCosto(e.target.value)}
+                      className="w-full bg-th-151617 text-gray-100 pl-7 pr-2.5 py-2.5 rounded-lg border border-gray-700 text-blue-400 font-bold focus:outline-none focus:ring-1 focus:ring-orange-500 text-center"
+                    />
+                  </div>
                 </div>
                 <div>
                   <label className="text-gray-400 block mb-1">Precio Base al Cliente ($ MXN)</label>
-                  <input
-                    type="number"
-                    step="any"
-                    value={newPrecioCliente}
-                    onChange={(e) => setNewPrecioCliente(e.target.value)}
-                    className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 text-orange-400 font-bold"
-                  />
+                  <div className="relative flex items-center">
+                    <span className="absolute left-3 text-orange-400 font-mono font-bold text-xs select-none">$</span>
+                    <input
+                      type="number"
+                      step="any"
+                      value={newPrecioCliente}
+                      onChange={(e) => setNewPrecioCliente(e.target.value)}
+                      className="w-full bg-th-151617 text-gray-100 pl-7 pr-2.5 py-2.5 rounded-lg border border-gray-700 text-orange-400 font-bold focus:outline-none focus:ring-1 focus:ring-orange-500 text-center"
+                    />
+                  </div>
                 </div>
               </div>
 
