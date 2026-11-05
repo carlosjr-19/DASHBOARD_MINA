@@ -324,45 +324,6 @@ def guardar_pedido(data: schemas.PedidoCreateSchema, db: Session = Depends(get_d
                             es_egreso_pedido=True
                         ))
 
-        # Auto-registro en Catálogo de Productos si tiene nombre
-        if prod_data.nombre and prod_data.nombre.strip():
-            nombre_limpio = prod_data.nombre.strip()
-            cat_prod = db.query(models.ProductoCatalogo).filter(
-                models.ProductoCatalogo.nombre.ilike(nombre_limpio)
-            ).first()
-
-            insumos_list = [{
-                "nombre": i.nombre,
-                "detalle": i.detalle or "",
-                "nota": i.nota or "",
-                "proveedor": i.proveedor or "",
-                "metodoPago": i.metodoPago or "STOCK",
-                "cant": float(i.cant or 1.0),
-                "costoUnitario": float(i.costoUnitario or 0.0),
-                "costo": float(i.costo or 0.0)
-            } for i in prod_data.insumos]
-
-            costo_total_insumos = sum(i["costo"] for i in insumos_list)
-            precio_unit = float(prod_data.precioUnitario) or 0.0
-            margen_pct = round(((precio_unit - costo_total_insumos) / costo_total_insumos * 100), 1) if costo_total_insumos > 0 else 0.0
-
-            if not cat_prod:
-                nuevo_cat = models.ProductoCatalogo(
-                    nombre=nombre_limpio,
-                    proveedor=prod_data.proveedor or "Propio",
-                    costo=costo_total_insumos,
-                    margen=margen_pct,
-                    precio=precio_unit,
-                    insumos_json=json.dumps(insumos_list)
-                )
-                db.add(nuevo_cat)
-            elif insumos_list and (not cat_prod.insumos_json or cat_prod.insumos_json == "[]"):
-                cat_prod.costo = costo_total_insumos
-                cat_prod.precio = precio_unit
-                cat_prod.margen = margen_pct
-                cat_prod.insumos_json = json.dumps(insumos_list)
-
-
     # Sincronización de anticipo con Cuentas (MovimientoCaja)
     if pedido_obj.tipo == "PEDIDO" or pedido_obj.id.startswith("PMD-"):
         monto_anticipo = float(data.pagado or 0.0)
