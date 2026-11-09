@@ -75,6 +75,33 @@ export default function App() {
   const [isMovimientoOpen, setIsMovimientoOpen] = useState(false);
   const [movimientoTipo, setMovimientoTipo] = useState('INGRESO');
   const [isRecoleccionOpen, setIsRecoleccionOpen] = useState(false);
+  const [draftOrderInfo, setDraftOrderInfo] = useState(null);
+
+  const checkDraftOrder = () => {
+    try {
+      const raw = localStorage.getItem('mina_draft_order');
+      if (raw) {
+        const d = JSON.parse(raw);
+        const hasContent = 
+          d && (
+            (d.clienteNombre && d.clienteNombre.trim() !== '') ||
+            (d.productos && d.productos.length > 0 && d.productos[0]?.nombre?.trim())
+          );
+        if (hasContent) {
+          setDraftOrderInfo({
+            tipo: d.tipo || 'PEDIDO',
+            clienteNombre: d.clienteNombre || '',
+            productosCount: (d.productos || []).filter(p => p.nombre?.trim()).length || 1,
+            data: d
+          });
+          return;
+        }
+      }
+    } catch (e) {
+      console.warn('Error reading draft in App:', e);
+    }
+    setDraftOrderInfo(null);
+  };
 
   // Fetch all live data
   const fetchData = async () => {
@@ -108,9 +135,13 @@ export default function App() {
   useEffect(() => {
     if (user) {
       fetchData();
-      // Sincronización en vivo cada 10 segundos
+      checkDraftOrder();
       const interval = setInterval(fetchData, 10000);
-      return () => clearInterval(interval);
+      window.addEventListener('mina_draft_updated', checkDraftOrder);
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener('mina_draft_updated', checkDraftOrder);
+      };
     }
   }, [user]);
 
@@ -260,15 +291,50 @@ export default function App() {
   };
 
   const handleExportarCalculadoraAPedido = (calculatedProd) => {
-    setEditingOrder({
-      id: null,
-      tipo: 'PEDIDO',
-      cliente: '',
-      telefono: '',
-      correo: '',
-      productos: [calculatedProd]
-    });
-    setNuevoPedidoTipo('PEDIDO');
+    let baseData = null;
+    try {
+      const raw = localStorage.getItem('mina_draft_order');
+      if (raw) {
+        const draft = JSON.parse(raw);
+        if (draft) {
+          const existingProds = (draft.productos || []).filter(p => p.nombre && p.nombre.trim() !== '');
+          baseData = {
+            id: null,
+            tipo: draft.tipo || 'PEDIDO',
+            cliente: draft.clienteNombre || '',
+            telefono: draft.telefono || '',
+            correo: draft.correo || '',
+            fechaEntrega: draft.fechaEntrega || '',
+            requiereFactura: draft.requiereFactura || false,
+            tipoPersona: draft.tipoPersona || 'Fisica',
+            rfc: draft.rfc || '',
+            razonSocial: draft.razonSocial || '',
+            cp: draft.cp || '',
+            regimenFiscal: draft.regimenFiscal || '',
+            usoCfdi: draft.usoCfdi || '',
+            pagado: draft.pagado || 0,
+            metodoPagoAnticipo: draft.metodoPagoAnticipo || 'NU MINA',
+            productos: existingProds.length > 0 ? [...existingProds, calculatedProd] : [calculatedProd]
+          };
+        }
+      }
+    } catch (e) {
+      console.warn('Error merging draft with calculator export:', e);
+    }
+
+    if (!baseData) {
+      baseData = {
+        id: null,
+        tipo: 'PEDIDO',
+        cliente: '',
+        telefono: '',
+        correo: '',
+        productos: [calculatedProd]
+      };
+    }
+
+    setEditingOrder(baseData);
+    setNuevoPedidoTipo(baseData.tipo || 'PEDIDO');
     setIsNuevoPedidoOpen(true);
   };
 
@@ -300,6 +366,43 @@ export default function App() {
           setIsMovimientoOpen(true);
         }}
       />
+
+      {/* Banner de Borrador Global (como Gmail) */}
+      {draftOrderInfo && !isNuevoPedidoOpen && (
+        <div className="bg-gradient-to-r from-amber-950 via-amber-900 to-gray-900 border-b border-amber-600/50 px-4 py-2 flex flex-wrap items-center justify-between text-xs text-amber-200 z-30 shadow-md">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span>
+              Tienes un <strong>borrador no guardado de {draftOrderInfo.tipo === 'COTIZACION' ? 'cotización' : 'pedido'}</strong>
+              {draftOrderInfo.clienteNombre ? ` para "${draftOrderInfo.clienteNombre}"` : ''} ({draftOrderInfo.productosCount} {draftOrderInfo.productosCount === 1 ? 'producto' : 'productos'}).
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                setEditingOrder(null);
+                setNuevoPedidoTipo(draftOrderInfo.tipo || 'PEDIDO');
+                setIsNuevoPedidoOpen(true);
+              }}
+              className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold rounded-md shadow-sm transition-all text-xs"
+            >
+              Retomar Borrador
+            </button>
+            <button
+              onClick={() => {
+                if (window.confirm('¿Deseas descartar el borrador pendiente?')) {
+                  localStorage.removeItem('mina_draft_order');
+                  setDraftOrderInfo(null);
+                  window.dispatchEvent(new Event('mina_draft_updated'));
+                }
+              }}
+              className="text-amber-300 hover:text-rose-400 underline font-medium text-xs transition-colors"
+            >
+              Descartar
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Content wrapper with Sidebar + Main Content */}
       <div className="flex-1 flex min-h-0 relative">

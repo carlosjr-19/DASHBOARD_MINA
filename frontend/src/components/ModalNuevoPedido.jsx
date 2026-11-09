@@ -38,33 +38,57 @@ export default function ModalNuevoPedido({
   onClose, 
   onSave 
 }) {
-  const isEditing = Boolean(initialData);
+  const isEditing = Boolean(initialData && initialData.id);
 
-  const [pedidoTipo, setPedidoTipo] = useState(initialData?.tipo || tipo);
+  // Helper to load draft if not editing an existing persisted order
+  const getInitialDraft = () => {
+    if (initialData && initialData.id) return null;
+    try {
+      const raw = localStorage.getItem('mina_draft_order');
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d && (d.clienteNombre || (d.productos && d.productos.length > 0 && d.productos[0]?.nombre))) {
+          return d;
+        }
+      }
+    } catch (e) {
+      console.warn('Error reading draft:', e);
+    }
+    return null;
+  };
+
+  const savedDraft = (!initialData || !initialData.id) ? getInitialDraft() : null;
+  const [isDraftRestored, setIsDraftRestored] = useState(Boolean(savedDraft && !initialData));
+
+  const [pedidoTipo, setPedidoTipo] = useState(initialData?.tipo || savedDraft?.tipo || tipo);
   const [folio, setFolio] = useState(initialData?.id || '');
-  const [clienteNombre, setClienteNombre] = useState(initialData?.cliente || '');
-  const [telefono, setTelefono] = useState(initialData?.telefono || '');
-  const [correo, setCorreo] = useState(initialData?.correo || '');
+  const [clienteNombre, setClienteNombre] = useState(initialData?.cliente || savedDraft?.clienteNombre || '');
+  const [telefono, setTelefono] = useState(initialData?.telefono || savedDraft?.telefono || '');
+  const [correo, setCorreo] = useState(initialData?.correo || savedDraft?.correo || '');
   const todayIsoDate = new Date().toISOString().split('T')[0];
   const [fechaEntrega, setFechaEntrega] = useState(
-    initialData?.fechaEntrega || initialData?.fecha?.split('T')[0] || todayIsoDate
+    initialData?.fechaEntrega || initialData?.fecha?.split('T')[0] || savedDraft?.fechaEntrega || todayIsoDate
   );
-  const [requiereFactura, setRequiereFactura] = useState(initialData?.requiereFactura || false);
-  const [tipoPersona, setTipoPersona] = useState(initialData?.tipoPersona || 'Fisica');
-  const [rfc, setRfc] = useState(initialData?.rfc || '');
-  const [razonSocial, setRazonSocial] = useState(initialData?.razonSocial || '');
-  const [cp, setCp] = useState(initialData?.cp || '');
-  const [regimenFiscal, setRegimenFiscal] = useState(initialData?.regimenFiscal || '612 Personas Físicas con Actividades Empresariales');
-  const [usoCfdi, setUsoCfdi] = useState(initialData?.usoCfdi || 'G03 Gastos en general');
-  const [pagado, setPagado] = useState(initialData?.pagado || 0);
-  const [metodoPagoAnticipo, setMetodoPagoAnticipo] = useState(initialData?.metodoPagoAnticipo || 'NU MINA');
+  const [requiereFactura, setRequiereFactura] = useState(initialData?.requiereFactura ?? savedDraft?.requiereFactura ?? false);
+  const [tipoPersona, setTipoPersona] = useState(initialData?.tipoPersona || savedDraft?.tipoPersona || 'Fisica');
+  const [rfc, setRfc] = useState(initialData?.rfc || savedDraft?.rfc || '');
+  const [razonSocial, setRazonSocial] = useState(initialData?.razonSocial || savedDraft?.razonSocial || '');
+  const [cp, setCp] = useState(initialData?.cp || savedDraft?.cp || '');
+  const [regimenFiscal, setRegimenFiscal] = useState(initialData?.regimenFiscal || savedDraft?.regimenFiscal || '612 Personas Físicas con Actividades Empresariales');
+  const [usoCfdi, setUsoCfdi] = useState(initialData?.usoCfdi || savedDraft?.usoCfdi || 'G03 Gastos en general');
+  const [pagado, setPagado] = useState(initialData?.pagado ?? savedDraft?.pagado ?? 0);
+  const [metodoPagoAnticipo, setMetodoPagoAnticipo] = useState(initialData?.metodoPagoAnticipo || savedDraft?.metodoPagoAnticipo || 'NU MINA');
   const [collapsedInsumos, setCollapsedInsumos] = useState({});
   const [collapsedMermas, setCollapsedMermas] = useState({});
 
   // Products array
   const [productos, setProductos] = useState(() => {
-    if (initialData?.productos && initialData.productos.length > 0) {
-      return initialData.productos.map(p => ({
+    const sourceProds = (initialData?.productos && initialData.productos.length > 0)
+      ? initialData.productos
+      : (savedDraft?.productos && savedDraft.productos.length > 0 ? savedDraft.productos : null);
+
+    if (sourceProds && sourceProds.length > 0) {
+      return sourceProds.map(p => ({
         nombre: p.nombre || '',
         proveedor: p.proveedor || '',
         nota: p.nota || '',
@@ -129,6 +153,91 @@ export default function ModalNuevoPedido({
     const formattedNum = String(nextNum).padStart(3, '0');
     setFolio(`${prefix}${formattedNum}`);
   }, [pedidoTipo, pedidos, isEditing]);
+
+  // Auto-guardado en borrador (estilo Gmail) mientras se crea un pedido o cotización nuevo
+  useEffect(() => {
+    if (isEditing) return;
+
+    const hasContent = 
+      (clienteNombre && clienteNombre.trim() !== '') ||
+      (telefono && telefono.trim() !== '') ||
+      (correo && correo.trim() !== '') ||
+      productos.length > 1 ||
+      (productos[0] && ((productos[0].nombre && productos[0].nombre.trim() !== '') || (productos[0].insumos && productos[0].insumos.length > 0) || productos[0].precioUnitario > 0));
+
+    if (hasContent) {
+      const draftData = {
+        tipo: pedidoTipo,
+        clienteNombre,
+        telefono,
+        correo,
+        fechaEntrega,
+        requiereFactura,
+        tipoPersona,
+        rfc,
+        razonSocial,
+        cp,
+        regimenFiscal,
+        usoCfdi,
+        pagado,
+        metodoPagoAnticipo,
+        productos,
+        updatedAt: new Date().toISOString()
+      };
+      localStorage.setItem('mina_draft_order', JSON.stringify(draftData));
+      window.dispatchEvent(new Event('mina_draft_updated'));
+    }
+  }, [
+    isEditing,
+    pedidoTipo,
+    clienteNombre,
+    telefono,
+    correo,
+    fechaEntrega,
+    requiereFactura,
+    tipoPersona,
+    rfc,
+    razonSocial,
+    cp,
+    regimenFiscal,
+    usoCfdi,
+    pagado,
+    metodoPagoAnticipo,
+    productos
+  ]);
+
+  const handleDiscardDraft = () => {
+    if (window.confirm('¿Deseas descartar este borrador y empezar en blanco? Los cambios no guardados se perderán.')) {
+      localStorage.removeItem('mina_draft_order');
+      window.dispatchEvent(new Event('mina_draft_updated'));
+      setIsDraftRestored(false);
+      setClienteNombre('');
+      setTelefono('');
+      setCorreo('');
+      setFechaEntrega(todayIsoDate);
+      setRequiereFactura(false);
+      setTipoPersona('Fisica');
+      setRfc('');
+      setRazonSocial('');
+      setCp('');
+      setRegimenFiscal('612 Personas Físicas con Actividades Empresariales');
+      setUsoCfdi('G03 Gastos en general');
+      setPagado(0);
+      setMetodoPagoAnticipo('NU MINA');
+      setProductos([
+        {
+          nombre: '',
+          proveedor: '',
+          nota: '',
+          cant: 1,
+          precioUnitario: 0,
+          costoUnitario: 0,
+          insumos: [],
+          mermas: []
+        }
+      ]);
+    }
+  };
 
   // Client autocomplete
   const handleSelectCliente = (nom) => {
@@ -424,6 +533,8 @@ export default function ModalNuevoPedido({
       };
 
       await onSave(payload);
+      localStorage.removeItem('mina_draft_order');
+      window.dispatchEvent(new Event('mina_draft_updated'));
       onClose();
     } catch (err) {
       alert(err.message || 'Error al guardar el pedido');
@@ -476,6 +587,30 @@ export default function ModalNuevoPedido({
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Banner de Borrador (como Gmail) */}
+        {!isEditing && (
+          <div className="bg-amber-950/40 border-b border-amber-800/40 px-4 py-2 flex items-center justify-between text-xs text-amber-200">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+              <span>
+                {isDraftRestored 
+                  ? 'Borrador recuperado automáticamente. Tu progreso no consume folio de pedido hasta que lo guardes.'
+                  : 'Modo borrador activo: si sales de esta ventana (ej. a la calculadora), tu avance se guarda sin ocupar folio.'
+                }
+              </span>
+            </div>
+            {isDraftRestored && (
+              <button
+                type="button"
+                onClick={handleDiscardDraft}
+                className="text-amber-400 hover:text-rose-400 underline font-semibold transition-colors ml-2 flex-shrink-0"
+              >
+                Descartar borrador
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Formulario con Scroll central para Secciones 1 y 2 */}
         <form onSubmit={handleSubmit} className="overflow-y-auto p-4 sm:p-5 space-y-4 text-xs flex-1">
