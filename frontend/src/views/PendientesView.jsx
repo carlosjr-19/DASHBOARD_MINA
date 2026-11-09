@@ -247,7 +247,7 @@ export default function PendientesView({
   const handleOpenBitacora = (item) => {
     setBitacoraItem(item);
     setNuevoComentarioTexto('');
-    setComentarioNuevoEstatus('');
+    setComentarioNuevoEstatus(normalizeStatus(item.estatus));
     setComentarioAutor('Nathy');
   };
 
@@ -276,7 +276,7 @@ export default function PendientesView({
       } : null);
 
       setNuevoComentarioTexto('');
-      setComentarioNuevoEstatus('');
+      // keep selected status
     } catch (err) {
       console.error('Error al agregar comentario:', err);
       alert('Error al guardar comentario en bitácora: ' + (err.message || ''));
@@ -805,11 +805,10 @@ export default function PendientesView({
                     Cambiar estatus con este comentario:
                   </label>
                   <select
-                    value={comentarioNuevoEstatus}
+                    value={comentarioNuevoEstatus || normalizeStatus(bitacoraItem.estatus)}
                     onChange={(e) => setComentarioNuevoEstatus(e.target.value)}
                     className="w-full h-[36px] bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-gray-200 focus:outline-none focus:border-blue-500 text-xs font-semibold cursor-pointer"
                   >
-                    <option value="">Mantener actual ({normalizeStatus(bitacoraItem.estatus)})</option>
                     <option value="Pendiente">Pendiente</option>
                     <option value="En espera">En espera</option>
                     <option value="Atendido">Atendido</option>
