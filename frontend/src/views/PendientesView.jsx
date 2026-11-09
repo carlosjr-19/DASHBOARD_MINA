@@ -555,9 +555,9 @@ export default function PendientesView({
                       )}
                     </div>
 
-                    {/* Descripción resumida abajo */}
+                    {/* Descripción abajo: corte y sigue abajo sin ... */}
                     {item.descripcion && item.descripcion !== item.titulo && (
-                      <p className={`text-xs mt-0.5 truncate max-w-xl font-normal ${
+                      <p className={`text-xs mt-0.5 font-normal break-words whitespace-normal leading-relaxed ${
                         isCulminado ? 'line-through text-gray-400' : 'text-gray-400'
                       }`}>
                         {item.descripcion}
@@ -723,10 +723,10 @@ export default function PendientesView({
                   return (
                     <div 
                       key={c.id || idx} 
-                      className="flex items-center gap-2.5 px-3 py-2 bg-gray-950 border border-gray-800/90 rounded-lg text-xs hover:border-gray-700 transition-colors"
+                      className="flex items-start gap-2.5 px-3 py-2 bg-gray-950 border border-gray-800/90 rounded-lg text-xs hover:border-gray-700 transition-colors"
                     >
                       {/* Badge de Autor: Nathy (Rosa) o Emi (Cyan) */}
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wide border flex-shrink-0 ${
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wide border flex-shrink-0 mt-0.5 ${
                         isNathy 
                           ? 'bg-rose-950/80 text-rose-300 border-rose-700/70' 
                           : 'bg-cyan-950/80 text-cyan-300 border-cyan-700/70'
@@ -735,17 +735,17 @@ export default function PendientesView({
                       </span>
 
                       {/* Fecha y Hora */}
-                      <span className="text-[11px] font-mono text-gray-400 flex-shrink-0">
+                      <span className="text-[11px] font-mono text-gray-400 flex-shrink-0 mt-0.5">
                         {c.fecha || ''}
                       </span>
 
                       {/* Separador */}
-                      <span className="text-gray-400 font-bold flex-shrink-0">:</span>
+                      <span className="text-gray-400 font-bold flex-shrink-0 mt-0.5">:</span>
 
-                      {/* Texto del comentario en la misma línea */}
-                      <span className="text-gray-200 truncate flex-1 min-w-0 font-medium" title={c.texto}>
+                      {/* Texto del comentario: corte y sigue abajo sin ... */}
+                      <div className="text-gray-200 flex-1 min-w-0 font-medium break-words whitespace-normal leading-relaxed">
                         {c.texto}
-                      </span>
+                      </div>
                     </div>
                   );
                 })
@@ -894,15 +894,12 @@ export default function PendientesView({
                 />
               </div>
 
-              {/* INPUT DE TAGS INTERACTIVO (Enter o coma separa etiquetas) */}
+              {/* INPUT DE TAGS INTERACTIVO */}
               <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
-                    <TagIcon className="w-3.5 h-3.5 text-emerald-400" />
-                    TAGS (A quién se pide, qué se necesita o dónde):
-                  </label>
-                  <span className="text-[10px] text-gray-400 font-medium">Presiona Enter o Coma para agregar</span>
-                </div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1 flex items-center gap-1.5">
+                  <TagIcon className="w-3.5 h-3.5 text-emerald-400" />
+                  TAGS:
+                </label>
 
                 <div className="w-full bg-gray-950 border border-gray-700 focus-within:border-emerald-500 rounded-lg p-2 flex flex-wrap items-center gap-1.5 min-h-[42px] transition-colors">
                   {formTags.map((tag, idx) => (
