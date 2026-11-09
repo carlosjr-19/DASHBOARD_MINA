@@ -253,8 +253,8 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
   const formatMoney = (val) => `$${(val || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-th-18191c border border-gray-700 w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto cursor-pointer" onClick={onClose}>
+      <div className="bg-th-18191c border border-gray-700 w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 cursor-default" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-th-1f2024">
           <div className="flex items-center gap-2.5 text-orange-400">

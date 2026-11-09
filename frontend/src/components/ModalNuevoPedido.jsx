@@ -544,9 +544,9 @@ export default function ModalNuevoPedido({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-sm overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-sm overflow-y-auto cursor-pointer" onClick={onClose}>
       {/* Modal Container más amplio (max-w-5xl) para que no esté amontonado */}
-      <div className="bg-th-1b1c1e border border-gray-700 w-full max-w-7xl w-[96vw] rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[95vh] flex flex-col animate-in fade-in zoom-in-95">
+      <div className="bg-th-1b1c1e border border-gray-700 w-full max-w-7xl w-[96vw] rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[95vh] flex flex-col animate-in fade-in zoom-in-95 cursor-default" onClick={(e) => e.stopPropagation()}>
         
         {/* Header Superior Fijo */}
         <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-th-151618 shrink-0">

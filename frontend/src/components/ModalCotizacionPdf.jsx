@@ -16,8 +16,8 @@ export default function ModalCotizacionPdf({ order, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div className="theme-fixed bg-white text-gray-900 w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden my-auto border border-gray-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto cursor-pointer" onClick={onClose}>
+      <div className="theme-fixed bg-white text-gray-900 w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden my-auto border border-gray-300 cursor-default" onClick={(e) => e.stopPropagation()}>
         {/* Modal Toolbar - Hidden during print */}
         <div className="no-print bg-th-1e2022 text-gray-200 px-4 py-3 flex items-center justify-between border-b border-gray-700">
           <div className="flex items-center gap-2">

@@ -624,8 +624,8 @@ export default function PendientesView({
 
       {/* MODAL: BITÁCORA Y SEGUIMIENTO (Comentarios en 1 sola línea, Autor Nathy o Emi) */}
       {bitacoraItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200 cursor-pointer" onClick={() => setBitacoraItem(null)}>
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh] cursor-default" onClick={(e) => e.stopPropagation()}>
             {/* Modal Header */}
             <div className="p-4 bg-gray-950 border-b border-gray-800 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
@@ -799,8 +799,8 @@ export default function PendientesView({
 
       {/* MODAL: CREAR / EDITAR PENDIENTE (Con N tags interactivos estilo correos) */}
       {isFormModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200 cursor-pointer" onClick={() => setIsFormModalOpen(false)}>
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col cursor-default" onClick={(e) => e.stopPropagation()}>
             {/* Modal Header */}
             <div className="p-4 bg-gray-950 border-b border-gray-800 flex items-center justify-between">
               <div className="flex items-center gap-2.5">

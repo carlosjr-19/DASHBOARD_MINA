@@ -340,8 +340,8 @@ export default function InventarioView({
 
       {/* Add / Edit Insumo Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="bg-th-1e2022 border border-gray-700 w-full max-w-sm rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm cursor-pointer" onClick={() => setIsModalOpen(false)}>
+          <div className="bg-th-1e2022 border border-gray-700 w-full max-w-sm rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 cursor-default" onClick={(e) => e.stopPropagation()}>
             <div className="p-4 border-b border-gray-800 flex items-center justify-between">
               <h3 className="font-bold text-gray-100 text-sm">
                 {editingItem ? 'Editar Insumo' : 'Agregar Nuevo Insumo a Stock'}

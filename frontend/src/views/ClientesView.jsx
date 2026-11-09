@@ -260,8 +260,8 @@ export default function ClientesView({
 
       {/* MODAL HISTORIAL DEL CLIENTE (Imagen 5 de referencia) */}
       {selectedClienteHistory && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm overflow-y-auto animate-in fade-in">
-          <div className="bg-th-1b1c1e border border-gray-700 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-sm overflow-y-auto animate-in fade-in cursor-pointer" onClick={() => setSelectedClient(null)}>
+          <div className="bg-th-1b1c1e border border-gray-700 w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[90vh] flex flex-col cursor-default" onClick={(e) => e.stopPropagation()}>
             {/* Header del Modal */}
             <div className="p-4 sm:p-5 border-b border-gray-800 flex items-start justify-between bg-th-151618 shrink-0">
               <div>
@@ -438,8 +438,8 @@ export default function ClientesView({
 
       {/* Modal Add / Edit */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-          <div className="bg-th-1e2022 border border-gray-700 w-full max-w-sm rounded-xl p-4 space-y-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm cursor-pointer" onClick={() => setShowAddModal(false)}>
+          <div className="bg-th-1e2022 border border-gray-700 w-full max-w-sm rounded-xl p-4 space-y-3 cursor-default" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-bold text-gray-100 text-sm">
               {editingCliente ? 'Editar Cliente' : 'Registrar Nuevo Cliente'}
             </h3>

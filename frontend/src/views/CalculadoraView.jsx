@@ -438,8 +438,8 @@ export default function CalculadoraView({
 
       {/* Modal para Agregar Material */}
       {showAddMat && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <div className="bg-th-1c1d1f border border-gray-700 w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm cursor-pointer" onClick={() => setIsModalOpen(false)}>
+          <div className="bg-th-1c1d1f border border-gray-700 w-full max-w-md rounded-2xl p-5 space-y-4 shadow-2xl animate-in fade-in cursor-default" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b border-gray-800 pb-3">
               <h3 className="font-bold text-gray-100 text-base">Nuevo Material / Sustrato</h3>
               <button

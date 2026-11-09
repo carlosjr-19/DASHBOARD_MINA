@@ -48,7 +48,6 @@ class PedidoProducto(Base):
     __tablename__ = "pedido_productos"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    titulo = Column(String, default="")
     pedido_id = Column(String, ForeignKey("pedidos.id"), index=True)
     nombre = Column(String)
     proveedor = Column(String, nullable=True)
@@ -66,7 +65,6 @@ class PedidoInsumo(Base):
     __tablename__ = "pedido_insumos"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    titulo = Column(String, default="")
     producto_id = Column(Integer, ForeignKey("pedido_productos.id"), index=True)
     pedido_id = Column(String, index=True)
     nombre = Column(String)
@@ -87,7 +85,6 @@ class PedidoMerma(Base):
     __tablename__ = "pedido_mermas"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    titulo = Column(String, default="")
     producto_id = Column(Integer, ForeignKey("pedido_productos.id"), index=True)
     material = Column(String)
     cant = Column(Float, default=1.0)
@@ -102,7 +99,6 @@ class Cliente(Base):
     __tablename__ = "clientes"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    titulo = Column(String, default="")
     nombre = Column(String, unique=True, index=True)
     rfc = Column(String, default="")
     cp = Column(String, default="")
@@ -119,7 +115,6 @@ class InsumoInventario(Base):
     __tablename__ = "inventario"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    titulo = Column(String, default="")
     nombre = Column(String, unique=True, index=True)
     proveedor = Column(String, default="Propio")
     precio = Column(Float, default=0.0)
@@ -184,7 +179,6 @@ class RecoleccionPedido(Base):
     __tablename__ = "recoleccion_pedidos"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    titulo = Column(String, default="")
     recoleccion_id = Column(String, ForeignKey("recolecciones.id"), index=True)
     pedido_id = Column(String, ForeignKey("pedidos.id"), index=True)
     porcion = Column(Float, default=0.0)
@@ -197,7 +191,6 @@ class MaterialCalculadora(Base):
     __tablename__ = "materiales_calculadora"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    titulo = Column(String, default="")
     nombre = Column(String)
     proveedor = Column(String, default="Propio")
     ancho = Column(Float, default=100.0)
@@ -210,7 +203,6 @@ class ProductoCatalogo(Base):
     __tablename__ = "productos_catalogo"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    titulo = Column(String, default="")
     nombre = Column(String, unique=True)
     proveedor = Column(String, default="Propio")
     costo = Column(Float, default=0.0)

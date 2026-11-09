@@ -114,10 +114,10 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm cursor-pointer" onClick={onClose}>
       <div 
-        className="bg-th-18191c border border-gray-700/80 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95"
-        onClick={() => dropdownOpen && setDropdownOpen(false)}
+        className="bg-th-18191c border border-gray-700/80 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 cursor-default"
+        onClick={(e) => { e.stopPropagation(); if (dropdownOpen) setDropdownOpen(false); }}
       >
         {/* Header con icono circular e indicativo */}
         <div className="p-4 sm:p-5 border-b border-gray-800 flex items-center justify-between">

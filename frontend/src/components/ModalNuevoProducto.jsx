@@ -204,8 +204,8 @@ export default function ModalNuevoProducto({
   const formatMoney = (val) => `$${(parseFloat(val) || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-th-18191c border border-gray-800 rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto cursor-pointer" onClick={onClose}>
+      <div className="bg-th-18191c border border-gray-800 rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
         <div className="px-5 py-4 border-b border-gray-800 flex items-center justify-between bg-th-151618 shrink-0">
           <div className="flex items-center gap-2.5">
