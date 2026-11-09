@@ -185,7 +185,8 @@ class ComentarioPendienteSchema(BaseModel):
 class PendienteCreateSchema(BaseModel):
     id: Optional[int] = None
     titulo: Optional[str] = ""
-    descripcion: str
+    tags: Optional[List[str]] = []
+    descripcion: Optional[str] = ""
     urgencia: Optional[str] = "Media"
     quien_pide: Optional[str] = ""
     para_quien: Optional[str] = ""

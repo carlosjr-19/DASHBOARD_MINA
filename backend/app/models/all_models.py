@@ -133,7 +133,6 @@ class MovimientoInventario(Base):
     __tablename__ = "movimientos_inventario"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    titulo = Column(String, default="")
     insumo_id = Column(Integer, ForeignKey("inventario.id"), index=True, nullable=True)
     insumo_nombre = Column(String, index=True)
     pedido_id = Column(String, index=True)
@@ -254,6 +253,7 @@ class Pendiente(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     titulo = Column(String, default="")
+    tags = Column(String, default="")
     descripcion = Column(Text, nullable=False)
     urgencia = Column(String, default="Media") # Baja, Media, Alta, Urgente
     quien_pide = Column(String, default="")

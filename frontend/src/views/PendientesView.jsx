@@ -12,12 +12,12 @@ import {
   Trash2, 
   Send, 
   X, 
-  ChevronDown, 
   Check,
-  MapPin,
+  Tag as TagIcon,
   Filter,
   History,
-  AlertTriangle
+  AlertTriangle,
+  Hourglass
 } from 'lucide-react';
 
 const URGENCIAS = [
@@ -33,29 +33,34 @@ const ESTATUS_CONFIG = {
     dot: 'bg-amber-400',
     badge: 'bg-amber-950/60 text-amber-300 border-amber-700/50'
   },
-  'En Proceso': {
-    label: 'En Proceso',
-    dot: 'bg-blue-400',
-    badge: 'bg-blue-950/60 text-blue-300 border-blue-700/50'
+  'En espera': {
+    label: 'En espera',
+    dot: 'bg-purple-400',
+    badge: 'bg-purple-950/60 text-purple-300 border-purple-700/50'
   },
-  'Esperando': {
-    label: 'Esperando',
+  'Esperando': { // compatibilidad
+    label: 'En espera',
+    dot: 'bg-purple-400',
+    badge: 'bg-purple-950/60 text-purple-300 border-purple-700/50'
+  },
+  'En Proceso': { // compatibilidad
+    label: 'En espera',
     dot: 'bg-purple-400',
     badge: 'bg-purple-950/60 text-purple-300 border-purple-700/50'
   },
   'Atendido': {
     label: 'Atendido',
+    dot: 'bg-cyan-400',
+    badge: 'bg-cyan-950/60 text-cyan-300 border-cyan-700/50'
+  },
+  'Culminado': {
+    label: 'Culminado',
     dot: 'bg-emerald-400',
     badge: 'bg-emerald-950/60 text-emerald-300 border-emerald-700/50'
-  },
-  'Cancelado': {
-    label: 'Cancelado',
-    dot: 'bg-gray-500',
-    badge: 'bg-gray-800 text-gray-400 border-gray-700'
   }
 };
 
-const ESTATUS_OPTIONS = ['Pendiente', 'En Proceso', 'Esperando', 'Atendido', 'Cancelado'];
+const ESTATUS_OPTIONS = ['Pendiente', 'En espera', 'Atendido', 'Culminado'];
 
 export default function PendientesView({
   pendientes = [],
@@ -77,8 +82,9 @@ export default function PendientesView({
   const todayIso = new Date().toISOString().split('T')[0];
   const [formTitulo, setFormTitulo] = useState('');
   const [formDescripcion, setFormDescripcion] = useState('');
+  const [formTags, setFormTags] = useState([]);
+  const [tagInput, setTagInput] = useState('');
   const [formUrgencia, setFormUrgencia] = useState('Media');
-  const [formDeQuienDepende, setFormDeQuienDepende] = useState('');
   const [formFechaSolicitud, setFormFechaSolicitud] = useState(todayIso);
   const [formFechaEntrega, setFormFechaEntrega] = useState('');
   const [formEstatus, setFormEstatus] = useState('Pendiente');
@@ -88,18 +94,28 @@ export default function PendientesView({
   const [bitacoraItem, setBitacoraItem] = useState(null);
   const [nuevoComentarioTexto, setNuevoComentarioTexto] = useState('');
   const [comentarioNuevoEstatus, setComentarioNuevoEstatus] = useState('');
-  const [comentarioAutor, setComentarioAutor] = useState(user?.nombre || 'Usuario');
+  const [comentarioAutor, setComentarioAutor] = useState('Nathy');
   const [savingComentario, setSavingComentario] = useState(false);
+
+  // Normalizar estatus para filtros
+  const normalizeStatus = (st) => {
+    if (!st) return 'Pendiente';
+    if (st === 'Esperando' || st === 'En Proceso') return 'En espera';
+    return st;
+  };
 
   // Filtered List
   const filtered = pendientes.filter((item) => {
     const term = searchTerm.toLowerCase();
+    const itemTagsStr = (item.tags || []).join(' ').toLowerCase();
     const matchSearch = 
       (item.titulo || '').toLowerCase().includes(term) ||
       (item.descripcion || '').toLowerCase().includes(term) ||
-      (item.deQuienDepende || '').toLowerCase().includes(term);
+      (item.deQuienDepende || '').toLowerCase().includes(term) ||
+      itemTagsStr.includes(term);
 
-    const matchStatus = statusFilter === 'Todos' || (item.estatus || 'Pendiente') === statusFilter;
+    const normItemSt = normalizeStatus(item.estatus);
+    const matchStatus = statusFilter === 'Todos' || normItemSt === statusFilter;
     const matchUrgencia = urgenciaFilter === 'Todas' || (item.urgencia || 'Media') === urgenciaFilter;
 
     return matchSearch && matchStatus && matchUrgencia;
@@ -107,17 +123,18 @@ export default function PendientesView({
 
   // Metrics
   const totalCount = pendientes.length;
-  const pendientesCount = pendientes.filter(p => (p.estatus || 'Pendiente') === 'Pendiente').length;
-  const enProcesoCount = pendientes.filter(p => p.estatus === 'En Proceso').length;
-  const esperandoCount = pendientes.filter(p => p.estatus === 'Esperando').length;
-  const atendidosCount = pendientes.filter(p => p.estatus === 'Atendido').length;
+  const pendientesCount = pendientes.filter(p => normalizeStatus(p.estatus) === 'Pendiente').length;
+  const enEsperaCount = pendientes.filter(p => normalizeStatus(p.estatus) === 'En espera').length;
+  const atendidosCount = pendientes.filter(p => normalizeStatus(p.estatus) === 'Atendido').length;
+  const culminadosCount = pendientes.filter(p => normalizeStatus(p.estatus) === 'Culminado').length;
 
   const handleOpenNew = () => {
     setEditingItem(null);
     setFormTitulo('');
     setFormDescripcion('');
+    setFormTags([]);
+    setTagInput('');
     setFormUrgencia('Media');
-    setFormDeQuienDepende('');
     setFormFechaSolicitud(todayIso);
     setFormFechaEntrega('');
     setFormEstatus('Pendiente');
@@ -128,17 +145,47 @@ export default function PendientesView({
     setEditingItem(item);
     setFormTitulo(item.titulo || '');
     setFormDescripcion(item.descripcion || '');
+    setFormTags(Array.isArray(item.tags) ? [...item.tags] : (item.deQuienDepende ? item.deQuienDepende.split(',').map(s => s.trim()).filter(Boolean) : []));
+    setTagInput('');
     setFormUrgencia(item.urgencia || 'Media');
-    setFormDeQuienDepende(item.deQuienDepende || '');
     setFormFechaSolicitud(item.fechaSolicitud || todayIso);
     setFormFechaEntrega(item.fechaEntrega || '');
-    setFormEstatus(item.estatus || 'Pendiente');
+    setFormEstatus(normalizeStatus(item.estatus));
     setIsFormModalOpen(true);
+  };
+
+  // Tag Handlers en Modal
+  const handleTagKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      addTagFromInput();
+    } else if (e.key === 'Backspace' && !tagInput && formTags.length > 0) {
+      setFormTags(prev => prev.slice(0, -1));
+    }
+  };
+
+  const addTagFromInput = () => {
+    const clean = tagInput.trim().replace(/^,|,$/g, '');
+    if (clean && !formTags.includes(clean)) {
+      setFormTags(prev => [...prev, clean]);
+    }
+    setTagInput('');
+  };
+
+  const removeTag = (tagToRemove) => {
+    setFormTags(prev => prev.filter(t => t !== tagToRemove));
   };
 
   const handleSaveForm = async (e) => {
     e.preventDefault();
     if (!formTitulo.trim() && !formDescripcion.trim()) return;
+
+    // Si quedó algo en tagInput al presionar guardar, agregarlo
+    let currentTags = [...formTags];
+    const pendingTag = tagInput.trim().replace(/^,|,$/g, '');
+    if (pendingTag && !currentTags.includes(pendingTag)) {
+      currentTags.push(pendingTag);
+    }
 
     try {
       setSaving(true);
@@ -146,8 +193,9 @@ export default function PendientesView({
         id: editingItem ? editingItem.id : undefined,
         titulo: formTitulo.trim() || formDescripcion.trim().slice(0, 40),
         descripcion: formDescripcion.trim(),
+        tags: currentTags,
+        de_quien_depende: currentTags.join(', '),
         urgencia: formUrgencia,
-        de_quien_depende: formDeQuienDepende.trim(),
         fecha_solicitud: formFechaSolicitud || todayIso,
         fecha_entrega: formFechaEntrega || '',
         estatus: formEstatus,
@@ -163,9 +211,10 @@ export default function PendientesView({
     }
   };
 
+  // Checkbox: toggle Culminado
   const handleToggleCheck = async (item) => {
-    const isAtendido = item.estatus === 'Atendido';
-    const nuevo = isAtendido ? 'Pendiente' : 'Atendido';
+    const isCulminado = normalizeStatus(item.estatus) === 'Culminado';
+    const nuevo = isCulminado ? 'Pendiente' : 'Culminado';
     try {
       await onUpdateEstatus(item.id, nuevo);
     } catch (err) {
@@ -199,7 +248,7 @@ export default function PendientesView({
     setBitacoraItem(item);
     setNuevoComentarioTexto('');
     setComentarioNuevoEstatus('');
-    setComentarioAutor(user?.nombre || 'Usuario');
+    setComentarioAutor('Nathy');
   };
 
   const handleSaveBitacoraComentario = async (e) => {
@@ -210,15 +259,14 @@ export default function PendientesView({
       setSavingComentario(true);
       await onAddComentario(bitacoraItem.id, {
         texto: nuevoComentarioTexto.trim(),
-        autor: comentarioAutor || 'Usuario',
+        autor: comentarioAutor,
         nuevoEstatus: comentarioNuevoEstatus || undefined
       });
 
-      // Actualizar localmente bitacoraItem comentarios
       const nuevo = {
         id: `com-${Date.now()}`,
         fecha: new Date().toISOString().replace('T', ' ').slice(0, 16),
-        autor: comentarioAutor || 'Usuario',
+        autor: comentarioAutor,
         texto: nuevoComentarioTexto.trim()
       };
       setBitacoraItem(prev => prev ? {
@@ -239,92 +287,128 @@ export default function PendientesView({
 
   return (
     <div className="w-full space-y-4">
-      {/* Header y Resumen Superior */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-900/80 p-4 rounded-xl border border-gray-800 shadow-md">
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
-              <ListTodo className="w-6 h-6" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-100 flex items-center gap-2">
-                Pendientes & Bitácora
-                <span className="text-xs px-2 py-0.5 rounded-full bg-gray-800 text-gray-400 border border-gray-700">
-                  {filtered.length} de {totalCount}
-                </span>
-              </h1>
-              <p className="text-xs text-gray-400">
-                Control de tareas, requisiciones, proveedores y seguimiento en bitácora
-              </p>
-            </div>
+      {/* 1. Header Superior: Título a la izquierda, SOLO botón "+ Nuevo Pendiente" a la derecha */}
+      <div className="flex items-center justify-between gap-4 bg-gray-900/80 p-4 rounded-xl border border-gray-800 shadow-md">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
+            <ListTodo className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-gray-100 flex items-center gap-2">
+              Pendientes & Bitácora
+            </h1>
+            <p className="text-xs text-gray-400">
+              Control de tareas, requisiciones con tags y seguimiento de bitácora
+            </p>
           </div>
         </div>
 
-        {/* Métricas Rápidas en Barra */}
-        <div className="flex flex-wrap items-center gap-2">
-          <div 
-            onClick={() => setStatusFilter('Todos')}
-            className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
-              statusFilter === 'Todos' ? 'bg-gray-800 text-white border-gray-600 shadow-sm' : 'bg-gray-900/50 text-gray-400 border-gray-800 hover:border-gray-700'
-            }`}
-          >
-            Todos: <span className="font-bold text-gray-200">{totalCount}</span>
-          </div>
+        <button
+          onClick={handleOpenNew}
+          className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md transition-all active:scale-95"
+        >
+          <Plus className="w-4 h-4 stroke-[2.5]" />
+          Nuevo Pendiente
+        </button>
+      </div>
 
-          <div 
-            onClick={() => setStatusFilter('Pendiente')}
-            className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-all flex items-center gap-1.5 ${
-              statusFilter === 'Pendiente' ? 'bg-amber-950/70 text-amber-200 border-amber-600 shadow-sm' : 'bg-gray-900/50 text-amber-400/80 border-gray-800 hover:border-amber-800/40'
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-amber-400"></span>
-            Pendientes: <span className="font-bold">{pendientesCount}</span>
+      {/* 2. Tarjetas de Resumen de Métricas (Diseño idéntico a las tarjetas del ERP) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        {/* Total */}
+        <div 
+          onClick={() => setStatusFilter('Todos')}
+          className={`cursor-pointer bg-gray-900/90 border rounded-xl p-3.5 transition-all flex items-center justify-between ${
+            statusFilter === 'Todos' ? 'border-gray-500 shadow-lg ring-1 ring-gray-500' : 'border-gray-800 hover:border-gray-700'
+          }`}
+        >
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
+              TOTAL PENDIENTES
+            </span>
+            <span className="text-2xl font-black text-gray-100">{totalCount}</span>
           </div>
-
-          <div 
-            onClick={() => setStatusFilter('En Proceso')}
-            className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-all flex items-center gap-1.5 ${
-              statusFilter === 'En Proceso' ? 'bg-blue-950/70 text-blue-200 border-blue-600 shadow-sm' : 'bg-gray-900/50 text-blue-400/80 border-gray-800 hover:border-blue-800/40'
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-blue-400"></span>
-            En Proceso: <span className="font-bold">{enProcesoCount}</span>
+          <div className="p-2.5 rounded-lg bg-gray-800 text-gray-300">
+            <ListTodo className="w-5 h-5" />
           </div>
+        </div>
 
-          <div 
-            onClick={() => setStatusFilter('Esperando')}
-            className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-all flex items-center gap-1.5 ${
-              statusFilter === 'Esperando' ? 'bg-purple-950/70 text-purple-200 border-purple-600 shadow-sm' : 'bg-gray-900/50 text-purple-400/80 border-gray-800 hover:border-purple-800/40'
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-purple-400"></span>
-            Esperando: <span className="font-bold">{esperandoCount}</span>
+        {/* Pendientes Activos */}
+        <div 
+          onClick={() => setStatusFilter('Pendiente')}
+          className={`cursor-pointer bg-gray-900/90 border rounded-xl p-3.5 transition-all flex items-center justify-between ${
+            statusFilter === 'Pendiente' ? 'border-amber-500 shadow-lg ring-1 ring-amber-500' : 'border-gray-800 hover:border-amber-900/40'
+          }`}
+        >
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400/90 block mb-1">
+              PENDIENTES
+            </span>
+            <span className="text-2xl font-black text-amber-400">{pendientesCount}</span>
           </div>
-
-          <div 
-            onClick={() => setStatusFilter('Atendido')}
-            className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-all flex items-center gap-1.5 ${
-              statusFilter === 'Atendido' ? 'bg-emerald-950/70 text-emerald-200 border-emerald-600 shadow-sm' : 'bg-gray-900/50 text-emerald-400/80 border-gray-800 hover:border-emerald-800/40'
-            }`}
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            Atendidos: <span className="font-bold">{atendidosCount}</span>
+          <div className="p-2.5 rounded-lg bg-amber-950/60 text-amber-400 border border-amber-800/50">
+            <Clock className="w-5 h-5" />
           </div>
+        </div>
 
-          <button
-            onClick={handleOpenNew}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-md transition-all active:scale-95 ml-auto"
-          >
-            <Plus className="w-4 h-4" />
-            Nuevo Pendiente
-          </button>
+        {/* En espera */}
+        <div 
+          onClick={() => setStatusFilter('En espera')}
+          className={`cursor-pointer bg-gray-900/90 border rounded-xl p-3.5 transition-all flex items-center justify-between ${
+            statusFilter === 'En espera' ? 'border-purple-500 shadow-lg ring-1 ring-purple-500' : 'border-gray-800 hover:border-purple-900/40'
+          }`}
+        >
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400/90 block mb-1">
+              EN ESPERA
+            </span>
+            <span className="text-2xl font-black text-purple-400">{enEsperaCount}</span>
+          </div>
+          <div className="p-2.5 rounded-lg bg-purple-950/60 text-purple-400 border border-purple-800/50">
+            <Hourglass className="w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Atendidos */}
+        <div 
+          onClick={() => setStatusFilter('Atendido')}
+          className={`cursor-pointer bg-gray-900/90 border rounded-xl p-3.5 transition-all flex items-center justify-between ${
+            statusFilter === 'Atendido' ? 'border-cyan-500 shadow-lg ring-1 ring-cyan-500' : 'border-gray-800 hover:border-cyan-900/40'
+          }`}
+        >
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400/90 block mb-1">
+              ATENDIDOS
+            </span>
+            <span className="text-2xl font-black text-cyan-400">{atendidosCount}</span>
+          </div>
+          <div className="p-2.5 rounded-lg bg-cyan-950/60 text-cyan-400 border border-cyan-800/50">
+            <CheckCircle2 className="w-5 h-5" />
+          </div>
+        </div>
+
+        {/* Culminados */}
+        <div 
+          onClick={() => setStatusFilter('Culminado')}
+          className={`cursor-pointer bg-gray-900/90 border rounded-xl p-3.5 transition-all flex items-center justify-between ${
+            statusFilter === 'Culminado' ? 'border-emerald-500 shadow-lg ring-1 ring-emerald-500' : 'border-gray-800 hover:border-emerald-900/40'
+          }`}
+        >
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400/90 block mb-1">
+              CULMINADOS
+            </span>
+            <span className="text-2xl font-black text-emerald-400">{culminadosCount}</span>
+          </div>
+          <div className="p-2.5 rounded-lg bg-emerald-950/60 text-emerald-400 border border-emerald-800/50">
+            <Check className="w-5 h-5 stroke-[2.5]" />
+          </div>
         </div>
       </div>
 
-      {/* Barra de Filtros */}
+      {/* 3. Barra de Filtros */}
       <div className="flex flex-col sm:flex-row items-center gap-3 bg-gray-900/60 p-3 rounded-xl border border-gray-800 text-xs">
         <div className="relative flex-1 w-full">
-          <label className="text-[11px] font-semibold text-gray-400 block mb-1">Buscar por título, detalle o dónde se hace:</label>
+          <label className="text-[11px] font-semibold text-gray-400 block mb-1">Buscar por título, detalle o tags:</label>
           <div className="relative flex items-center">
             <Search className="w-4 h-4 text-gray-500 absolute left-3 pointer-events-none" />
             <input
@@ -373,13 +457,13 @@ export default function PendientesView({
         </div>
       </div>
 
-      {/* Tabla / Lista de Pendientes (Diseño compacto sin scroll horizontal) */}
+      {/* 4. Tabla / Lista de Pendientes (100% primera plana, sin scroll horizontal) */}
       <div className="w-full bg-gray-900 border border-gray-800 rounded-xl overflow-hidden shadow-xl">
         {/* Cabecera */}
         <div className="hidden md:flex items-center gap-3 px-4 py-2.5 bg-gray-950 border-b border-gray-800 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
           <div className="w-8 text-center">✓</div>
           <div className="flex-1 min-w-0">Título & Descripción</div>
-          <div className="w-48">¿Dónde / Qué se necesita?</div>
+          <div className="w-52">TAGS</div>
           <div className="w-28 text-center">Fecha Límite</div>
           <div className="w-32 text-center">Status</div>
           <div className="w-24 text-center">Bitácora</div>
@@ -401,49 +485,57 @@ export default function PendientesView({
         ) : (
           <div className="divide-y divide-gray-800/80">
             {filtered.map((item) => {
-              const isAtendido = item.estatus === 'Atendido';
-              const cfg = ESTATUS_CONFIG[item.estatus] || ESTATUS_CONFIG['Pendiente'];
+              const normStatus = normalizeStatus(item.estatus);
+              const isCulminado = normStatus === 'Culminado';
+              const cfg = ESTATUS_CONFIG[normStatus] || ESTATUS_CONFIG['Pendiente'];
               const comentariosCount = (item.comentarios || []).length;
-              const isOverdue = item.fechaEntrega && item.fechaEntrega < todayIso && !isAtendido;
+              const isOverdue = item.fechaEntrega && item.fechaEntrega < todayIso && !isCulminado;
+
+              const itemTags = Array.isArray(item.tags) 
+                ? item.tags 
+                : (item.deQuienDepende ? item.deQuienDepende.split(',').map(s => s.trim()).filter(Boolean) : []);
+
+              const visibleTags = itemTags.slice(0, 2);
+              const extraTagsCount = itemTags.length - 2;
 
               return (
                 <div 
                   key={item.id}
                   className={`flex flex-col md:flex-row md:items-center gap-2 md:gap-3 px-4 py-2.5 transition-colors group ${
-                    isAtendido 
+                    isCulminado 
                       ? 'bg-gray-950/40 opacity-70 hover:opacity-100' 
                       : 'hover:bg-gray-800/40 bg-gray-900/60'
                   }`}
                 >
-                  {/* Checkbox para tachar al instante */}
+                  {/* Checkbox: marca como Culminado y tacha */}
                   <div className="flex items-center justify-between md:justify-center md:w-8">
                     <button
                       type="button"
                       onClick={() => handleToggleCheck(item)}
-                      title={isAtendido ? "Desmarcar como atendido" : "Marcar como atendido"}
+                      title={isCulminado ? "Desmarcar culminado (pasar a pendiente)" : "Marcar como culminado"}
                       className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
-                        isAtendido 
+                        isCulminado 
                           ? 'bg-emerald-500 border-emerald-400 text-gray-950 shadow-sm shadow-emerald-950' 
                           : 'border-gray-600 bg-gray-950 hover:border-emerald-500'
                       }`}
                     >
-                      {isAtendido && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                      {isCulminado && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                     </button>
 
                     {/* En móvil mostrar el estatus aquí */}
                     <div className="md:hidden">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${cfg.badge}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`}></span>
-                        {item.estatus || 'Pendiente'}
+                        {normStatus}
                       </span>
                     </div>
                   </div>
 
-                  {/* Título & Descripción */}
+                  {/* Título (Más Negrito) & Descripción */}
                   <div className="flex-1 min-w-0 pr-2">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`text-sm font-semibold transition-all ${
-                        isAtendido 
+                      <span className={`text-sm font-extrabold tracking-tight transition-all ${
+                        isCulminado 
                           ? 'line-through text-gray-400' 
                           : 'text-gray-100 group-hover:text-emerald-300'
                       }`}>
@@ -465,23 +557,38 @@ export default function PendientesView({
 
                     {/* Descripción resumida abajo */}
                     {item.descripcion && item.descripcion !== item.titulo && (
-                      <p className={`text-xs mt-0.5 truncate max-w-xl ${
-                        isAtendido ? 'line-through text-gray-400' : 'text-gray-400'
+                      <p className={`text-xs mt-0.5 truncate max-w-xl font-normal ${
+                        isCulminado ? 'line-through text-gray-400' : 'text-gray-400'
                       }`}>
                         {item.descripcion}
                       </p>
                     )}
                   </div>
 
-                  {/* Dónde se hace / Qué se necesita */}
-                  <div className="md:w-48 text-xs flex items-center">
-                    {item.deQuienDepende ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-800/90 text-gray-300 border border-gray-700/70 truncate max-w-full">
-                        <MapPin className="w-3 h-3 text-emerald-400 flex-shrink-0" />
-                        <span className="truncate">{item.deQuienDepende}</span>
-                      </span>
+                  {/* TAGS: Máximo 2 visibles y luego +N */}
+                  <div className="md:w-52 text-xs flex items-center">
+                    {itemTags.length > 0 ? (
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {visibleTags.map((tag, idx) => (
+                          <span 
+                            key={idx} 
+                            className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-gray-800/90 text-gray-200 border border-gray-700 max-w-[100px] truncate"
+                            title={tag}
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                        {extraTagsCount > 0 && (
+                          <span 
+                            title={itemTags.slice(2).join(', ')}
+                            className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-800 text-emerald-400 border border-emerald-700/60 cursor-help"
+                          >
+                            +{extraTagsCount}
+                          </span>
+                        )}
+                      </div>
                     ) : (
-                      <span className="text-gray-400 text-xs italic">No especificado</span>
+                      <span className="text-gray-400 text-xs italic">—</span>
                     )}
                   </div>
 
@@ -499,10 +606,10 @@ export default function PendientesView({
                     )}
                   </div>
 
-                  {/* Status Dropdown / Pill */}
+                  {/* Status Dropdown (Sin tanto texto: Pendiente, En espera, Atendido, Culminado) */}
                   <div className="hidden md:flex md:w-32 justify-center">
                     <select
-                      value={item.estatus || 'Pendiente'}
+                      value={normStatus}
                       onChange={(e) => handleStatusChange(item, e.target.value)}
                       className={`text-[11px] font-semibold rounded-lg px-2 py-1 border focus:outline-none transition-all cursor-pointer ${cfg.badge} bg-gray-950`}
                     >
@@ -557,10 +664,10 @@ export default function PendientesView({
         )}
       </div>
 
-      {/* MODAL: BITÁCORA Y SEGUIMIENTO (Lápiz / Comentarios) */}
+      {/* MODAL: BITÁCORA Y SEGUIMIENTO (Comentarios en 1 sola línea, Autor Nathy o Emi) */}
       {bitacoraItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
             {/* Modal Header */}
             <div className="p-4 bg-gray-950 border-b border-gray-800 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
@@ -568,10 +675,10 @@ export default function PendientesView({
                   <History className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-gray-100 flex items-center gap-2">
+                  <h3 className="text-base font-bold text-gray-100">
                     Bitácora de Seguimiento
                   </h3>
-                  <p className="text-xs text-gray-400 truncate max-w-md">
+                  <p className="text-xs text-gray-400 truncate max-w-md font-medium">
                     {bitacoraItem.titulo || bitacoraItem.descripcion}
                   </p>
                 </div>
@@ -584,35 +691,64 @@ export default function PendientesView({
               </button>
             </div>
 
-            {/* Estado actual & Dónde se hace */}
+            {/* Tags e Info Actual */}
             <div className="px-4 py-2 bg-gray-950/50 border-b border-gray-800/80 flex items-center justify-between text-xs">
-              <span className="text-gray-400 flex items-center gap-1">
-                Lugar / Necesidad: <strong className="text-gray-200">{bitacoraItem.deQuienDepende || 'General'}</strong>
-              </span>
-              <span className={`px-2 py-0.5 rounded-full border text-[11px] font-semibold ${ESTATUS_CONFIG[bitacoraItem.estatus]?.badge || ''}`}>
-                ● {bitacoraItem.estatus}
+              <div className="flex items-center gap-1.5 truncate max-w-md">
+                <span className="text-gray-400">TAGS:</span>
+                {(bitacoraItem.tags || []).length > 0 ? (
+                  bitacoraItem.tags.map((t, idx) => (
+                    <span key={idx} className="px-1.5 py-0.2 bg-gray-800 text-gray-300 rounded text-[10px] border border-gray-700">
+                      {t}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-gray-400 italic">Sin tags</span>
+                )}
+              </div>
+              <span className={`px-2 py-0.5 rounded-full border text-[11px] font-semibold ${ESTATUS_CONFIG[normalizeStatus(bitacoraItem.estatus)]?.badge || ''}`}>
+                ● {normalizeStatus(bitacoraItem.estatus)}
               </span>
             </div>
 
-            {/* Historial de Comentarios */}
-            <div className="p-4 overflow-y-auto flex-1 space-y-3 min-h-[160px] max-h-[300px]">
+            {/* Historial de Comentarios en UNA SOLA LÍNEA */}
+            <div className="p-4 overflow-y-auto flex-1 space-y-2 min-h-[160px] max-h-[300px]">
               {(!bitacoraItem.comentarios || bitacoraItem.comentarios.length === 0) ? (
                 <div className="text-center py-8 text-gray-500 text-xs">
                   <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-40 text-gray-400" />
-                  Aún no hay comentarios en la bitácora. Registra el primer avance o nota abajo.
+                  Aún no hay comentarios en la bitácora. Registra el primer avance abajo.
                 </div>
               ) : (
-                bitacoraItem.comentarios.map((c, idx) => (
-                  <div key={c.id || idx} className="bg-gray-950 border border-gray-800/80 rounded-xl p-3 text-xs">
-                    <div className="flex items-center justify-between text-[11px] text-gray-400 mb-1 border-b border-gray-800/50 pb-1">
-                      <span className="font-semibold text-emerald-400">{c.autor || 'Usuario'}</span>
-                      <span className="font-mono text-gray-400">{c.fecha || ''}</span>
+                bitacoraItem.comentarios.map((c, idx) => {
+                  const isNathy = (c.autor || '').toLowerCase().includes('nathy');
+                  return (
+                    <div 
+                      key={c.id || idx} 
+                      className="flex items-center gap-2.5 px-3 py-2 bg-gray-950 border border-gray-800/90 rounded-lg text-xs hover:border-gray-700 transition-colors"
+                    >
+                      {/* Badge de Autor: Nathy (Rosa) o Emi (Cyan) */}
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wide border flex-shrink-0 ${
+                        isNathy 
+                          ? 'bg-rose-950/80 text-rose-300 border-rose-700/70' 
+                          : 'bg-cyan-950/80 text-cyan-300 border-cyan-700/70'
+                      }`}>
+                        {c.autor || 'Nathy'}
+                      </span>
+
+                      {/* Fecha y Hora */}
+                      <span className="text-[11px] font-mono text-gray-400 flex-shrink-0">
+                        {c.fecha || ''}
+                      </span>
+
+                      {/* Separador */}
+                      <span className="text-gray-400 font-bold flex-shrink-0">:</span>
+
+                      {/* Texto del comentario en la misma línea */}
+                      <span className="text-gray-200 truncate flex-1 min-w-0 font-medium" title={c.texto}>
+                        {c.texto}
+                      </span>
                     </div>
-                    <p className="text-gray-200 whitespace-pre-wrap leading-relaxed mt-1">
-                      {c.texto}
-                    </p>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 
@@ -620,18 +756,50 @@ export default function PendientesView({
             <form onSubmit={handleSaveBitacoraComentario} className="p-4 bg-gray-950 border-t border-gray-800 space-y-3">
               <div>
                 <label className="block text-xs font-semibold text-gray-300 mb-1">
-                  Escribir nuevo comentario / avance:
+                  Escribir avance o nota de bitácora:
                 </label>
-                <textarea
-                  rows={2}
+                <input
+                  type="text"
                   required
                   value={nuevoComentarioTexto}
                   onChange={(e) => setNuevoComentarioTexto(e.target.value)}
-                  className="w-full bg-gray-900 border border-gray-700 focus:border-blue-500 rounded-lg p-2.5 text-xs text-gray-100 focus:outline-none"
+                  className="w-full bg-gray-900 border border-gray-700 focus:border-blue-500 rounded-lg px-3 py-2 text-xs text-gray-100 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                {/* Selector de Autor con 2 botones de colores: Nathy o Emi */}
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                    Autor del comentario:
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setComentarioAutor('Nathy')}
+                      className={`py-1.5 px-3 rounded-lg text-xs font-bold border transition-all ${
+                        comentarioAutor === 'Nathy'
+                          ? 'bg-rose-600 text-white border-rose-500 shadow-md shadow-rose-950 ring-1 ring-rose-400'
+                          : 'bg-gray-900 text-rose-300 border-gray-700 hover:border-rose-700/50'
+                      }`}
+                    >
+                      Nathy
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setComentarioAutor('Emi')}
+                      className={`py-1.5 px-3 rounded-lg text-xs font-bold border transition-all ${
+                        comentarioAutor === 'Emi'
+                          ? 'bg-cyan-600 text-white border-cyan-500 shadow-md shadow-cyan-950 ring-1 ring-cyan-400'
+                          : 'bg-gray-900 text-cyan-300 border-gray-700 hover:border-cyan-700/50'
+                      }`}
+                    >
+                      Emi
+                    </button>
+                  </div>
+                </div>
+
+                {/* Actualizar estatus */}
                 <div>
                   <label className="block text-[11px] font-semibold text-gray-400 mb-1">
                     Cambiar estatus con este comentario:
@@ -641,24 +809,12 @@ export default function PendientesView({
                     onChange={(e) => setComentarioNuevoEstatus(e.target.value)}
                     className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-gray-200 focus:outline-none focus:border-blue-500 text-xs"
                   >
-                    <option value="">Mantener estatus actual ({bitacoraItem.estatus})</option>
-                    <option value="Esperando">Esperando (en espera de algo)</option>
-                    <option value="Atendido">Atendido (ya se hizo y envió)</option>
-                    <option value="En Proceso">En Proceso</option>
+                    <option value="">Mantener estatus actual ({normalizeStatus(bitacoraItem.estatus)})</option>
+                    <option value="En espera">En espera (esperando respuesta o datos)</option>
+                    <option value="Atendido">Atendido (ya se atendió)</option>
+                    <option value="Culminado">Culminado (ya se hizo y envió)</option>
                     <option value="Pendiente">Pendiente</option>
                   </select>
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-semibold text-gray-400 mb-1">
-                    Autor del comentario:
-                  </label>
-                  <input
-                    type="text"
-                    value={comentarioAutor}
-                    onChange={(e) => setComentarioAutor(e.target.value)}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-gray-200 focus:outline-none focus:border-blue-500 text-xs"
-                  />
                 </div>
               </div>
 
@@ -684,7 +840,7 @@ export default function PendientesView({
         </div>
       )}
 
-      {/* MODAL: CREAR / EDITAR PENDIENTE */}
+      {/* MODAL: CREAR / EDITAR PENDIENTE (Con N tags interactivos estilo correos) */}
       {isFormModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col">
@@ -699,7 +855,7 @@ export default function PendientesView({
                     {editingItem ? 'Editar Pendiente' : 'Nuevo Pendiente'}
                   </h3>
                   <p className="text-xs text-gray-400">
-                    Ingresa los detalles para la requisición o tarea
+                    Ingresa el título, etiquetas (TAGS) y detalles del pendiente
                   </p>
                 </div>
               </div>
@@ -738,16 +894,42 @@ export default function PendientesView({
                 />
               </div>
 
+              {/* INPUT DE TAGS INTERACTIVO (Enter o coma separa etiquetas) */}
               <div>
-                <label className="block text-xs font-semibold text-gray-300 mb-1">
-                  ¿A quién se pide, qué se necesita o dónde se hace?:
-                </label>
-                <input
-                  type="text"
-                  value={formDeQuienDepende}
-                  onChange={(e) => setFormDeQuienDepende(e.target.value)}
-                  className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 rounded-lg p-2.5 text-xs text-gray-100 focus:outline-none"
-                />
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-semibold text-gray-300 flex items-center gap-1.5">
+                    <TagIcon className="w-3.5 h-3.5 text-emerald-400" />
+                    TAGS (A quién se pide, qué se necesita o dónde):
+                  </label>
+                  <span className="text-[10px] text-gray-400 font-medium">Presiona Enter o Coma para agregar</span>
+                </div>
+
+                <div className="w-full bg-gray-950 border border-gray-700 focus-within:border-emerald-500 rounded-lg p-2 flex flex-wrap items-center gap-1.5 min-h-[42px] transition-colors">
+                  {formTags.map((tag, idx) => (
+                    <span 
+                      key={idx}
+                      className="inline-flex items-center gap-1 px-2 py-1 rounded bg-gray-800 text-gray-200 border border-gray-700 text-xs font-medium"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(tag)}
+                        className="text-gray-400 hover:text-rose-400 ml-0.5"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+
+                  <input
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyDown={handleTagKeyDown}
+                    onBlur={addTagFromInput}
+                    className="flex-1 min-w-[120px] bg-transparent text-xs text-gray-100 focus:outline-none py-1"
+                  />
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">

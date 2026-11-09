@@ -13,12 +13,14 @@ router = APIRouter(prefix="/pendientes", tags=["pendientes"])
 def init_pendientes_db():
     try:
         models.Base.metadata.create_all(bind=engine)
+        # Migrate SQLite or PostgreSQL columns
         with engine.connect() as conn:
-            try:
-                conn.execute(text("ALTER TABLE pendientes ADD COLUMN titulo VARCHAR DEFAULT ''"))
-                conn.commit()
-            except Exception:
-                pass
+            for col, col_type in [("titulo", "TEXT DEFAULT ''"), ("tags", "TEXT DEFAULT ''")]:
+                try:
+                    conn.execute(text(f"ALTER TABLE pendientes ADD COLUMN {col} {col_type}"))
+                    conn.commit()
+                except Exception:
+                    pass
     except Exception as e:
         print("Pendientes DB init warning:", e)
 
@@ -30,9 +32,25 @@ def format_pendiente_dict(p: models.Pendiente):
     except Exception:
         comentarios = []
 
+    tags_raw = getattr(p, "tags", "") or ""
+    tags_list = []
+    if tags_raw:
+        try:
+            if tags_raw.strip().startswith("["):
+                tags_list = json.loads(tags_raw)
+            else:
+                tags_list = [t.strip() for t in tags_raw.split(",") if t.strip()]
+        except Exception:
+            tags_list = [t.strip() for t in tags_raw.split(",") if t.strip()]
+
+    # If tags is empty but de_quien_depende exists, default tags with de_quien_depende
+    if not tags_list and p.de_quien_depende:
+        tags_list = [t.strip() for t in p.de_quien_depende.split(",") if t.strip()]
+
     return {
         "id": p.id,
-        "titulo": getattr(p, "titulo", "") or (p.descripcion[:50] if p.descripcion else "Sin título"),
+        "titulo": getattr(p, "titulo", "") or "",
+        "tags": tags_list,
         "descripcion": p.descripcion or "",
         "urgencia": p.urgencia or "Media",
         "quienPide": p.quien_pide or "",
@@ -54,19 +72,25 @@ def listar_pendientes(db: Session = Depends(get_db)):
 @router.post("")
 def guardar_pendiente(data: schemas.PendienteCreateSchema, db: Session = Depends(get_db)):
     comentarios_serialized = json.dumps([c.model_dump() if hasattr(c, "model_dump") else c.dict() for c in (data.comentarios or [])])
+    tags_serialized = json.dumps(data.tags or [])
+    tags_str_display = ", ".join(data.tags or [])
     today_iso = datetime.date.today().isoformat()
     now_iso = datetime.datetime.now().isoformat()
+
+    titulo_val = (data.titulo or "").strip()
+    desc_val = (data.descripcion or "").strip()
 
     if data.id:
         p = db.query(models.Pendiente).filter(models.Pendiente.id == data.id).first()
         if not p:
             raise HTTPException(status_code=404, detail="Pendiente no encontrado")
-        p.titulo = data.titulo or (data.descripcion[:50] if data.descripcion else "")
-        p.descripcion = data.descripcion or ""
+        p.titulo = titulo_val
+        p.tags = tags_serialized
+        p.descripcion = desc_val
         p.urgencia = data.urgencia or "Media"
         p.quien_pide = data.quien_pide or ""
         p.para_quien = data.para_quien or ""
-        p.de_quien_depende = data.de_quien_depende or ""
+        p.de_quien_depende = data.de_quien_depende or tags_str_display
         p.fecha_solicitud = data.fecha_solicitud or p.fecha_solicitud or today_iso
         p.fecha_entrega = data.fecha_entrega or ""
         p.estatus = data.estatus or p.estatus or "Pendiente"
@@ -75,12 +99,13 @@ def guardar_pendiente(data: schemas.PendienteCreateSchema, db: Session = Depends
         p.updated_at = now_iso
     else:
         p = models.Pendiente(
-            titulo=data.titulo or (data.descripcion[:50] if data.descripcion else ""),
-            descripcion=data.descripcion or "",
+            titulo=titulo_val,
+            tags=tags_serialized,
+            descripcion=desc_val,
             urgencia=data.urgencia or "Media",
             quien_pide=data.quien_pide or "",
             para_quien=data.para_quien or "",
-            de_quien_depende=data.de_quien_depende or "",
+            de_quien_depende=data.de_quien_depende or tags_str_display,
             fecha_solicitud=data.fecha_solicitud or today_iso,
             fecha_entrega=data.fecha_entrega or "",
             estatus=data.estatus or "Pendiente",
@@ -119,7 +144,7 @@ def agregar_comentario(pendiente_id: int, payload: schemas.NuevoComentarioSchema
     nuevo = {
         "id": f"com-{int(datetime.datetime.now().timestamp()*1000)}",
         "fecha": datetime.datetime.now().strftime("%Y-%m-%d %H:%M"),
-        "autor": payload.autor or "Usuario",
+        "autor": payload.autor or "Nathy",
         "texto": payload.texto.strip()
     }
     coms.append(nuevo)

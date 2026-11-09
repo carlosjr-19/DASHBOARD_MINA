@@ -45,7 +45,7 @@ export default function Sidebar({
   ).length;
 
   const pendientesActivos = pendientes.filter(
-    (p) => !['atendido', 'concluido', 'cancelado'].includes((p.estatus || '').toLowerCase())
+    (p) => !['atendido', 'concluido', 'culminado', 'cancelado'].includes((p.estatus || '').toLowerCase())
   ).length;
 
   const pedidosBadge = pedidosActivos > 0 ? pedidosActivos : totalPedidos;
