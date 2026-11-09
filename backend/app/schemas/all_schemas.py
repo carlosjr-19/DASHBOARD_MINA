@@ -204,3 +204,7 @@ class NuevoComentarioSchema(BaseModel):
     autor: Optional[str] = "Usuario"
     nuevoEstatus: Optional[str] = None
 
+
+class CancelarMovimientoSchema(BaseModel):
+    motivo: str
+    canceladoPor: Optional[str] = "Nathy"

@@ -120,6 +120,19 @@ export const api = {
     return res.json();
   },
 
+  async cancelMovimiento(id, data) {
+    const res = await fetch(`${BASE_URL}/finanzas/movimientos/${id}/cancelar`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Error al cancelar movimiento');
+    }
+    return res.json();
+  },
+
   // Recolecciones
   async getRecolecciones() {
     const res = await fetch(`${BASE_URL}/finanzas/recolecciones`);

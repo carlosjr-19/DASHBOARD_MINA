@@ -157,6 +157,10 @@ class MovimientoCaja(Base):
     es_egreso_pedido = Column(Boolean, default=False)
     categoria = Column(String, default="Otros")
     nota = Column(String, default="")
+    cancelado = Column(Boolean, default=False)
+    cancelado_motivo = Column(String, default="")
+    cancelado_por = Column(String, default="")
+    cancelado_fecha = Column(String, default="")
 
 
 class Recoleccion(Base):

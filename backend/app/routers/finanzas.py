@@ -22,6 +22,14 @@ def init_finanzas_db():
                 conn.exec_driver_sql("ALTER TABLE movimientos_caja ADD COLUMN categoria VARCHAR DEFAULT 'Otros'")
             if "nota" not in col_names:
                 conn.exec_driver_sql("ALTER TABLE movimientos_caja ADD COLUMN nota VARCHAR DEFAULT ''")
+            if "cancelado" not in col_names:
+                conn.exec_driver_sql("ALTER TABLE movimientos_caja ADD COLUMN cancelado BOOLEAN DEFAULT FALSE")
+            if "cancelado_motivo" not in col_names:
+                conn.exec_driver_sql("ALTER TABLE movimientos_caja ADD COLUMN cancelado_motivo VARCHAR DEFAULT ''")
+            if "cancelado_por" not in col_names:
+                conn.exec_driver_sql("ALTER TABLE movimientos_caja ADD COLUMN cancelado_por VARCHAR DEFAULT ''")
+            if "cancelado_fecha" not in col_names:
+                conn.exec_driver_sql("ALTER TABLE movimientos_caja ADD COLUMN cancelado_fecha VARCHAR DEFAULT ''")
             conn.commit()
     except Exception as e:
         print("Finanzas DB migration warning:", e)
@@ -92,7 +100,11 @@ def listar_movimientos(db: Session = Depends(get_db)):
                     "nota": getattr(m, 'nota', '') or '',
                     "pedidoId": m.pedido_id,
                     "esGrupoInsumos": True,
-                    "insumos": desglose
+                    "insumos": desglose,
+                    "cancelado": bool(getattr(m, 'cancelado', False)),
+                    "canceladoMotivo": getattr(m, 'cancelado_motivo', '') or '',
+                    "canceladoPor": getattr(m, 'cancelado_por', '') or '',
+                    "canceladoFecha": getattr(m, 'cancelado_fecha', '') or ''
                 }
             else:
                 insumos_agrupados[key]["idsOriginales"].append(m.id)
@@ -111,7 +123,11 @@ def listar_movimientos(db: Session = Depends(get_db)):
                 "nota": getattr(m, 'nota', '') or '',
                 "pedidoId": m.pedido_id,
                 "esGrupoInsumos": False,
-                "insumos": []
+                "insumos": [],
+                "cancelado": bool(getattr(m, 'cancelado', False)),
+                "canceladoMotivo": getattr(m, 'cancelado_motivo', '') or '',
+                "canceladoPor": getattr(m, 'cancelado_por', '') or '',
+                "canceladoFecha": getattr(m, 'cancelado_fecha', '') or ''
             })
 
     # Añadir los grupos consolidados
@@ -174,11 +190,61 @@ def eliminar_movimiento(mov_id: str, db: Session = Depends(get_db)):
     db.commit()
     return {"status": "success", "id": mov_id}
 
+@router.put("/movimientos/{mov_id}/cancelar")
+def cancelar_movimiento(mov_id: str, payload: schemas.CancelarMovimientoSchema, db: Session = Depends(get_db)):
+    now_str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    motivo_clean = (payload.motivo or "").strip()
+    autor_clean = payload.canceladoPor or "Nathy"
+
+    if mov_id.startswith("GRP-"):
+        parts = mov_id.split("-")
+        if len(parts) >= 3:
+            ped_id = parts[1]
+            cta = parts[2].replace("_", " ")
+            movs = db.query(models.MovimientoCaja).filter(
+                models.MovimientoCaja.pedido_id == ped_id,
+                models.MovimientoCaja.cuenta == cta,
+                models.MovimientoCaja.es_egreso_pedido == True
+            ).all()
+            if not movs:
+                raise HTTPException(status_code=404, detail="Movimiento no encontrado")
+            for m in movs:
+                m.cancelado = True
+                m.cancelado_motivo = motivo_clean
+                m.cancelado_por = autor_clean
+                m.cancelado_fecha = now_str
+            db.commit()
+            return {"status": "success", "id": mov_id}
+
+    mov = db.query(models.MovimientoCaja).filter(models.MovimientoCaja.id == mov_id).first()
+    if not mov:
+        raise HTTPException(status_code=404, detail="Movimiento no encontrado")
+
+    mov.cancelado = True
+    mov.cancelado_motivo = motivo_clean
+    mov.cancelado_por = autor_clean
+    mov.cancelado_fecha = now_str
+
+    # Si era un abono a pedido, descontar de pedido.pagado y reponer cliente.deuda
+    if mov.pedido_id and mov.tipo == "INGRESO":
+        ped = db.query(models.Pedido).filter(models.Pedido.id == mov.pedido_id).first()
+        if ped:
+            ped.pagado = max(0.0, (ped.pagado or 0.0) - mov.monto)
+            if ped.cliente:
+                cl = db.query(models.Cliente).filter(models.Cliente.nombre == ped.cliente).first()
+                if cl:
+                    cl.deuda = (cl.deuda or 0.0) + mov.monto
+
+    db.commit()
+    return {"status": "success", "id": mov_id}
+
 @router.get("/saldos")
 def obtener_saldos(db: Session = Depends(get_db)):
     movs = db.query(models.MovimientoCaja).all()
     saldos = {c: 0.0 for c in CUENTAS_DEF}
     for m in movs:
+        if getattr(m, "cancelado", False):
+            continue
         if m.cuenta in saldos:
             if m.tipo == "INGRESO":
                 saldos[m.cuenta] += m.monto

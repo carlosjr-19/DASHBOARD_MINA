@@ -507,6 +507,7 @@ export default function App() {
             }}
             onOpenRecoleccion={() => setIsRecoleccionOpen(true)}
             onDeleteMovimiento={handleDeleteMovimiento}
+            onCancelMovimiento={handleCancelMovimiento}
             onDeleteRecoleccion={handleDeleteRecoleccion}
           />
         )}

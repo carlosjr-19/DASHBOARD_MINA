@@ -18,7 +18,10 @@ import {
   Tag,
   Calendar,
   Layers,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Ban,
+  X,
+  AlertCircle
 } from 'lucide-react';
 import ResicoDeclaracionView from '../components/ResicoDeclaracionView';
 
@@ -48,6 +51,7 @@ export default function FinanzasView({
   onOpenEgreso, 
   onOpenRecoleccion,
   onDeleteMovimiento,
+  onCancelMovimiento,
   onDeleteRecoleccion
 }) {
   const [selectedCuenta, setSelectedCuenta] = useState('TODAS');
@@ -55,6 +59,10 @@ export default function FinanzasView({
   const [activeTab, setActiveTab] = useState('movimientos'); // 'movimientos' | 'recolecciones'
   const [expandedGroups, setExpandedGroups] = useState({});
   const [expandedRecolecciones, setExpandedRecolecciones] = useState({});
+  const [cancelModalMov, setCancelModalMov] = useState(null);
+  const [cancelMotivo, setCancelMotivo] = useState('');
+  const [cancelAutor, setCancelAutor] = useState('Nathy');
+  const [cancelling, setCancelling] = useState(false);
 
   const normalizeCategoria = (cat) => {
     if (!cat) return 'Otros';
@@ -123,11 +131,11 @@ export default function FinanzasView({
     : movimientos;
 
   const totalIngresos = relevantMovimientos
-    .filter(m => m.tipo === 'INGRESO')
+    .filter(m => m.tipo === 'INGRESO' && !m.cancelado)
     .reduce((acc, m) => acc + (m.monto || 0), 0);
 
   const totalEgresos = relevantMovimientos
-    .filter(m => m.tipo === 'EGRESO')
+    .filter(m => m.tipo === 'EGRESO' && !m.cancelado)
     .reduce((acc, m) => acc + (m.monto || 0), 0);
 
   const flujoNeto = totalIngresos - totalEgresos;
@@ -135,7 +143,7 @@ export default function FinanzasView({
   // Category spending breakdown (egresos only para la cuenta seleccionada o global)
   const categoryTotals = CATEGORIAS.reduce((acc, cat) => {
     acc[cat] = relevantMovimientos
-      .filter(m => m.tipo === 'EGRESO' && normalizeCategoria(m.categoria) === cat)
+      .filter(m => m.tipo === 'EGRESO' && !m.cancelado && normalizeCategoria(m.categoria) === cat)
       .reduce((sum, m) => sum + (m.monto || 0), 0);
     return acc;
   }, {});
@@ -810,6 +818,139 @@ export default function FinanzasView({
       {/* TAB 3: DECLARACION Y RESICO SAT */}
       {activeTab === 'resico' && (
         <ResicoDeclaracionView />
+      )}
+      {/* MODAL: CANCELAR MOVIMIENTO DE CAJA */}
+      {cancelModalMov && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col">
+            {/* Header */}
+            <div className="p-4 bg-gray-950 border-b border-gray-800 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-rose-500/10 text-rose-400 rounded-lg border border-rose-500/20">
+                  <Ban className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-gray-100">
+                    Cancelar Movimiento de Caja
+                  </h3>
+                  <p className="text-xs text-gray-400">
+                    Se descontará de los totales y quedará registrado el motivo
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setCancelModalMov(null)}
+                className="text-gray-400 hover:text-gray-200 p-1.5 rounded-lg hover:bg-gray-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Contenido / Info del movimiento */}
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
+                if (!cancelMotivo.trim()) return;
+                try {
+                  setCancelling(true);
+                  await onCancelMovimiento(cancelModalMov.id, {
+                    motivo: cancelMotivo.trim(),
+                    canceladoPor: cancelAutor
+                  });
+                  setCancelModalMov(null);
+                } catch (err) {
+                  console.error('Error al cancelar movimiento:', err);
+                  alert('Error al cancelar movimiento: ' + (err.message || ''));
+                } finally {
+                  setCancelling(false);
+                }
+              }}
+              className="p-4 space-y-3.5 text-xs"
+            >
+              {/* Resumen del movimiento a cancelar */}
+              <div className="bg-gray-950 p-3 rounded-xl border border-gray-800 space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] text-gray-400">Monto del movimiento:</span>
+                  <span className={`font-mono font-bold text-sm ${cancelModalMov.tipo === 'INGRESO' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                    {cancelModalMov.tipo === 'INGRESO' ? '+' : '-'}{formatMoney(cancelModalMov.monto)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-gray-400">Cuenta:</span>
+                  <span className="text-gray-200 font-semibold">{cancelModalMov.cuenta}</span>
+                </div>
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-gray-400">Concepto:</span>
+                  <span className="text-gray-200 truncate max-w-[220px]">{formatDescripcion(cancelModalMov)}</span>
+                </div>
+              </div>
+
+              {/* Selector de Quién lo cancela: Nathy o Emi */}
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                  ¿Quién cancela este movimiento?: *
+                </label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCancelAutor('Nathy')}
+                    className={`h-[36px] px-3 rounded-lg text-xs font-bold border transition-all flex items-center justify-center ${
+                      cancelAutor === 'Nathy'
+                        ? 'bg-rose-600 text-white border-rose-500 shadow-md shadow-rose-950 ring-1 ring-rose-400'
+                        : 'bg-gray-950 text-rose-300 border-gray-700 hover:border-rose-700/50'
+                    }`}
+                  >
+                    Nathy
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCancelAutor('Emi')}
+                    className={`h-[36px] px-3 rounded-lg text-xs font-bold border transition-all flex items-center justify-center ${
+                      cancelAutor === 'Emi'
+                        ? 'bg-cyan-600 text-white border-cyan-500 shadow-md shadow-cyan-950 ring-1 ring-cyan-400'
+                        : 'bg-gray-950 text-cyan-300 border-gray-700 hover:border-cyan-700/50'
+                    }`}
+                  >
+                    Emi
+                  </button>
+                </div>
+              </div>
+
+              {/* Motivo de cancelación obligatorio */}
+              <div>
+                <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                  Motivo obligatorio de cancelación: *
+                </label>
+                <textarea
+                  rows={2}
+                  required
+                  value={cancelMotivo}
+                  onChange={(e) => setCancelMotivo(e.target.value)}
+                  className="w-full bg-gray-950 border border-gray-700 focus:border-rose-500 rounded-lg p-2.5 text-xs text-gray-100 focus:outline-none"
+                />
+              </div>
+
+              {/* Botones de acción */}
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-800">
+                <button
+                  type="button"
+                  onClick={() => setCancelModalMov(null)}
+                  className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs font-medium"
+                >
+                  Volver
+                </button>
+                <button
+                  type="submit"
+                  disabled={cancelling || !cancelMotivo.trim()}
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white rounded-lg text-xs font-bold shadow-md shadow-rose-950 transition-all"
+                >
+                  <Ban className="w-3.5 h-3.5" />
+                  {cancelling ? 'Cancelando...' : 'Confirmar Cancelación'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );
