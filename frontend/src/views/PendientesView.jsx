@@ -463,7 +463,7 @@ export default function PendientesView({
         <div className="hidden md:flex items-center gap-3 px-4 py-2.5 bg-gray-950 border-b border-gray-800 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
           <div className="w-8 text-center">✓</div>
           <div className="flex-1 min-w-0">Título & Descripción</div>
-          <div className="w-52">TAGS</div>
+          <div className="w-52 text-center">TAGS</div>
           <div className="w-28 text-center">Fecha Límite</div>
           <div className="w-32 text-center">Status</div>
           <div className="w-24 text-center">Bitácora</div>
@@ -565,10 +565,10 @@ export default function PendientesView({
                     )}
                   </div>
 
-                  {/* TAGS: Máximo 2 visibles y luego +N */}
-                  <div className="md:w-52 text-xs flex items-center">
+                  {/* TAGS: Centrado, Máximo 2 visibles y luego +N */}
+                  <div className="md:w-52 text-xs flex items-center justify-center text-center">
                     {itemTags.length > 0 ? (
-                      <div className="flex items-center gap-1.5 flex-wrap">
+                      <div className="flex items-center justify-center gap-1.5 flex-wrap">
                         {visibleTags.map((tag, idx) => (
                           <span 
                             key={idx} 
@@ -777,7 +777,7 @@ export default function PendientesView({
                     <button
                       type="button"
                       onClick={() => setComentarioAutor('Nathy')}
-                      className={`py-1.5 px-3 rounded-lg text-xs font-bold border transition-all ${
+                      className={`h-[36px] px-3 rounded-lg text-xs font-bold border transition-all flex items-center justify-center ${
                         comentarioAutor === 'Nathy'
                           ? 'bg-rose-600 text-white border-rose-500 shadow-md shadow-rose-950 ring-1 ring-rose-400'
                           : 'bg-gray-900 text-rose-300 border-gray-700 hover:border-rose-700/50'
@@ -788,7 +788,7 @@ export default function PendientesView({
                     <button
                       type="button"
                       onClick={() => setComentarioAutor('Emi')}
-                      className={`py-1.5 px-3 rounded-lg text-xs font-bold border transition-all ${
+                      className={`h-[36px] px-3 rounded-lg text-xs font-bold border transition-all flex items-center justify-center ${
                         comentarioAutor === 'Emi'
                           ? 'bg-cyan-600 text-white border-cyan-500 shadow-md shadow-cyan-950 ring-1 ring-cyan-400'
                           : 'bg-gray-900 text-cyan-300 border-gray-700 hover:border-cyan-700/50'
@@ -799,7 +799,7 @@ export default function PendientesView({
                   </div>
                 </div>
 
-                {/* Actualizar estatus */}
+                {/* Actualizar estatus con el mismo grosor y altura */}
                 <div>
                   <label className="block text-[11px] font-semibold text-gray-400 mb-1">
                     Cambiar estatus con este comentario:
@@ -807,13 +807,13 @@ export default function PendientesView({
                   <select
                     value={comentarioNuevoEstatus}
                     onChange={(e) => setComentarioNuevoEstatus(e.target.value)}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-gray-200 focus:outline-none focus:border-blue-500 text-xs"
+                    className="w-full h-[36px] bg-gray-900 border border-gray-700 rounded-lg px-3 py-1.5 text-gray-200 focus:outline-none focus:border-blue-500 text-xs font-semibold cursor-pointer"
                   >
-                    <option value="">Mantener estatus actual ({normalizeStatus(bitacoraItem.estatus)})</option>
-                    <option value="En espera">En espera (esperando respuesta o datos)</option>
-                    <option value="Atendido">Atendido (ya se atendió)</option>
-                    <option value="Culminado">Culminado (ya se hizo y envió)</option>
+                    <option value="">Mantener actual ({normalizeStatus(bitacoraItem.estatus)})</option>
                     <option value="Pendiente">Pendiente</option>
+                    <option value="En espera">En espera</option>
+                    <option value="Atendido">Atendido</option>
+                    <option value="Culminado">Culminado</option>
                   </select>
                 </div>
               </div>
