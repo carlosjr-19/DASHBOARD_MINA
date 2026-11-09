@@ -184,6 +184,7 @@ class ComentarioPendienteSchema(BaseModel):
 
 class PendienteCreateSchema(BaseModel):
     id: Optional[int] = None
+    titulo: Optional[str] = ""
     descripcion: str
     urgencia: Optional[str] = "Media"
     quien_pide: Optional[str] = ""
@@ -200,4 +201,5 @@ class PendienteEstatusUpdate(BaseModel):
 class NuevoComentarioSchema(BaseModel):
     texto: str
     autor: Optional[str] = "Usuario"
+    nuevoEstatus: Optional[str] = None
 

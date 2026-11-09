@@ -13,23 +13,49 @@ import {
   Send, 
   X, 
   ChevronDown, 
-  ChevronRight,
-  Check
+  Check,
+  MapPin,
+  Filter,
+  History,
+  AlertTriangle
 } from 'lucide-react';
 
 const URGENCIAS = [
-  { id: 'Baja', label: 'Baja', color: 'bg-gray-800 text-gray-300 border-gray-700' },
-  { id: 'Media', label: 'Media', color: 'bg-amber-950/60 text-amber-300 border-amber-800/60' },
-  { id: 'Alta', label: 'Alta', color: 'bg-orange-950/60 text-orange-300 border-orange-800/60' },
-  { id: 'Urgente', label: 'Urgente', color: 'bg-rose-950/70 text-rose-300 border-rose-800/70' }
+  { id: 'Baja', label: 'Baja', badge: 'bg-gray-800 text-gray-300 border-gray-700' },
+  { id: 'Media', label: 'Media', badge: 'bg-blue-950/60 text-blue-300 border-blue-800/60' },
+  { id: 'Alta', label: 'Alta', badge: 'bg-amber-950/60 text-amber-300 border-amber-800/60' },
+  { id: 'Urgente', label: 'Urgente', badge: 'bg-rose-950/70 text-rose-300 border-rose-800/70' }
 ];
 
-const ESTATUS_LIST = [
-  { id: 'Pendiente', label: 'Pendiente', color: 'bg-amber-950/80 text-amber-300 border-amber-700/60' },
-  { id: 'En Proceso', label: 'En Proceso', color: 'bg-blue-950/80 text-blue-300 border-blue-700/60' },
-  { id: 'Atendido', label: 'Atendido', color: 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60' },
-  { id: 'Cancelado', label: 'Cancelado', color: 'bg-gray-800 text-gray-400 border-gray-700' }
-];
+const ESTATUS_CONFIG = {
+  'Pendiente': {
+    label: 'Pendiente',
+    dot: 'bg-amber-400',
+    badge: 'bg-amber-950/60 text-amber-300 border-amber-700/50'
+  },
+  'En Proceso': {
+    label: 'En Proceso',
+    dot: 'bg-blue-400',
+    badge: 'bg-blue-950/60 text-blue-300 border-blue-700/50'
+  },
+  'Esperando': {
+    label: 'Esperando',
+    dot: 'bg-purple-400',
+    badge: 'bg-purple-950/60 text-purple-300 border-purple-700/50'
+  },
+  'Atendido': {
+    label: 'Atendido',
+    dot: 'bg-emerald-400',
+    badge: 'bg-emerald-950/60 text-emerald-300 border-emerald-700/50'
+  },
+  'Cancelado': {
+    label: 'Cancelado',
+    dot: 'bg-gray-500',
+    badge: 'bg-gray-800 text-gray-400 border-gray-700'
+  }
+};
+
+const ESTATUS_OPTIONS = ['Pendiente', 'En Proceso', 'Esperando', 'Atendido', 'Cancelado'];
 
 export default function PendientesView({
   pendientes = [],
@@ -43,35 +69,34 @@ export default function PendientesView({
   const [statusFilter, setStatusFilter] = useState('Todos');
   const [urgenciaFilter, setUrgenciaFilter] = useState('Todas');
   
-  // Expanded rows state { [id]: boolean }
-  const [expandedRows, setExpandedRows] = useState({});
-
-  // Modal State
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Modal Crear / Editar
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   
   // Form State
   const todayIso = new Date().toISOString().split('T')[0];
+  const [formTitulo, setFormTitulo] = useState('');
   const [formDescripcion, setFormDescripcion] = useState('');
   const [formUrgencia, setFormUrgencia] = useState('Media');
-  const [formQuienPide, setFormQuienPide] = useState('');
-  const [formParaQuien, setFormParaQuien] = useState('');
   const [formDeQuienDepende, setFormDeQuienDepende] = useState('');
   const [formFechaSolicitud, setFormFechaSolicitud] = useState(todayIso);
   const [formFechaEntrega, setFormFechaEntrega] = useState('');
   const [formEstatus, setFormEstatus] = useState('Pendiente');
-  
-  // Inline Comment Inputs { [pendienteId]: string }
-  const [commentInputs, setCommentInputs] = useState({});
   const [saving, setSaving] = useState(false);
+
+  // Modal Bitácora / Seguimiento
+  const [bitacoraItem, setBitacoraItem] = useState(null);
+  const [nuevoComentarioTexto, setNuevoComentarioTexto] = useState('');
+  const [comentarioNuevoEstatus, setComentarioNuevoEstatus] = useState('');
+  const [comentarioAutor, setComentarioAutor] = useState(user?.nombre || 'Usuario');
+  const [savingComentario, setSavingComentario] = useState(false);
 
   // Filtered List
   const filtered = pendientes.filter((item) => {
     const term = searchTerm.toLowerCase();
     const matchSearch = 
+      (item.titulo || '').toLowerCase().includes(term) ||
       (item.descripcion || '').toLowerCase().includes(term) ||
-      (item.quienPide || '').toLowerCase().includes(term) ||
-      (item.paraQuien || '').toLowerCase().includes(term) ||
       (item.deQuienDepende || '').toLowerCase().includes(term);
 
     const matchStatus = statusFilter === 'Todos' || (item.estatus || 'Pendiente') === statusFilter;
@@ -84,604 +109,705 @@ export default function PendientesView({
   const totalCount = pendientes.length;
   const pendientesCount = pendientes.filter(p => (p.estatus || 'Pendiente') === 'Pendiente').length;
   const enProcesoCount = pendientes.filter(p => p.estatus === 'En Proceso').length;
+  const esperandoCount = pendientes.filter(p => p.estatus === 'Esperando').length;
   const atendidosCount = pendientes.filter(p => p.estatus === 'Atendido').length;
-  const urgentesCount = pendientes.filter(p => ['Alta', 'Urgente'].includes(p.urgencia) && p.estatus !== 'Atendido' && p.estatus !== 'Cancelado').length;
-
-  const toggleRow = (id) => {
-    setExpandedRows(prev => ({ ...prev, [id]: !prev[id] }));
-  };
 
   const handleOpenNew = () => {
     setEditingItem(null);
+    setFormTitulo('');
     setFormDescripcion('');
     setFormUrgencia('Media');
-    setFormQuienPide(user?.nombre || '');
-    setFormParaQuien('');
     setFormDeQuienDepende('');
     setFormFechaSolicitud(todayIso);
     setFormFechaEntrega('');
     setFormEstatus('Pendiente');
-    setIsModalOpen(true);
+    setIsFormModalOpen(true);
   };
 
-  const handleOpenEdit = (item, e) => {
-    if (e) e.stopPropagation();
+  const handleOpenEdit = (item) => {
     setEditingItem(item);
+    setFormTitulo(item.titulo || '');
     setFormDescripcion(item.descripcion || '');
     setFormUrgencia(item.urgencia || 'Media');
-    setFormQuienPide(item.quienPide || '');
-    setFormParaQuien(item.paraQuien || '');
     setFormDeQuienDepende(item.deQuienDepende || '');
     setFormFechaSolicitud(item.fechaSolicitud || todayIso);
     setFormFechaEntrega(item.fechaEntrega || '');
     setFormEstatus(item.estatus || 'Pendiente');
-    setIsModalOpen(true);
+    setIsFormModalOpen(true);
   };
 
-  const handleSubmitForm = async (e) => {
+  const handleSaveForm = async (e) => {
     e.preventDefault();
-    if (!formDescripcion.trim()) return;
+    if (!formTitulo.trim() && !formDescripcion.trim()) return;
 
     try {
       setSaving(true);
       await onSavePendiente({
         id: editingItem ? editingItem.id : undefined,
+        titulo: formTitulo.trim() || formDescripcion.trim().slice(0, 40),
         descripcion: formDescripcion.trim(),
         urgencia: formUrgencia,
-        quien_pide: formQuienPide.trim(),
-        para_quien: formParaQuien.trim(),
         de_quien_depende: formDeQuienDepende.trim(),
         fecha_solicitud: formFechaSolicitud || todayIso,
         fecha_entrega: formFechaEntrega || '',
         estatus: formEstatus,
         comentarios: editingItem ? editingItem.comentarios : []
       });
-      setIsModalOpen(false);
+      setIsFormModalOpen(false);
+      setEditingItem(null);
     } catch (err) {
-      alert(err.message || 'Error al guardar el pendiente');
+      console.error('Error al guardar pendiente:', err);
+      alert('Error al guardar pendiente: ' + (err.message || ''));
     } finally {
       setSaving(false);
     }
   };
 
-  const handleInlineCommentSubmit = async (pendienteId) => {
-    const text = commentInputs[pendienteId]?.trim();
-    if (!text) return;
-
+  const handleToggleCheck = async (item) => {
+    const isAtendido = item.estatus === 'Atendido';
+    const nuevo = isAtendido ? 'Pendiente' : 'Atendido';
     try {
-      await onAddComentario(pendienteId, {
-        texto: text,
-        autor: user?.nombre || 'Usuario'
-      });
-      setCommentInputs(prev => ({ ...prev, [pendienteId]: '' }));
-      setExpandedRows(prev => ({ ...prev, [pendienteId]: true }));
+      await onUpdateEstatus(item.id, nuevo);
     } catch (err) {
-      alert(err.message || 'Error al agregar comentario');
+      console.error('Error al actualizar estatus:', err);
     }
   };
 
-  const getUrgenciaBadge = (urgencia) => {
-    const found = URGENCIAS.find(u => u.id === urgencia) || URGENCIAS[1];
-    return (
-      <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border whitespace-nowrap ${found.color}`}>
-        {found.label}
-      </span>
-    );
+  const handleStatusChange = async (item, newStatus) => {
+    try {
+      await onUpdateEstatus(item.id, newStatus);
+    } catch (err) {
+      console.error('Error al cambiar estatus:', err);
+    }
+  };
+
+  const handleDelete = async (item) => {
+    if (window.confirm(`¿Seguro que deseas eliminar el pendiente "${item.titulo || item.descripcion}"?`)) {
+      try {
+        await onDeletePendiente(item.id);
+        if (bitacoraItem && bitacoraItem.id === item.id) {
+          setBitacoraItem(null);
+        }
+      } catch (err) {
+        console.error('Error al eliminar pendiente:', err);
+      }
+    }
+  };
+
+  // Bitácora Handlers
+  const handleOpenBitacora = (item) => {
+    setBitacoraItem(item);
+    setNuevoComentarioTexto('');
+    setComentarioNuevoEstatus('');
+    setComentarioAutor(user?.nombre || 'Usuario');
+  };
+
+  const handleSaveBitacoraComentario = async (e) => {
+    e.preventDefault();
+    if (!nuevoComentarioTexto.trim() || !bitacoraItem) return;
+
+    try {
+      setSavingComentario(true);
+      await onAddComentario(bitacoraItem.id, {
+        texto: nuevoComentarioTexto.trim(),
+        autor: comentarioAutor || 'Usuario',
+        nuevoEstatus: comentarioNuevoEstatus || undefined
+      });
+
+      // Actualizar localmente bitacoraItem comentarios
+      const nuevo = {
+        id: `com-${Date.now()}`,
+        fecha: new Date().toISOString().replace('T', ' ').slice(0, 16),
+        autor: comentarioAutor || 'Usuario',
+        texto: nuevoComentarioTexto.trim()
+      };
+      setBitacoraItem(prev => prev ? {
+        ...prev,
+        estatus: comentarioNuevoEstatus || prev.estatus,
+        comentarios: [...(prev.comentarios || []), nuevo]
+      } : null);
+
+      setNuevoComentarioTexto('');
+      setComentarioNuevoEstatus('');
+    } catch (err) {
+      console.error('Error al agregar comentario:', err);
+      alert('Error al guardar comentario en bitácora: ' + (err.message || ''));
+    } finally {
+      setSavingComentario(false);
+    }
   };
 
   return (
-    <div className="space-y-4">
-      {/* Top Metrics Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
-          <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Total Solicitudes</span>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-lg sm:text-2xl font-bold text-gray-100">{totalCount}</span>
-            <ListTodo className="w-5 h-5 text-gray-400" />
+    <div className="w-full space-y-4">
+      {/* Header y Resumen Superior */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gray-900/80 p-4 rounded-xl border border-gray-800 shadow-md">
+        <div>
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
+              <ListTodo className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-100 flex items-center gap-2">
+                Pendientes & Bitácora
+                <span className="text-xs px-2 py-0.5 rounded-full bg-gray-800 text-gray-400 border border-gray-700">
+                  {filtered.length} de {totalCount}
+                </span>
+              </h1>
+              <p className="text-xs text-gray-400">
+                Control de tareas, requisiciones, proveedores y seguimiento en bitácora
+              </p>
+            </div>
           </div>
         </div>
 
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
-          <span className="text-[10px] sm:text-xs text-amber-400 uppercase font-semibold block">Pendientes</span>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-lg sm:text-2xl font-bold text-amber-400">{pendientesCount + enProcesoCount}</span>
-            <Clock className="w-5 h-5 text-amber-400" />
-          </div>
-        </div>
-
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
-          <span className="text-[10px] sm:text-xs text-rose-400 uppercase font-semibold block">Alta / Urgentes</span>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-lg sm:text-2xl font-bold text-rose-400">{urgentesCount}</span>
-            <AlertCircle className="w-5 h-5 text-rose-400" />
-          </div>
-        </div>
-
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
-          <span className="text-[10px] sm:text-xs text-emerald-400 uppercase font-semibold block">Atendidos</span>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-lg sm:text-2xl font-bold text-emerald-400">{atendidosCount}</span>
-            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-          </div>
-        </div>
-      </div>
-
-      {/* Action and Filter Bar */}
-      <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        {/* Search */}
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3 top-3 pointer-events-none" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-th-151617 text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
-          />
-        </div>
-
-        {/* Filters and Add Button */}
-        <div className="flex items-center gap-2 flex-wrap">
-          {/* Status Filter */}
-          <div className="relative">
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-th-151617 text-gray-200 pl-3 pr-8 py-2 rounded-lg border border-gray-700 text-xs font-semibold focus:outline-none appearance-none cursor-pointer"
-            >
-              <option value="Todos">Estatus: Todos</option>
-              {ESTATUS_LIST.map(e => (
-                <option key={e.id} value={e.id}>{e.label}</option>
-              ))}
-            </select>
-            <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-2.5 pointer-events-none" />
+        {/* Métricas Rápidas en Barra */}
+        <div className="flex flex-wrap items-center gap-2">
+          <div 
+            onClick={() => setStatusFilter('Todos')}
+            className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+              statusFilter === 'Todos' ? 'bg-gray-800 text-white border-gray-600 shadow-sm' : 'bg-gray-900/50 text-gray-400 border-gray-800 hover:border-gray-700'
+            }`}
+          >
+            Todos: <span className="font-bold text-gray-200">{totalCount}</span>
           </div>
 
-          {/* Urgencia Filter */}
-          <div className="relative">
-            <select
-              value={urgenciaFilter}
-              onChange={(e) => setUrgenciaFilter(e.target.value)}
-              className="bg-th-151617 text-gray-200 pl-3 pr-8 py-2 rounded-lg border border-gray-700 text-xs font-semibold focus:outline-none appearance-none cursor-pointer"
-            >
-              <option value="Todas">Urgencia: Todas</option>
-              {URGENCIAS.map(u => (
-                <option key={u.id} value={u.id}>{u.label}</option>
-              ))}
-            </select>
-            <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-2.5 pointer-events-none" />
+          <div 
+            onClick={() => setStatusFilter('Pendiente')}
+            className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-all flex items-center gap-1.5 ${
+              statusFilter === 'Pendiente' ? 'bg-amber-950/70 text-amber-200 border-amber-600 shadow-sm' : 'bg-gray-900/50 text-amber-400/80 border-gray-800 hover:border-amber-800/40'
+            }`}
+          >
+            <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+            Pendientes: <span className="font-bold">{pendientesCount}</span>
           </div>
 
-          {/* Add Button */}
+          <div 
+            onClick={() => setStatusFilter('En Proceso')}
+            className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-all flex items-center gap-1.5 ${
+              statusFilter === 'En Proceso' ? 'bg-blue-950/70 text-blue-200 border-blue-600 shadow-sm' : 'bg-gray-900/50 text-blue-400/80 border-gray-800 hover:border-blue-800/40'
+            }`}
+          >
+            <span className="w-2 h-2 rounded-full bg-blue-400"></span>
+            En Proceso: <span className="font-bold">{enProcesoCount}</span>
+          </div>
+
+          <div 
+            onClick={() => setStatusFilter('Esperando')}
+            className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-all flex items-center gap-1.5 ${
+              statusFilter === 'Esperando' ? 'bg-purple-950/70 text-purple-200 border-purple-600 shadow-sm' : 'bg-gray-900/50 text-purple-400/80 border-gray-800 hover:border-purple-800/40'
+            }`}
+          >
+            <span className="w-2 h-2 rounded-full bg-purple-400"></span>
+            Esperando: <span className="font-bold">{esperandoCount}</span>
+          </div>
+
+          <div 
+            onClick={() => setStatusFilter('Atendido')}
+            className={`cursor-pointer px-3 py-1.5 rounded-lg border text-xs font-medium transition-all flex items-center gap-1.5 ${
+              statusFilter === 'Atendido' ? 'bg-emerald-950/70 text-emerald-200 border-emerald-600 shadow-sm' : 'bg-gray-900/50 text-emerald-400/80 border-gray-800 hover:border-emerald-800/40'
+            }`}
+          >
+            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+            Atendidos: <span className="font-bold">{atendidosCount}</span>
+          </div>
+
           <button
             onClick={handleOpenNew}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-md transition-all active:scale-95"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-md transition-all active:scale-95 ml-auto"
           >
-            <Plus className="w-4 h-4 text-white" />
-            <span>Agregar Pendiente</span>
+            <Plus className="w-4 h-4" />
+            Nuevo Pendiente
           </button>
         </div>
       </div>
 
-      {/* Pendientes Table - Single Line Renglones Delgados (similar a Pedidos) */}
-      <div className="overflow-x-auto rounded-xl border border-gray-800 bg-th-161719 shadow-sm">
-        <table className="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr className="border-b border-gray-800 bg-th-131416 text-[10px] sm:text-[11px] font-bold uppercase text-gray-400 select-none">
-              <th className="py-2.5 px-2 w-8 text-center"></th>
-              <th className="py-2.5 px-3 min-w-[75px]">ID</th>
-              <th className="py-2.5 px-3 min-w-[130px] text-center">ESTATUS</th>
-              <th className="py-2.5 px-3 min-w-[90px] text-center">URGENCIA</th>
-              <th className="py-2.5 px-3 min-w-[240px]">DESCRIPCIÓN</th>
-              <th className="py-2.5 px-3 min-w-[120px]">QUIÉN PIDE</th>
-              <th className="py-2.5 px-3 min-w-[120px]">PARA QUIÉN</th>
-              <th className="py-2.5 px-3 min-w-[130px]">DE QUIÉN DEPENDE</th>
-              <th className="py-2.5 px-3 min-w-[110px] text-center">F. SOLICITUD</th>
-              <th className="py-2.5 px-3 min-w-[120px] text-center">F. MÁXIMA</th>
-              <th className="py-2.5 px-3 min-w-[95px] text-center">SEGUIMIENTO</th>
-              <th className="py-2.5 px-3 min-w-[80px] text-center">ACCIONES</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-800/60">
-            {filtered.length > 0 ? (
-              filtered.map((item) => {
-                const isAtendido = (item.estatus || '') === 'Atendido';
-                const isExpanded = Boolean(expandedRows[item.id]);
-                const commentsCount = item.comentarios?.length || 0;
-                const isOverdue = item.fechaEntrega && item.fechaEntrega < todayIso && !isAtendido;
-
-                return (
-                  <React.Fragment key={item.id}>
-                    {/* Main 1-Line Thin Row */}
-                    <tr
-                      onClick={() => toggleRow(item.id)}
-                      className={`hover:bg-gray-800/40 cursor-pointer transition-colors border-b border-gray-800/80 text-xs ${
-                        isAtendido 
-                          ? 'opacity-60 bg-th-121314/60' 
-                          : isOverdue 
-                            ? 'bg-rose-950/10' 
-                            : ''
-                      }`}
-                    >
-                      {/* 1. Chevron */}
-                      <td className="py-2.5 px-2 text-center text-gray-400 w-8">
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleRow(item.id);
-                          }}
-                          className="p-1 hover:text-gray-100 rounded transition-colors"
-                        >
-                          {isExpanded ? (
-                            <ChevronDown className="w-4 h-4 text-orange-400" />
-                          ) : (
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
-                          )}
-                        </button>
-                      </td>
-
-                      {/* 2. ID */}
-                      <td className="py-2.5 px-3 whitespace-nowrap">
-                        <span className="px-2 py-0.5 rounded border border-gray-700/80 bg-gray-800/80 font-mono font-bold text-[11px] text-gray-300 shadow-sm">
-                          #{String(item.id).padStart(3, '0')}
-                        </span>
-                      </td>
-
-                      {/* 3. ESTATUS */}
-                      <td className="py-2.5 px-3 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                        <div className="relative inline-block">
-                          <select
-                            value={item.estatus || 'Pendiente'}
-                            onChange={(e) => onUpdateEstatus(item.id, e.target.value)}
-                            className={`text-[11px] font-bold pl-2 pr-6 py-1 rounded-md border appearance-none cursor-pointer focus:outline-none transition-colors ${
-                              item.estatus === 'Atendido'
-                                ? 'bg-emerald-950/50 text-emerald-300 border-emerald-600/50'
-                                : item.estatus === 'En Proceso'
-                                  ? 'bg-blue-950/50 text-blue-300 border-blue-600/50'
-                                  : item.estatus === 'Cancelado'
-                                    ? 'bg-gray-800 text-gray-400 border-gray-700'
-                                    : 'bg-amber-950/50 text-amber-300 border-amber-600/50'
-                            }`}
-                          >
-                            {ESTATUS_LIST.map(e => (
-                              <option key={e.id} value={e.id} className="bg-th-1c1d1f text-gray-100 font-medium">
-                                {e.label}
-                              </option>
-                            ))}
-                          </select>
-                          <ChevronDown className="w-3 h-3 text-gray-400 absolute right-1.5 top-2 pointer-events-none" />
-                        </div>
-                      </td>
-
-                      {/* 4. URGENCIA */}
-                      <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                        {getUrgenciaBadge(item.urgencia || 'Media')}
-                      </td>
-
-                      {/* 5. DESCRIPCIÓN (delgada y truncada a 1 línea con tooltip) */}
-                      <td className="py-2.5 px-3 max-w-[260px] truncate" title={item.descripcion}>
-                        <span className={`font-medium ${isAtendido ? 'line-through text-gray-500' : 'text-gray-100'}`}>
-                          {item.descripcion}
-                        </span>
-                      </td>
-
-                      {/* 6. QUIÉN PIDE */}
-                      <td className="py-2.5 px-3 whitespace-nowrap text-gray-300 font-medium">
-                        {item.quienPide || '-'}
-                      </td>
-
-                      {/* 7. PARA QUIÉN */}
-                      <td className="py-2.5 px-3 whitespace-nowrap text-gray-300">
-                        {item.paraQuien || '-'}
-                      </td>
-
-                      {/* 8. DE QUIÉN DEPENDE */}
-                      <td className="py-2.5 px-3 whitespace-nowrap font-medium text-orange-400">
-                        {item.deQuienDepende || '-'}
-                      </td>
-
-                      {/* 9. FECHA SOLICITUD */}
-                      <td className="py-2.5 px-3 text-center font-mono text-[11px] text-gray-400 whitespace-nowrap">
-                        {item.fechaSolicitud || '-'}
-                      </td>
-
-                      {/* 10. FECHA MÁXIMA ENTREGA */}
-                      <td className="py-2.5 px-3 text-center font-mono whitespace-nowrap text-[11px]">
-                        {isOverdue ? (
-                          <span className="px-1.5 py-0.5 rounded bg-rose-950/70 border border-rose-800/80 text-rose-300 font-bold" title="¡Fecha límite vencida!">
-                            {item.fechaEntrega} ⚠️
-                          </span>
-                        ) : (
-                          <span className={item.fechaEntrega ? 'text-gray-200' : 'text-gray-500'}>
-                            {item.fechaEntrega || '-'}
-                          </span>
-                        )}
-                      </td>
-
-                      {/* 11. SEGUIMIENTO / COMENTARIOS */}
-                      <td className="py-2.5 px-3 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                        <button
-                          type="button"
-                          onClick={() => toggleRow(item.id)}
-                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-semibold border transition-all ${
-                            commentsCount > 0
-                              ? 'bg-orange-950/40 text-orange-300 border-orange-700/50 hover:bg-orange-900/40'
-                              : 'bg-gray-800 text-gray-400 border-gray-700 hover:text-gray-200'
-                          }`}
-                          title="Ver o agregar notas y comentarios"
-                        >
-                          <MessageSquare className="w-3 h-3 text-orange-400" />
-                          <span>{commentsCount}</span>
-                        </button>
-                      </td>
-
-                      {/* 12. ACCIONES */}
-                      <td className="py-2.5 px-3 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-center gap-1">
-                          <button
-                            type="button"
-                            onClick={(e) => handleOpenEdit(item, e)}
-                            className="p-1 rounded text-gray-400 hover:text-orange-400 hover:bg-orange-950/30 transition-colors"
-                            title="Editar pendiente"
-                          >
-                            <Edit3 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              if (window.confirm('¿Estás seguro de eliminar este pendiente?')) {
-                                onDeletePendiente(item.id);
-                              }
-                            }}
-                            className="p-1 rounded text-gray-400 hover:text-rose-400 hover:bg-rose-950/30 transition-colors"
-                            title="Eliminar pendiente"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-
-                    {/* Expanded Detail and Comments Row */}
-                    {isExpanded && (
-                      <tr className="bg-th-141517/80 border-b border-gray-800/80">
-                        <td colSpan={12} className="p-3 sm:p-4 space-y-3">
-                          {/* Full Description & Status info */}
-                          <div className="bg-th-1c1d1f p-3 rounded-xl border border-gray-800 space-y-1.5">
-                            <div className="flex items-center justify-between text-[11px] text-gray-400 font-semibold border-b border-gray-800/80 pb-1.5">
-                              <span>Descripción Completa</span>
-                              <div className="flex items-center gap-3">
-                                <span>Solicitado por: <strong className="text-gray-200">{item.quienPide || 'N/A'}</strong></span>
-                                <span>Para: <strong className="text-gray-200">{item.paraQuien || 'N/A'}</strong></span>
-                                <span>Depende de: <strong className="text-orange-400">{item.deQuienDepende || 'N/A'}</strong></span>
-                              </div>
-                            </div>
-                            <p className="text-xs text-gray-100 whitespace-pre-wrap leading-relaxed pt-1">
-                              {item.descripcion}
-                            </p>
-                          </div>
-
-                          {/* Comments & Bitacora */}
-                          <div className="bg-th-1c1d1f p-3 rounded-xl border border-gray-800 space-y-2.5">
-                            <div className="flex items-center justify-between text-xs font-semibold text-gray-300">
-                              <div className="flex items-center gap-1.5">
-                                <MessageSquare className="w-3.5 h-3.5 text-orange-400" />
-                                <span>Notas de Seguimiento y Atención ({commentsCount})</span>
-                              </div>
-                              {isAtendido && (
-                                <span className="text-[11px] text-emerald-400 font-bold flex items-center gap-1">
-                                  <Check className="w-3.5 h-3.5" /> Solicitud Atendida
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Existing Comments */}
-                            {item.comentarios && item.comentarios.length > 0 ? (
-                              <div className="space-y-2 max-h-44 overflow-y-auto pr-1">
-                                {item.comentarios.map((c, cIdx) => (
-                                  <div key={c.id || cIdx} className="bg-th-151617 p-2.5 rounded-lg border border-gray-800/80 text-xs">
-                                    <div className="flex items-center justify-between text-[10px] text-gray-400 mb-1">
-                                      <span className="font-bold text-orange-400">{c.autor || 'Usuario'}</span>
-                                      <span className="font-mono">{c.fecha || ''}</span>
-                                    </div>
-                                    <p className="text-gray-200 whitespace-pre-wrap">{c.texto}</p>
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <p className="text-xs text-gray-500 italic py-1">
-                                No hay comentarios ni notas registradas aún.
-                              </p>
-                            )}
-
-                            {/* Quick Add Comment Input */}
-                            <div className="flex gap-2 pt-1">
-                              <input
-                                type="text"
-                                value={commentInputs[item.id] || ''}
-                                onChange={(e) => setCommentInputs({ ...commentInputs, [item.id]: e.target.value })}
-                                onKeyDown={(e) => {
-                                  if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    handleInlineCommentSubmit(item.id);
-                                  }
-                                }}
-                                className="flex-1 bg-th-151617 text-gray-100 px-3 py-1.5 rounded-lg border border-gray-700 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => handleInlineCommentSubmit(item.id)}
-                                className="px-3.5 py-1.5 bg-orange-600 hover:bg-orange-500 text-white rounded-lg text-xs font-bold transition-all active:scale-95 flex items-center gap-1"
-                              >
-                                <Send className="w-3 h-3" />
-                                <span>Comentar</span>
-                              </button>
-                            </div>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={12} className="py-12 text-center text-gray-500">
-                  <ListTodo className="w-9 h-9 mx-auto text-gray-600 mb-2" />
-                  <p className="text-sm font-semibold">No se encontraron pendientes</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Agrega una nueva solicitud con el botón superior "+ Agregar Pendiente".
-                  </p>
-                </td>
-              </tr>
+      {/* Barra de Filtros */}
+      <div className="flex flex-col sm:flex-row items-center gap-3 bg-gray-900/60 p-3 rounded-xl border border-gray-800 text-xs">
+        <div className="relative flex-1 w-full">
+          <label className="text-[11px] font-semibold text-gray-400 block mb-1">Buscar por título, detalle o dónde se hace:</label>
+          <div className="relative flex items-center">
+            <Search className="w-4 h-4 text-gray-500 absolute left-3 pointer-events-none" />
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-gray-950 border border-gray-800 focus:border-emerald-500 rounded-lg pl-9 pr-8 py-2 text-gray-200 focus:outline-none transition-colors"
+            />
+            {searchTerm && (
+              <button 
+                onClick={() => setSearchTerm('')}
+                className="absolute right-2.5 text-gray-500 hover:text-gray-300"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             )}
-          </tbody>
-        </table>
+          </div>
+        </div>
+
+        <div className="w-full sm:w-44">
+          <label className="text-[11px] font-semibold text-gray-400 block mb-1">Estatus:</label>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="w-full bg-gray-950 border border-gray-800 focus:border-emerald-500 rounded-lg px-2.5 py-2 text-gray-200 focus:outline-none"
+          >
+            <option value="Todos">Todos los estatus</option>
+            {ESTATUS_OPTIONS.map(st => (
+              <option key={st} value={st}>{st}</option>
+            ))}
+          </select>
+        </div>
+
+        <div className="w-full sm:w-40">
+          <label className="text-[11px] font-semibold text-gray-400 block mb-1">Urgencia:</label>
+          <select
+            value={urgenciaFilter}
+            onChange={(e) => setUrgenciaFilter(e.target.value)}
+            className="w-full bg-gray-950 border border-gray-800 focus:border-emerald-500 rounded-lg px-2.5 py-2 text-gray-200 focus:outline-none"
+          >
+            <option value="Todas">Todas las urgencias</option>
+            {URGENCIAS.map(u => (
+              <option key={u.id} value={u.id}>{u.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      {/* Modal para Crear / Editar Pendiente */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-th-1c1d1f border border-gray-700 w-full max-w-lg rounded-2xl p-5 space-y-4 shadow-2xl animate-in fade-in my-auto">
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-gray-800 pb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
-                  <ListTodo className="w-4 h-4" />
+      {/* Tabla / Lista de Pendientes (Diseño compacto sin scroll horizontal) */}
+      <div className="w-full bg-gray-900 border border-gray-800 rounded-xl overflow-hidden shadow-xl">
+        {/* Cabecera */}
+        <div className="hidden md:flex items-center gap-3 px-4 py-2.5 bg-gray-950 border-b border-gray-800 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+          <div className="w-8 text-center">✓</div>
+          <div className="flex-1 min-w-0">Título & Descripción</div>
+          <div className="w-48">¿Dónde / Qué se necesita?</div>
+          <div className="w-28 text-center">Fecha Límite</div>
+          <div className="w-32 text-center">Status</div>
+          <div className="w-24 text-center">Bitácora</div>
+          <div className="w-20 text-right pr-2">Acciones</div>
+        </div>
+
+        {/* Contenido de filas */}
+        {filtered.length === 0 ? (
+          <div className="p-10 text-center text-gray-500">
+            <ListTodo className="w-10 h-10 mx-auto mb-2 text-gray-600 opacity-60" />
+            <p className="text-sm font-medium text-gray-400">No hay pendientes que coincidan con la búsqueda.</p>
+            <button
+              onClick={handleOpenNew}
+              className="mt-3 px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-200 rounded-lg text-xs font-medium transition-all"
+            >
+              Registrar nuevo pendiente
+            </button>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-800/80">
+            {filtered.map((item) => {
+              const isAtendido = item.estatus === 'Atendido';
+              const cfg = ESTATUS_CONFIG[item.estatus] || ESTATUS_CONFIG['Pendiente'];
+              const comentariosCount = (item.comentarios || []).length;
+              const isOverdue = item.fechaEntrega && item.fechaEntrega < todayIso && !isAtendido;
+
+              return (
+                <div 
+                  key={item.id}
+                  className={`flex flex-col md:flex-row md:items-center gap-2 md:gap-3 px-4 py-2.5 transition-colors group ${
+                    isAtendido 
+                      ? 'bg-gray-950/40 opacity-70 hover:opacity-100' 
+                      : 'hover:bg-gray-800/40 bg-gray-900/60'
+                  }`}
+                >
+                  {/* Checkbox para tachar al instante */}
+                  <div className="flex items-center justify-between md:justify-center md:w-8">
+                    <button
+                      type="button"
+                      onClick={() => handleToggleCheck(item)}
+                      title={isAtendido ? "Desmarcar como atendido" : "Marcar como atendido"}
+                      className={`w-5 h-5 rounded border flex items-center justify-center transition-all ${
+                        isAtendido 
+                          ? 'bg-emerald-500 border-emerald-400 text-gray-950 shadow-sm shadow-emerald-950' 
+                          : 'border-gray-600 bg-gray-950 hover:border-emerald-500'
+                      }`}
+                    >
+                      {isAtendido && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                    </button>
+
+                    {/* En móvil mostrar el estatus aquí */}
+                    <div className="md:hidden">
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold border ${cfg.badge}`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`}></span>
+                        {item.estatus || 'Pendiente'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Título & Descripción */}
+                  <div className="flex-1 min-w-0 pr-2">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className={`text-sm font-semibold transition-all ${
+                        isAtendido 
+                          ? 'line-through text-gray-400' 
+                          : 'text-gray-100 group-hover:text-emerald-300'
+                      }`}>
+                        {item.titulo || item.descripcion}
+                      </span>
+
+                      {/* Tag de Urgencia sutil */}
+                      {item.urgencia === 'Urgente' && (
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-rose-950 text-rose-300 border border-rose-800 font-bold flex items-center gap-1">
+                          <AlertTriangle className="w-2.5 h-2.5" /> Urgente
+                        </span>
+                      )}
+                      {item.urgencia === 'Alta' && (
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-950 text-amber-300 border border-amber-800 font-medium">
+                          Alta
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Descripción resumida abajo */}
+                    {item.descripcion && item.descripcion !== item.titulo && (
+                      <p className={`text-xs mt-0.5 truncate max-w-xl ${
+                        isAtendido ? 'line-through text-gray-400' : 'text-gray-400'
+                      }`}>
+                        {item.descripcion}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Dónde se hace / Qué se necesita */}
+                  <div className="md:w-48 text-xs flex items-center">
+                    {item.deQuienDepende ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-gray-800/90 text-gray-300 border border-gray-700/70 truncate max-w-full">
+                        <MapPin className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                        <span className="truncate">{item.deQuienDepende}</span>
+                      </span>
+                    ) : (
+                      <span className="text-gray-400 text-xs italic">No especificado</span>
+                    )}
+                  </div>
+
+                  {/* Fecha Límite */}
+                  <div className="md:w-28 text-center text-xs">
+                    {item.fechaEntrega ? (
+                      <div className={`inline-flex items-center gap-1 font-mono text-[11px] ${
+                        isOverdue ? 'text-rose-400 font-bold' : 'text-gray-300'
+                      }`}>
+                        <Calendar className="w-3 h-3 flex-shrink-0 text-gray-500" />
+                        <span>{item.fechaEntrega}</span>
+                      </div>
+                    ) : (
+                      <span className="text-gray-400 text-[11px]">—</span>
+                    )}
+                  </div>
+
+                  {/* Status Dropdown / Pill */}
+                  <div className="hidden md:flex md:w-32 justify-center">
+                    <select
+                      value={item.estatus || 'Pendiente'}
+                      onChange={(e) => handleStatusChange(item, e.target.value)}
+                      className={`text-[11px] font-semibold rounded-lg px-2 py-1 border focus:outline-none transition-all cursor-pointer ${cfg.badge} bg-gray-950`}
+                    >
+                      {ESTATUS_OPTIONS.map(st => (
+                        <option key={st} value={st} className="bg-gray-900 text-gray-200">
+                          {st}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Botón Bitácora / Lápiz con contador */}
+                  <div className="md:w-24 flex items-center justify-start md:justify-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenBitacora(item)}
+                      title="Abrir bitácora y agregar comentarios"
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-all ${
+                        comentariosCount > 0 
+                          ? 'bg-blue-950/60 text-blue-300 border-blue-800 hover:bg-blue-900/60' 
+                          : 'bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700 hover:text-white'
+                      }`}
+                    >
+                      <MessageSquare className="w-3.5 h-3.5 text-blue-400" />
+                      <span>{comentariosCount}</span>
+                    </button>
+                  </div>
+
+                  {/* Acciones: Editar y Borrar */}
+                  <div className="md:w-20 flex items-center justify-end gap-1 pr-2">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEdit(item)}
+                      title="Editar pendiente completo"
+                      className="p-1.5 text-gray-400 hover:text-emerald-400 hover:bg-gray-800 rounded transition-colors"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(item)}
+                      title="Eliminar pendiente"
+                      className="p-1.5 text-gray-400 hover:text-rose-400 hover:bg-gray-800 rounded transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
-                <h3 className="font-bold text-gray-100 text-base">
-                  {editingItem ? 'Editar Pendiente / Solicitud' : 'Nuevo Pendiente / Solicitud'}
-                </h3>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* MODAL: BITÁCORA Y SEGUIMIENTO (Lápiz / Comentarios) */}
+      {bitacoraItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+            {/* Modal Header */}
+            <div className="p-4 bg-gray-950 border-b border-gray-800 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-blue-500/10 text-blue-400 rounded-lg border border-blue-500/20">
+                  <History className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-gray-100 flex items-center gap-2">
+                    Bitácora de Seguimiento
+                  </h3>
+                  <p className="text-xs text-gray-400 truncate max-w-md">
+                    {bitacoraItem.titulo || bitacoraItem.descripcion}
+                  </p>
+                </div>
               </div>
               <button
-                type="button"
-                onClick={() => setIsModalOpen(false)}
-                className="text-gray-400 hover:text-gray-100 p-1 rounded-lg"
+                onClick={() => setBitacoraItem(null)}
+                className="text-gray-400 hover:text-gray-200 p-1.5 rounded-lg hover:bg-gray-800"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmitForm} className="space-y-3.5 text-xs">
-              {/* Descripción */}
+            {/* Estado actual & Dónde se hace */}
+            <div className="px-4 py-2 bg-gray-950/50 border-b border-gray-800/80 flex items-center justify-between text-xs">
+              <span className="text-gray-400 flex items-center gap-1">
+                Lugar / Necesidad: <strong className="text-gray-200">{bitacoraItem.deQuienDepende || 'General'}</strong>
+              </span>
+              <span className={`px-2 py-0.5 rounded-full border text-[11px] font-semibold ${ESTATUS_CONFIG[bitacoraItem.estatus]?.badge || ''}`}>
+                ● {bitacoraItem.estatus}
+              </span>
+            </div>
+
+            {/* Historial de Comentarios */}
+            <div className="p-4 overflow-y-auto flex-1 space-y-3 min-h-[160px] max-h-[300px]">
+              {(!bitacoraItem.comentarios || bitacoraItem.comentarios.length === 0) ? (
+                <div className="text-center py-8 text-gray-500 text-xs">
+                  <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-40 text-gray-400" />
+                  Aún no hay comentarios en la bitácora. Registra el primer avance o nota abajo.
+                </div>
+              ) : (
+                bitacoraItem.comentarios.map((c, idx) => (
+                  <div key={c.id || idx} className="bg-gray-950 border border-gray-800/80 rounded-xl p-3 text-xs">
+                    <div className="flex items-center justify-between text-[11px] text-gray-400 mb-1 border-b border-gray-800/50 pb-1">
+                      <span className="font-semibold text-emerald-400">{c.autor || 'Usuario'}</span>
+                      <span className="font-mono text-gray-400">{c.fecha || ''}</span>
+                    </div>
+                    <p className="text-gray-200 whitespace-pre-wrap leading-relaxed mt-1">
+                      {c.texto}
+                    </p>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Formulario para nuevo comentario / actualización de estatus */}
+            <form onSubmit={handleSaveBitacoraComentario} className="p-4 bg-gray-950 border-t border-gray-800 space-y-3">
               <div>
-                <label className="text-gray-300 font-semibold block mb-1">
-                  Descripción de la Solicitud / Pendiente *
+                <label className="block text-xs font-semibold text-gray-300 mb-1">
+                  Escribir nuevo comentario / avance:
                 </label>
                 <textarea
+                  rows={2}
                   required
-                  rows={3}
-                  value={formDescripcion}
-                  onChange={(e) => setFormDescripcion(e.target.value)}
-                  className="w-full bg-th-151617 text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 leading-relaxed"
+                  value={nuevoComentarioTexto}
+                  onChange={(e) => setNuevoComentarioTexto(e.target.value)}
+                  className="w-full bg-gray-900 border border-gray-700 focus:border-blue-500 rounded-lg p-2.5 text-xs text-gray-100 focus:outline-none"
                 />
               </div>
 
-              {/* Fila: Urgencia y Estatus */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                    Cambiar estatus con este comentario:
+                  </label>
+                  <select
+                    value={comentarioNuevoEstatus}
+                    onChange={(e) => setComentarioNuevoEstatus(e.target.value)}
+                    className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-gray-200 focus:outline-none focus:border-blue-500 text-xs"
+                  >
+                    <option value="">Mantener estatus actual ({bitacoraItem.estatus})</option>
+                    <option value="Esperando">Esperando (en espera de algo)</option>
+                    <option value="Atendido">Atendido (ya se hizo y envió)</option>
+                    <option value="En Proceso">En Proceso</option>
+                    <option value="Pendiente">Pendiente</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold text-gray-400 mb-1">
+                    Autor del comentario:
+                  </label>
+                  <input
+                    type="text"
+                    value={comentarioAutor}
+                    onChange={(e) => setComentarioAutor(e.target.value)}
+                    className="w-full bg-gray-900 border border-gray-700 rounded-lg p-2 text-gray-200 focus:outline-none focus:border-blue-500 text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setBitacoraItem(null)}
+                  className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs font-medium"
+                >
+                  Cerrar
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingComentario || !nuevoComentarioTexto.trim()}
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold shadow-md transition-all"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  {savingComentario ? 'Guardando...' : 'Agregar a Bitácora'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CREAR / EDITAR PENDIENTE */}
+      {isFormModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col">
+            {/* Modal Header */}
+            <div className="p-4 bg-gray-950 border-b border-gray-800 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
+                  <ListTodo className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-gray-100">
+                    {editingItem ? 'Editar Pendiente' : 'Nuevo Pendiente'}
+                  </h3>
+                  <p className="text-xs text-gray-400">
+                    Ingresa los detalles para la requisición o tarea
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsFormModalOpen(false)}
+                className="text-gray-400 hover:text-gray-200 p-1.5 rounded-lg hover:bg-gray-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Form */}
+            <form onSubmit={handleSaveForm} className="p-4 space-y-3.5 text-xs">
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1">
+                  Título del Pendiente: *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={formTitulo}
+                  onChange={(e) => setFormTitulo(e.target.value)}
+                  className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 rounded-lg p-2.5 text-xs text-gray-100 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1">
+                  Descripción corta o resumen:
+                </label>
+                <textarea
+                  rows={2}
+                  value={formDescripcion}
+                  onChange={(e) => setFormDescripcion(e.target.value)}
+                  className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 rounded-lg p-2.5 text-xs text-gray-100 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-300 mb-1">
+                  ¿A quién se pide, qué se necesita o dónde se hace?:
+                </label>
+                <input
+                  type="text"
+                  value={formDeQuienDepende}
+                  onChange={(e) => setFormDeQuienDepende(e.target.value)}
+                  className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 rounded-lg p-2.5 text-xs text-gray-100 focus:outline-none"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-gray-400 font-semibold block mb-1">Urgencia</label>
+                  <label className="block text-xs font-semibold text-gray-300 mb-1">
+                    Fecha Límite / Entrega:
+                  </label>
+                  <input
+                    type="date"
+                    value={formFechaEntrega}
+                    onChange={(e) => setFormFechaEntrega(e.target.value)}
+                    className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 rounded-lg p-2 text-xs text-gray-100 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-gray-300 mb-1">
+                    Urgencia:
+                  </label>
                   <select
                     value={formUrgencia}
                     onChange={(e) => setFormUrgencia(e.target.value)}
-                    className="w-full bg-th-151617 text-gray-100 p-2 rounded-lg border border-gray-700 font-medium focus:outline-none focus:ring-1 focus:ring-orange-500"
+                    className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 rounded-lg p-2 text-xs text-gray-100 focus:outline-none"
                   >
                     {URGENCIAS.map(u => (
                       <option key={u.id} value={u.id}>{u.label}</option>
                     ))}
                   </select>
                 </div>
-
-                <div>
-                  <label className="text-gray-400 font-semibold block mb-1">Estatus</label>
-                  <select
-                    value={formEstatus}
-                    onChange={(e) => setFormEstatus(e.target.value)}
-                    className="w-full bg-th-151617 text-gray-100 p-2 rounded-lg border border-gray-700 font-medium focus:outline-none focus:ring-1 focus:ring-orange-500"
-                  >
-                    {ESTATUS_LIST.map(e => (
-                      <option key={e.id} value={e.id}>{e.label}</option>
-                    ))}
-                  </select>
-                </div>
               </div>
 
-              {/* Fila: Quién lo pide y Para quién */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-gray-400 font-semibold block mb-1">Quién lo pide</label>
-                  <input
-                    type="text"
-                    value={formQuienPide}
-                    onChange={(e) => setFormQuienPide(e.target.value)}
-                    className="w-full bg-th-151617 text-gray-100 p-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-gray-400 font-semibold block mb-1">Para quién</label>
-                  <input
-                    type="text"
-                    value={formParaQuien}
-                    onChange={(e) => setFormParaQuien(e.target.value)}
-                    className="w-full bg-th-151617 text-gray-100 p-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
-                  />
-                </div>
-              </div>
-
-              {/* Fila: De quién depende y Fecha de Solicitud */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-gray-400 font-semibold block mb-1">De quién depende</label>
-                  <input
-                    type="text"
-                    value={formDeQuienDepende}
-                    onChange={(e) => setFormDeQuienDepende(e.target.value)}
-                    className="w-full bg-th-151617 text-gray-100 p-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium text-orange-400"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-gray-400 font-semibold block mb-1">Fecha de Solicitud</label>
-                  <input
-                    type="date"
-                    value={formFechaSolicitud}
-                    onChange={(e) => setFormFechaSolicitud(e.target.value)}
-                    className="w-full bg-th-151617 text-gray-100 p-2 rounded-lg border border-gray-700 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-orange-500"
-                  />
-                </div>
-              </div>
-
-              {/* Fecha Máxima de Entrega */}
               <div>
-                <label className="text-gray-400 font-semibold block mb-1">
-                  Fecha Máxima de Entrega (Límite)
+                <label className="block text-xs font-semibold text-gray-300 mb-1">
+                  Estatus inicial:
                 </label>
-                <input
-                  type="date"
-                  value={formFechaEntrega}
-                  onChange={(e) => setFormFechaEntrega(e.target.value)}
-                  className="w-full bg-th-151617 text-gray-100 p-2 rounded-lg border border-gray-700 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-orange-500 font-bold"
-                />
+                <select
+                  value={formEstatus}
+                  onChange={(e) => setFormEstatus(e.target.value)}
+                  className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 rounded-lg p-2 text-xs text-gray-100 focus:outline-none"
+                >
+                  {ESTATUS_OPTIONS.map(st => (
+                    <option key={st} value={st}>{st}</option>
+                  ))}
+                </select>
               </div>
 
-              {/* Botones */}
-              <div className="flex justify-end gap-2 pt-3 border-t border-gray-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-800">
                 <button
                   type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-3.5 py-2 rounded-lg text-gray-400 hover:text-gray-100 bg-gray-800 transition-colors"
+                  onClick={() => setIsFormModalOpen(false)}
+                  className="px-3.5 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs font-medium"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-white font-bold transition-all shadow"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg text-xs font-semibold shadow-md transition-all"
                 >
-                  {saving ? 'Guardando...' : 'Guardar Pendiente'}
+                  {saving ? 'Guardando...' : (editingItem ? 'Guardar Cambios' : 'Crear Pendiente')}
                 </button>
               </div>
             </form>

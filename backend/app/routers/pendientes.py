@@ -3,7 +3,8 @@ import datetime
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from ..database import get_db
+from sqlalchemy import text
+from ..database import get_db, engine
 from ..models import all_models as models
 from ..schemas import all_schemas as schemas
 
@@ -11,8 +12,13 @@ router = APIRouter(prefix="/pendientes", tags=["pendientes"])
 
 def init_pendientes_db():
     try:
-        from ..database import engine
         models.Base.metadata.create_all(bind=engine)
+        with engine.connect() as conn:
+            try:
+                conn.execute(text("ALTER TABLE pendientes ADD COLUMN titulo VARCHAR DEFAULT ''"))
+                conn.commit()
+            except Exception:
+                pass
     except Exception as e:
         print("Pendientes DB init warning:", e)
 
@@ -26,7 +32,8 @@ def format_pendiente_dict(p: models.Pendiente):
 
     return {
         "id": p.id,
-        "descripcion": p.descripcion,
+        "titulo": getattr(p, "titulo", "") or (p.descripcion[:50] if p.descripcion else "Sin título"),
+        "descripcion": p.descripcion or "",
         "urgencia": p.urgencia or "Media",
         "quienPide": p.quien_pide or "",
         "paraQuien": p.para_quien or "",
@@ -54,7 +61,8 @@ def guardar_pendiente(data: schemas.PendienteCreateSchema, db: Session = Depends
         p = db.query(models.Pendiente).filter(models.Pendiente.id == data.id).first()
         if not p:
             raise HTTPException(status_code=404, detail="Pendiente no encontrado")
-        p.descripcion = data.descripcion
+        p.titulo = data.titulo or (data.descripcion[:50] if data.descripcion else "")
+        p.descripcion = data.descripcion or ""
         p.urgencia = data.urgencia or "Media"
         p.quien_pide = data.quien_pide or ""
         p.para_quien = data.para_quien or ""
@@ -67,7 +75,8 @@ def guardar_pendiente(data: schemas.PendienteCreateSchema, db: Session = Depends
         p.updated_at = now_iso
     else:
         p = models.Pendiente(
-            descripcion=data.descripcion,
+            titulo=data.titulo or (data.descripcion[:50] if data.descripcion else ""),
+            descripcion=data.descripcion or "",
             urgencia=data.urgencia or "Media",
             quien_pide=data.quien_pide or "",
             para_quien=data.para_quien or "",
@@ -115,6 +124,8 @@ def agregar_comentario(pendiente_id: int, payload: schemas.NuevoComentarioSchema
     }
     coms.append(nuevo)
     p.comentarios_json = json.dumps(coms)
+    if payload.nuevoEstatus:
+        p.estatus = payload.nuevoEstatus
     p.updated_at = datetime.datetime.now().isoformat()
     db.commit()
     db.refresh(p)
