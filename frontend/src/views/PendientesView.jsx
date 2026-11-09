@@ -72,7 +72,6 @@ export default function PendientesView({
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('Todos');
-  const [urgenciaFilter, setUrgenciaFilter] = useState('Todas');
   
   // Modal Crear / Editar
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -116,9 +115,8 @@ export default function PendientesView({
 
     const normItemSt = normalizeStatus(item.estatus);
     const matchStatus = statusFilter === 'Todos' || normItemSt === statusFilter;
-    const matchUrgencia = urgenciaFilter === 'Todas' || (item.urgencia || 'Media') === urgenciaFilter;
 
-    return matchSearch && matchStatus && matchUrgencia;
+    return matchSearch && matchStatus;
   });
 
   // Metrics
@@ -405,55 +403,25 @@ export default function PendientesView({
         </div>
       </div>
 
-      {/* 3. Barra de Filtros */}
-      <div className="flex flex-col sm:flex-row items-center gap-3 bg-gray-900/60 p-3 rounded-xl border border-gray-800 text-xs">
-        <div className="relative flex-1 w-full">
-          <label className="text-[11px] font-semibold text-gray-400 block mb-1">Buscar por título, detalle o tags:</label>
-          <div className="relative flex items-center">
-            <Search className="w-4 h-4 text-gray-500 absolute left-3 pointer-events-none" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-gray-950 border border-gray-800 focus:border-emerald-500 rounded-lg pl-9 pr-8 py-2 text-gray-200 focus:outline-none transition-colors"
-            />
-            {searchTerm && (
-              <button 
-                onClick={() => setSearchTerm('')}
-                className="absolute right-2.5 text-gray-500 hover:text-gray-300"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="w-full sm:w-44">
-          <label className="text-[11px] font-semibold text-gray-400 block mb-1">Estatus:</label>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full bg-gray-950 border border-gray-800 focus:border-emerald-500 rounded-lg px-2.5 py-2 text-gray-200 focus:outline-none"
-          >
-            <option value="Todos">Todos los estatus</option>
-            {ESTATUS_OPTIONS.map(st => (
-              <option key={st} value={st}>{st}</option>
-            ))}
-          </select>
-        </div>
-
-        <div className="w-full sm:w-40">
-          <label className="text-[11px] font-semibold text-gray-400 block mb-1">Urgencia:</label>
-          <select
-            value={urgenciaFilter}
-            onChange={(e) => setUrgenciaFilter(e.target.value)}
-            className="w-full bg-gray-950 border border-gray-800 focus:border-emerald-500 rounded-lg px-2.5 py-2 text-gray-200 focus:outline-none"
-          >
-            <option value="Todas">Todas las urgencias</option>
-            {URGENCIAS.map(u => (
-              <option key={u.id} value={u.id}>{u.label}</option>
-            ))}
-          </select>
+      {/* 3. Barra de Búsqueda (filtrado de estatus se hace arriba con los rectángulos) */}
+      <div className="bg-gray-900/60 p-3 rounded-xl border border-gray-800 text-xs">
+        <label className="text-[11px] font-semibold text-gray-400 block mb-1">Buscar por título, detalle o tags:</label>
+        <div className="relative flex items-center">
+          <Search className="w-4 h-4 text-gray-500 absolute left-3 pointer-events-none" />
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full bg-gray-950 border border-gray-800 focus:border-emerald-500 rounded-lg pl-9 pr-8 py-2 text-gray-200 focus:outline-none transition-colors"
+          />
+          {searchTerm && (
+            <button 
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2.5 text-gray-500 hover:text-gray-300"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
       </div>
 
@@ -542,17 +510,7 @@ export default function PendientesView({
                         {item.titulo || item.descripcion}
                       </span>
 
-                      {/* Tag de Urgencia sutil */}
-                      {item.urgencia === 'Urgente' && (
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-rose-950 text-rose-300 border border-rose-800 font-bold flex items-center gap-1">
-                          <AlertTriangle className="w-2.5 h-2.5" /> Urgente
-                        </span>
-                      )}
-                      {item.urgencia === 'Alta' && (
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-950 text-amber-300 border border-amber-800 font-medium">
-                          Alta
-                        </span>
-                      )}
+
                     </div>
 
                     {/* Descripción abajo: corte y sigue abajo sin ... */}
@@ -943,33 +901,18 @@ export default function PendientesView({
 
                 <div>
                   <label className="block text-xs font-semibold text-gray-300 mb-1">
-                    Urgencia:
+                    Estatus inicial:
                   </label>
                   <select
-                    value={formUrgencia}
-                    onChange={(e) => setFormUrgencia(e.target.value)}
+                    value={formEstatus}
+                    onChange={(e) => setFormEstatus(e.target.value)}
                     className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 rounded-lg p-2 text-xs text-gray-100 focus:outline-none"
                   >
-                    {URGENCIAS.map(u => (
-                      <option key={u.id} value={u.id}>{u.label}</option>
+                    {ESTATUS_OPTIONS.map(st => (
+                      <option key={st} value={st}>{st}</option>
                     ))}
                   </select>
                 </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-gray-300 mb-1">
-                  Estatus inicial:
-                </label>
-                <select
-                  value={formEstatus}
-                  onChange={(e) => setFormEstatus(e.target.value)}
-                  className="w-full bg-gray-950 border border-gray-700 focus:border-emerald-500 rounded-lg p-2 text-xs text-gray-100 focus:outline-none"
-                >
-                  {ESTATUS_OPTIONS.map(st => (
-                    <option key={st} value={st}>{st}</option>
-                  ))}
-                </select>
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-3 border-t border-gray-800">
