@@ -40,6 +40,7 @@ class Pedido(Base):
     motivo_cancelacion = Column(Text, nullable=True)
     cotizacion_origen = Column(String, nullable=True)
     convertida_a_pedido = Column(String, nullable=True)
+    terminos = Column(Text, nullable=True)
 
     productos = relationship("PedidoProducto", back_populates="pedido", cascade="all, delete-orphan")
 
@@ -152,6 +153,10 @@ class MovimientoCaja(Base):
     es_egreso_pedido = Column(Boolean, default=False)
     categoria = Column(String, default="Otros")
     nota = Column(String, default="")
+    cancelado = Column(Boolean, default=False)
+    cancelado_motivo = Column(String, default="")
+    cancelado_por = Column(String, default="")
+    cancelado_fecha = Column(String, default="")
 
 
 class Recoleccion(Base):
@@ -192,6 +197,7 @@ class MaterialCalculadora(Base):
     ancho = Column(Float, default=100.0)
     alto = Column(Float, default=100.0)
     costo = Column(Float, default=0.0)
+    precio_cliente = Column(Float, default=0.0)
 
 
 class ProductoCatalogo(Base):
@@ -237,4 +243,23 @@ class FacturaCFDI(Base):
     es_deducible_iva = Column(Boolean, default=True)
     porcentaje_deducible = Column(Float, default=100.0) # 8.5 para Alimentos, 100 para Insumos
     comentario_contador = Column(Text, default="")
+
+
+class Pendiente(Base):
+    __tablename__ = "pendientes"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    titulo = Column(String, default="")
+    tags = Column(String, default="")
+    descripcion = Column(Text, nullable=False)
+    urgencia = Column(String, default="Media") # Baja, Media, Alta, Urgente
+    quien_pide = Column(String, default="")
+    para_quien = Column(String, default="")
+    de_quien_depende = Column(String, default="")
+    fecha_solicitud = Column(String, default=lambda: datetime.date.today().isoformat())
+    fecha_entrega = Column(String, default="")
+    estatus = Column(String, default="Pendiente") # Pendiente, En Proceso, Atendido, Cancelado
+    comentarios_json = Column(Text, default="[]")
+    created_at = Column(String, default=lambda: datetime.datetime.now().isoformat())
+    updated_at = Column(String, default=lambda: datetime.datetime.now().isoformat())
 

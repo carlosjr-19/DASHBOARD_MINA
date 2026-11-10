@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, ArrowDown, ArrowUpRight, ChevronDown, Check } from 'lucide-react';
+import PillSelect from './PillSelect';
 
 const CUENTAS = [
   'NU MINA',
@@ -40,7 +41,6 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
 
   const handleSelectOrder = (order) => {
     if (!order) {
-      // Ingreso Independiente
       setSelectedPedidoId('');
       setDetalle('');
       setDropdownOpen(false);
@@ -77,7 +77,6 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
           finalDetalle = `Abono a pedido ${selectedPedido?.id || selectedPedidoId} | ${selectedPedido?.cliente || ''}`.trim();
         }
       } else {
-        // Ingreso Independiente
         if (!finalDetalle) {
           alert('Por favor especifica el motivo o descripción del ingreso independiente');
           return;
@@ -86,7 +85,6 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
         finalPedidoId = null;
       }
     } else {
-      // Egreso
       if (!finalDetalle) {
         alert('Por favor especifica el motivo o concepto del egreso');
         return;
@@ -114,112 +112,81 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-backdrop-in cursor-pointer" onClick={onClose}>
       <div 
-        className="bg-th-18191c border border-gray-700/80 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95"
-        onClick={() => dropdownOpen && setDropdownOpen(false)}
+        className="bg-white dark:bg-gray-900 border border-gray-100 w-full max-w-md rounded-3xl shadow-2xl overflow-visible animate-modal-in cursor-default p-6 sm:p-8"
+        onClick={(e) => { e.stopPropagation(); if (dropdownOpen) setDropdownOpen(false); }}
       >
-        {/* Header con icono circular e indicativo */}
-        <div className="p-4 sm:p-5 border-b border-gray-800 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 border ${
-              isIngreso
-                ? 'bg-emerald-950/80 border-emerald-700/70 text-emerald-400'
-                : 'bg-rose-950/80 border-rose-700/70 text-rose-400'
+        {/* Header con icono circular */}
+        <div className="flex items-center justify-between mb-6">
+          <h3 className={`text-xl font-black flex items-center ${isIngreso ? 'text-green-700' : 'text-red-600'}`}>
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${
+              isIngreso ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'
             }`}>
-              {isIngreso ? (
-                <ArrowDown className="w-4 h-4 text-emerald-400" />
-              ) : (
-                <ArrowUpRight className="w-4 h-4 text-rose-400" />
-              )}
+              {isIngreso ? <ArrowDown className="w-4 h-4" /> : <ArrowUpRight className="w-4 h-4" />}
             </div>
-            <div>
-              <h3 className="font-bold text-sm sm:text-base text-gray-100">
-                {isIngreso ? 'Registrar Ingreso' : 'Registrar Egreso / Gasto'}
-              </h3>
-              <span className="text-[10px] text-gray-400 block -mt-0.5">
-                {isIngreso ? 'Abono a pedido o ingreso independiente' : 'Gasto operativo o de insumos'}
-              </span>
-            </div>
-          </div>
+            <span>{isIngreso ? 'Registrar Ingreso' : 'Registrar Egreso'}</span>
+          </h3>
 
           <button 
             type="button" 
             onClick={onClose} 
-            className="text-gray-400 hover:text-gray-200 p-1.5 rounded-lg hover:bg-gray-800 transition-colors"
+            className="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Formulario */}
-        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4 text-xs">
+        <form onSubmit={handleSubmit} className="space-y-5 text-xs">
           
-          {/* Estructura específica para INGRESO */}
           {isIngreso ? (
             <>
-              {/* 1. VINCULAR A PEDIDO (OPCIONAL) */}
+              {/* 1. VINCULAR A PEDIDO (OPCIONAL) - Píldora Dropdown ref_site.html */}
               <div className="relative">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1.5">
-                  VINCULAR A PEDIDO (OPCIONAL)
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1 pl-2">
+                  Vincular a Pedido (Opcional)
                 </label>
 
-                {/* Dropdown Selector Trigger */}
-                <div
+                <button
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     setDropdownOpen(!dropdownOpen);
                   }}
-                  className={`w-full bg-th-121314 text-gray-200 p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition-all ${
-                    dropdownOpen ? 'border-emerald-500 ring-1 ring-emerald-500/30' : 'border-gray-700 hover:border-gray-600'
-                  }`}
+                  className="w-full bg-white border border-gray-200 rounded-full px-4 py-2.5 text-left font-bold text-xs text-gray-800 shadow-sm flex items-center justify-between hover:border-[#173865] transition focus:outline-none focus:ring-2 focus:ring-[#173865]/20"
                 >
                   {selectedPedido ? (
-                    <div className="flex items-center justify-between w-full pr-2">
-                      <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800/80 font-mono font-bold text-xs">
-                          {selectedPedido.id}
-                        </span>
-                        <span className="font-semibold text-gray-100 truncate max-w-[170px]">
-                          {selectedPedido.cliente || 'Sin nombre'}
-                        </span>
-                      </div>
-                      <span className="text-rose-400 font-mono font-bold text-xs">
-                        Resta: {formatMoney(Math.max(0, (parseFloat(selectedPedido.total) || 0) - (parseFloat(selectedPedido.pagado) || 0)))}
-                      </span>
-                    </div>
+                    <span className="truncate pr-2 text-gray-800 font-bold">
+                      {selectedPedido.id} - {selectedPedido.cliente || 'Cliente'} (Resta: {formatMoney(Math.max(0, (parseFloat(selectedPedido.total) || 0) - (parseFloat(selectedPedido.pagado) || 0)))})
+                    </span>
                   ) : (
-                    <div className="flex items-center justify-between w-full pr-2">
-                      <span className="font-semibold text-gray-200">Ingreso Independiente</span>
-                      <span className="text-[11px] text-gray-500">Sin vincular</span>
-                    </div>
+                    <span className="text-gray-500 font-semibold">Ingreso Independiente</span>
                   )}
                   <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 shrink-0 ${
-                    dropdownOpen ? 'rotate-180 text-emerald-400' : ''
+                    dropdownOpen ? 'rotate-180 text-[#173865]' : ''
                   }`} />
-                </div>
+                </button>
 
                 {/* Dropdown Options Menu */}
                 {dropdownOpen && (
                   <div 
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute left-0 right-0 top-full mt-1.5 bg-th-141518 border border-gray-700 rounded-xl overflow-hidden shadow-2xl z-50 max-h-56 overflow-y-auto divide-y divide-gray-800/80 animate-in fade-in"
+                    className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-[26px] shadow-[0_14px_38px_-6px_rgba(23,56,101,0.22)] border border-gray-100 p-1.5 z-50 max-h-56 overflow-y-auto animate-modal-in space-y-0.5"
                   >
-                    {/* Opción 1: Ingreso Independiente */}
                     <div
                       onClick={() => handleSelectOrder(null)}
-                      className={`flex items-center justify-between p-3 hover:bg-gray-800/60 cursor-pointer transition-colors ${
-                        !selectedPedidoId ? 'bg-emerald-950/20 text-emerald-400' : 'text-gray-200'
+                      className={`px-4 py-2 rounded-full hover:bg-[#eff4ff] cursor-pointer text-xs font-bold flex justify-between items-center transition-colors ${
+                        !selectedPedidoId ? 'bg-[#eff4ff] text-[#173865]' : 'text-gray-700'
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        {!selectedPedidoId && <Check className="w-3.5 h-3.5 text-emerald-400" />}
-                        <span className="font-semibold">Ingreso Independiente</span>
+                        {!selectedPedidoId && <Check className="w-3.5 h-3.5 text-[#173865]" />}
+                        <span>Ingreso Independiente</span>
                       </div>
-                      <span className="text-[11px] text-gray-500">Sin vincular</span>
+                      <span className="text-[10px] text-gray-400 font-normal">Sin vincular</span>
                     </div>
 
-                    {/* Opciones de Pedidos Activos con Deuda */}
                     {activeOrdersWithDebt.length > 0 ? (
                       activeOrdersWithDebt.map((p) => {
                         const total = parseFloat(p.total) || 0;
@@ -231,74 +198,68 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                           <div
                             key={p.id}
                             onClick={() => handleSelectOrder(p)}
-                            className={`flex items-center justify-between p-2.5 hover:bg-gray-800/60 cursor-pointer transition-colors ${
-                              isThisSelected ? 'bg-emerald-950/20' : ''
+                            className={`px-4 py-2 rounded-full hover:bg-[#eff4ff] cursor-pointer text-xs font-bold flex justify-between items-center transition-colors ${
+                              isThisSelected ? 'bg-[#eff4ff] text-[#173865]' : 'text-gray-700'
                             }`}
                           >
-                            <div className="flex items-center gap-2">
-                              {isThisSelected && <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
-                              <span className="px-2 py-0.5 rounded bg-blue-950 text-blue-400 border border-blue-800/80 font-mono font-bold text-xs">
+                            <div className="flex items-center gap-2 truncate">
+                              {isThisSelected && <Check className="w-3.5 h-3.5 text-[#173865] shrink-0" />}
+                              <span className="bg-blue-50 text-[#173865] px-2 py-0.5 rounded-full font-mono text-[10px] font-bold">
                                 {p.id}
                               </span>
-                              <span className="font-semibold text-gray-200 truncate max-w-[160px]">
-                                {p.cliente || 'Sin nombre'}
-                              </span>
+                              <span className="truncate">{p.cliente || 'Sin nombre'}</span>
                             </div>
 
-                            <div className="text-right font-mono text-xs font-bold text-rose-400">
-                              <span className="text-gray-500 text-[10px] font-sans font-normal mr-1">Resta:</span>
-                              {formatMoney(resta)}
-                            </div>
+                            <span className="text-xs text-gray-500 font-medium ml-2 whitespace-nowrap">
+                              Resta: <strong className="text-gray-800 font-bold">{formatMoney(resta)}</strong>
+                            </span>
                           </div>
                         );
                       })
                     ) : (
-                      <div className="p-3 text-center text-gray-500 italic text-[11px]">
-                        No hay pedidos activos con saldo pendiente
+                      <div className="px-4 py-2.5 text-xs text-gray-400 italic text-center">
+                        No hay pedidos pendientes de cobro.
                       </div>
                     )}
                   </div>
                 )}
               </div>
 
-              {/* 2. MOTIVO O DESCRIPCIÓN (Solo si es Ingreso Independiente) */}
               {!selectedPedidoId ? (
-                <div className="animate-in fade-in">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                    MOTIVO O DESCRIPCIÓN *
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1 pl-2">
+                    Motivo o Descripción *
                   </label>
                   <input
                     type="text"
                     required
                     value={detalle}
                     onChange={(e) => setDetalle(e.target.value)}
-                    className="w-full bg-th-121314 text-gray-100 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs"
+                    className="w-full bg-white border border-gray-200 rounded-full px-4 py-2.5 font-bold text-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-[#173865]"
                   />
                 </div>
               ) : (
-                /* Badge informativo cuando está vinculado a un pedido */
-                <div className="bg-th-121314 p-3 rounded-xl border border-gray-800 flex items-center justify-between text-xs animate-in fade-in">
+                <div className="bg-blue-50/70 p-3.5 rounded-2xl border border-blue-100 flex items-center justify-between text-xs">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-gray-500 block">Pedido Vinculado</span>
-                    <span className="font-bold text-gray-200">{selectedPedido.id} — {selectedPedido.cliente}</span>
+                    <span className="text-[10px] uppercase font-bold text-[#173865] block">Pedido Vinculado</span>
+                    <span className="font-bold text-gray-800">{selectedPedido.id} — {selectedPedido.cliente}</span>
                   </div>
                   <div className="text-right">
                     <span className="text-[10px] uppercase font-bold text-gray-500 block">Saldo Pendiente</span>
-                    <span className="font-mono font-bold text-rose-400">
+                    <span className="font-black text-red-600">
                       {formatMoney(Math.max(0, (parseFloat(selectedPedido.total) || 0) - (parseFloat(selectedPedido.pagado) || 0)))}
                     </span>
                   </div>
                 </div>
               )}
 
-              {/* 3. MONTO y CUENTA DESTINO en 2 Columnas */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                    MONTO *
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1 pl-2">
+                    Monto *
                   </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2.5 text-emerald-400 font-bold text-xs">$</span>
+                  <div className="flex items-center bg-green-50 rounded-full border border-green-200 px-3.5 py-2 shadow-inner">
+                    <span className="text-green-700 font-bold mr-1">$</span>
                     <input
                       type="number"
                       step="any"
@@ -306,50 +267,46 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                       required
                       value={monto}
                       onChange={(e) => setMonto(e.target.value)}
-                      className="w-full bg-th-121314 text-emerald-400 pl-7 pr-3 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-sm font-mono font-bold"
+                      className="w-full bg-transparent border-none p-0 text-green-700 font-black text-base outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                    CUENTA DESTINO
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1 pl-2">
+                    Cuenta Destino
                   </label>
-                  <select
+                  <PillSelect
                     value={cuenta}
-                    onChange={(e) => setCuenta(e.target.value)}
-                    className="w-full bg-th-121314 text-gray-200 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-xs font-semibold cursor-pointer"
-                  >
-                    {CUENTAS.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+                    onChange={setCuenta}
+                    options={CUENTAS}
+                    className="w-full px-4 py-2.5 text-xs"
+                  />
                 </div>
               </div>
             </>
           ) : (
-            /* Estructura para EGRESO / GASTO */
             <>
               <div>
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                  MOTIVO O DESCRIPCIÓN *
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1 pl-2">
+                  Motivo / Descripción *
                 </label>
                 <input
                   type="text"
                   required
                   value={detalle}
                   onChange={(e) => setDetalle(e.target.value)}
-                  className="w-full bg-th-121314 text-gray-100 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-rose-500 text-xs"
+                  className="w-full bg-white border border-gray-200 rounded-full px-4 py-2.5 font-bold text-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-[#173865]"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                    MONTO *
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1 pl-2">
+                    Monto *
                   </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-2.5 text-rose-400 font-bold text-xs">$</span>
+                  <div className="flex items-center bg-red-50 rounded-full border border-red-200 px-3.5 py-2 shadow-inner">
+                    <span className="text-red-600 font-bold mr-1">$</span>
                     <input
                       type="number"
                       step="any"
@@ -357,53 +314,46 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                       required
                       value={monto}
                       onChange={(e) => setMonto(e.target.value)}
-                      className="w-full bg-th-121314 text-rose-400 pl-7 pr-3 py-2 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-rose-500 text-sm font-mono font-bold"
+                      className="w-full bg-transparent border-none p-0 text-red-600 font-black text-base outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                    CUENTA ORIGEN
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1 pl-2">
+                    Cuenta Origen
                   </label>
-                  <select
+                  <PillSelect
                     value={cuenta}
-                    onChange={(e) => setCuenta(e.target.value)}
-                    className="w-full bg-th-121314 text-gray-200 p-2.5 rounded-xl border border-gray-700 focus:outline-none focus:ring-1 focus:ring-rose-500 text-xs font-semibold cursor-pointer"
-                  >
-                    {CUENTAS.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+                    onChange={setCuenta}
+                    options={CUENTAS}
+                    className="w-full px-4 py-2.5 text-xs"
+                  />
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                    CATEGORÍA
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1 pl-2">
+                    Categoría
                   </label>
-                  <select
+                  <PillSelect
                     value={categoria}
-                    onChange={(e) => setCategoria(e.target.value)}
-                    className="w-full bg-th-121314 text-gray-200 p-2 rounded-xl border border-gray-700 text-xs"
-                  >
-                    <option value="Insumos">Insumos</option>
-                    <option value="Gasolina">Gasolina</option>
-                    <option value="Alimentos">Alimentos</option>
-                    <option value="Otros">Otros</option>
-                  </select>
+                    onChange={setCategoria}
+                    options={['Insumos', 'Gasolina', 'Alimentos', 'Otros']}
+                    className="w-full px-4 py-2 text-xs"
+                  />
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
-                    NOTA ADICIONAL
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1 pl-2">
+                    Nota Adicional
                   </label>
                   <input
                     type="text"
                     value={nota}
                     onChange={(e) => setNota(e.target.value)}
-                    className="w-full bg-th-121314 text-gray-200 p-2 rounded-xl border border-gray-700 text-xs"
+                    className="w-full bg-white border border-gray-200 rounded-full px-4 py-2 font-medium text-gray-700 shadow-sm outline-none focus:ring-2 focus:ring-[#173865]"
                   />
                 </div>
               </div>
@@ -411,21 +361,21 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
           )}
 
           {/* Botones de acción inferiores */}
-          <div className="pt-3 border-t border-gray-800 flex items-center justify-end gap-2.5">
+          <div className="flex gap-3 mt-6 pt-4 border-t border-gray-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2.5 rounded-xl text-xs font-semibold text-gray-400 hover:text-gray-200 bg-gray-800/80 hover:bg-gray-800 transition-colors"
+              className="flex-1 bg-gray-100 text-gray-600 py-3.5 rounded-full font-bold hover:bg-gray-200 transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading}
-              className={`px-6 py-2.5 rounded-xl text-xs font-bold text-white shadow-md transition-all active:scale-95 ${
+              className={`flex-1 py-3.5 rounded-full font-bold text-white shadow-md transition-colors ${
                 isIngreso
-                  ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-900/30'
-                  : 'bg-rose-600 hover:bg-rose-500 shadow-rose-900/30'
+                  ? 'bg-green-600 hover:bg-green-700'
+                  : 'bg-red-600 hover:bg-red-700'
               }`}
             >
               {loading ? 'Guardando...' : 'Guardar'}

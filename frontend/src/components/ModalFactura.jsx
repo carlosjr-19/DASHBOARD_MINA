@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { X, Upload, CheckCircle2, FileText, Download } from 'lucide-react';
+import PillSelect from './PillSelect';
+import PillDatePicker from './PillDatePicker';
 
 export default function ModalFactura({ order, onClose, onSave }) {
   const [estatus, setEstatus] = useState(order?.facturaEstatus || 'Pendiente');
@@ -37,27 +39,26 @@ export default function ModalFactura({ order, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
-      <div className="bg-th-1e2022 border border-gray-700 w-full max-w-md rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95">
-        <div className="flex items-center justify-between p-4 border-b border-gray-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-backdrop-in cursor-pointer" onClick={onClose}>
+      <div className="bg-white dark:bg-gray-900 border border-gray-100 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden animate-modal-in cursor-default" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 sm:p-6 border-b border-gray-100">
           <div>
-            <h3 className="font-bold text-gray-100 text-sm">
+            <h3 className="font-black text-gray-900 text-lg">
               Gestión Fiscal / Facturación
             </h3>
-            <span className="text-xs text-orange-400 font-mono">{order?.id} - {order?.cliente}</span>
+            <span className="text-xs text-[#173865] font-mono font-bold">{order?.id} - {order?.cliente}</span>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-200">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="w-9 h-9 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-colors">
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="p-4 space-y-4">
-          {/* Datos Fiscales del Cliente */}
-          <div className="bg-th-151617 p-3 rounded-lg border border-gray-800 space-y-1.5 text-xs">
-            <span className="font-bold text-gray-400 uppercase text-[10px] tracking-wider block">
+        <div className="p-6 space-y-4">
+          <div className="bg-blue-50/60 p-4 rounded-2xl border border-blue-100 space-y-1.5 text-xs">
+            <span className="font-bold text-[#173865] uppercase text-[10px] tracking-wider block">
               Datos Fiscales Registrados
             </span>
-            <div className="grid grid-cols-2 gap-2 text-gray-300">
+            <div className="grid grid-cols-2 gap-2 text-gray-700">
               <div><strong className="text-gray-500">RFC:</strong> {order?.rfc || 'No especificado'}</div>
               <div><strong className="text-gray-500">CP:</strong> {order?.cp || 'No especificado'}</div>
               <div className="col-span-2"><strong className="text-gray-500">Razón Social:</strong> {order?.razonSocial || order?.cliente}</div>
@@ -66,41 +67,39 @@ export default function ModalFactura({ order, onClose, onSave }) {
             </div>
           </div>
 
-          {/* Estado de Facturación */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-semibold text-gray-400 uppercase block mb-1">
+              <label className="text-xs font-bold text-gray-500 uppercase block mb-1 pl-2">
                 Estado Factura
               </label>
-              <select
+              <PillSelect
                 value={estatus}
-                onChange={(e) => setEstatus(e.target.value)}
-                className="w-full bg-th-151617 text-gray-200 border border-gray-700 rounded-lg p-2 text-xs focus:ring-1 focus:ring-orange-500 focus:outline-none"
-              >
-                <option value="Pendiente">Pendiente</option>
-                <option value="Facturado">Facturado (Emitida)</option>
-              </select>
+                onChange={setEstatus}
+                options={[
+                  { value: 'Pendiente', label: 'Pendiente' },
+                  { value: 'Facturado', label: 'Facturado (Emitida)' }
+                ]}
+                className="w-full px-4 py-2 text-xs"
+              />
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-gray-400 uppercase block mb-1">
+              <label className="text-xs font-bold text-gray-500 uppercase block mb-1 pl-2">
                 Fecha Emisión
               </label>
-              <input
-                type="date"
+              <PillDatePicker
                 value={fecha}
-                onChange={(e) => setFecha(e.target.value)}
-                className="w-full bg-th-151617 text-gray-200 border border-gray-700 rounded-lg p-2 text-xs focus:ring-1 focus:ring-orange-500 focus:outline-none"
+                onChange={setFecha}
+                className="bg-white text-gray-800 border border-gray-200 rounded-full px-4 py-2 text-xs font-bold shadow-sm"
               />
             </div>
           </div>
 
-          {/* Adjuntar CFDI / PDF / XML */}
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-gray-400 uppercase block">
+            <label className="text-xs font-bold text-gray-500 uppercase block pl-2">
               Comprobante / Archivo Fiscal (PDF / XML)
             </label>
-            <div className="border-2 border-dashed border-gray-700 rounded-lg p-4 text-center hover:border-gray-600 transition-colors bg-th-151617/50">
+            <div className="border-2 border-dashed border-gray-200 rounded-2xl p-4 text-center hover:border-[#173865] transition-colors bg-gray-50">
               <input
                 type="file"
                 id="file-upload"
@@ -110,16 +109,16 @@ export default function ModalFactura({ order, onClose, onSave }) {
               />
               <label
                 htmlFor="file-upload"
-                className="cursor-pointer flex flex-col items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-orange-400"
+                className="cursor-pointer flex flex-col items-center justify-center gap-1.5 text-xs text-gray-500 hover:text-[#173865]"
               >
-                <Upload className="w-5 h-5 text-gray-400" />
-                <span>{archivoNombre ? archivoNombre : 'Seleccionar archivo (PDF o XML)'}</span>
-                <span className="text-[10px] text-gray-500">Máx 5MB</span>
+                <Upload className="w-5 h-5" />
+                <span className="font-bold">{archivoNombre ? archivoNombre : 'Seleccionar archivo (PDF o XML)'}</span>
+                <span className="text-[10px] text-gray-400">Máx 5MB</span>
               </label>
             </div>
 
             {archivoData && (
-              <div className="flex items-center justify-between p-2 rounded bg-emerald-950/30 border border-emerald-900/50 text-xs text-emerald-300">
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-green-50 border border-green-200 text-xs text-green-800 font-bold">
                 <span className="truncate max-w-[240px] flex items-center gap-1.5">
                   <FileText className="w-4 h-4 shrink-0" />
                   {archivoNombre || 'Archivo adjunto'}
@@ -127,7 +126,7 @@ export default function ModalFactura({ order, onClose, onSave }) {
                 <a
                   href={archivoData}
                   download={archivoNombre || 'comprobante_fiscal'}
-                  className="p-1 hover:text-gray-50"
+                  className="p-1 hover:text-[#173865]"
                   title="Descargar comprobante"
                 >
                   <Download className="w-4 h-4" />
@@ -137,17 +136,17 @@ export default function ModalFactura({ order, onClose, onSave }) {
           </div>
         </div>
 
-        <div className="p-3 bg-th-17181a border-t border-gray-800 flex justify-end gap-2">
+        <div className="p-5 pt-2 flex gap-3">
           <button
             onClick={onClose}
-            className="px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:text-gray-200 bg-gray-800"
+            className="flex-1 py-3 rounded-full text-xs font-bold text-gray-600 hover:bg-gray-200 bg-gray-100 transition-colors"
           >
             Cerrar
           </button>
           <button
             onClick={handleSave}
             disabled={loading}
-            className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-orange-600 hover:bg-orange-500 disabled:opacity-50 flex items-center gap-1.5 shadow"
+            className="flex-1 py-3 rounded-full text-xs font-bold text-white bg-[#173865] hover:bg-blue-900 disabled:opacity-50 flex items-center justify-center gap-1.5 shadow-md transition-all"
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>{loading ? 'Guardando...' : 'Guardar Factura'}</span>

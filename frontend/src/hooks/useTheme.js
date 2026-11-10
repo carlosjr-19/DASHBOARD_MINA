@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react';
 
-const STORAGE_KEY = 'mina-theme';
+const STORAGE_KEY = 'mina-theme-v2';
 
 const readTheme = () => {
   try {
-    return localStorage.getItem(STORAGE_KEY) === 'light' ? 'light' : 'dark';
+    return localStorage.getItem(STORAGE_KEY) === 'dark' ? 'dark' : 'light';
   } catch {
-    return 'dark';
+    return 'light';
   }
 };
 
-// Tema global de la app: 'dark' (por defecto) o 'light'.
+// Tema global de la app: 'light' (por defecto, estilo MINA DESIGN) o 'dark'.
 // Se guarda en el navegador para recordar la elección de cada usuario.
 export function useTheme() {
   const [theme, setTheme] = useState(readTheme);
 
   useEffect(() => {
-    document.documentElement.classList.toggle('light', theme === 'light');
+    document.documentElement.classList.toggle('dark', theme === 'dark');
     try {
       localStorage.setItem(STORAGE_KEY, theme);
     } catch {

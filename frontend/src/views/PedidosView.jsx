@@ -2,12 +2,8 @@ import React, { useState } from 'react';
 import { 
   Package, 
   Search, 
-  Filter, 
-  Plus, 
-  TrendingUp, 
   Clock, 
-  CheckCircle2, 
-  AlertTriangle,
+  TrendingUp, 
   DollarSign
 } from 'lucide-react';
 import MobileOrderCard from '../components/MobileOrderCard';
@@ -50,57 +46,65 @@ export default function PedidosView({
   const formatMoney = (val) => `$${(val || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Metrics Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4">
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
-          <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Total Pedidos</span>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-lg sm:text-2xl font-bold text-gray-100">{listPedidos.length}</span>
-            <Package className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400" />
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-3xl shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
+          <span className="text-[11px] text-gray-500 uppercase font-bold tracking-wider block">Total Pedidos</span>
+          <div className="flex items-center justify-between mt-1.5">
+            <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-gray-100">{listPedidos.length}</span>
+            <div className="w-9 h-9 rounded-full bg-blue-50 text-[#173865] flex items-center justify-center">
+              <Package className="w-4 h-4" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
-          <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">En Producción / Activos</span>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-lg sm:text-2xl font-bold text-blue-400">{activosCount}</span>
-            <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-3xl shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
+          <span className="text-[11px] text-gray-500 uppercase font-bold tracking-wider block">En Producción / Activos</span>
+          <div className="flex items-center justify-between mt-1.5">
+            <span className="text-xl sm:text-2xl font-black text-[#173865] dark:text-blue-400">{activosCount}</span>
+            <div className="w-9 h-9 rounded-full bg-blue-50 text-[#173865] flex items-center justify-center">
+              <Clock className="w-4 h-4" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
-          <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Total Cobrado</span>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-sm sm:text-xl font-bold font-mono text-emerald-400 truncate">{formatMoney(totalCobrado)}</span>
-            <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 shrink-0" />
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-3xl shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+          <span className="text-[11px] text-gray-500 uppercase font-bold tracking-wider block">Total Cobrado</span>
+          <div className="flex items-center justify-between mt-1.5">
+            <span className="text-base sm:text-xl font-black text-green-700 dark:text-green-400 truncate">{formatMoney(totalCobrado)}</span>
+            <div className="w-9 h-9 rounded-full bg-green-50 text-green-600 flex items-center justify-center shrink-0">
+              <DollarSign className="w-4 h-4" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
-          <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Ganancia Real</span>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-sm sm:text-xl font-bold font-mono text-emerald-400 truncate">{formatMoney(totalGanancia)}</span>
-            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 shrink-0" />
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-3xl shadow-sm hover:shadow-md hover:border-green-200 transition-all">
+          <span className="text-[11px] text-gray-500 uppercase font-bold tracking-wider block">Ganancia Real</span>
+          <div className="flex items-center justify-between mt-1.5">
+            <span className="text-base sm:text-xl font-black text-green-700 dark:text-green-400 truncate">{formatMoney(totalGanancia)}</span>
+            <div className="w-9 h-9 rounded-full bg-green-50 text-green-600 flex items-center justify-center shrink-0">
+              <TrendingUp className="w-4 h-4" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-th-18191b p-2.5 rounded-xl border border-gray-800">
-        {/* Buscador más pequeño */}
-        <div className="relative w-full sm:w-60 md:w-64 shrink-0">
-          <Search className="w-3.5 h-3.5 absolute left-2.5 top-2 text-gray-400 pointer-events-none" />
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-gray-900 p-3 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
+        {/* Buscador compacto en pastilla */}
+        <div className="relative w-full sm:w-52 xl:w-64 shrink-0">
+          <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-gray-400 pointer-events-none" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-th-121314 text-[11px] text-gray-100 pl-8 pr-2.5 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full bg-gray-50 dark:bg-gray-800 text-xs font-medium text-gray-800 dark:text-gray-100 pl-9 pr-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-[#173865] focus:bg-white transition"
           />
         </div>
 
         {/* Status filters */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+        <div className="flex items-center gap-1.5 overflow-x-auto lg:overflow-visible lg:flex-wrap no-scrollbar py-0.5">
           {[
             { id: 'TODOS', label: 'Todos' },
             { id: 'Pendiente', label: 'Pendientes' },
@@ -118,18 +122,18 @@ export default function PedidosView({
               <button
                 key={st.id}
                 onClick={() => setStatusFilter(st.id)}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                   isSelected
-                    ? 'bg-orange-600 text-white shadow-sm border border-orange-500'
-                    : 'bg-th-151617 text-gray-400 hover:text-gray-200 border border-gray-800 hover:border-gray-700'
+                    ? 'bg-[#173865] text-white shadow-md'
+                    : 'bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-100 border border-gray-200 dark:border-gray-700'
                 }`}
               >
                 <span>{st.label}</span>
                 <span
-                  className={`min-w-[16px] h-4 px-0.5 rounded-full text-xs font-bold flex items-center justify-center leading-none ${
+                  className={`min-w-[18px] h-4 px-1 rounded-full text-[11px] font-bold flex items-center justify-center leading-none ${
                     isSelected
-                      ? 'bg-white text-orange-600 shadow-sm'
-                      : 'bg-gray-800 text-gray-200 border border-gray-700/60'
+                      ? 'bg-white text-[#173865]'
+                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'
                   }`}
                 >
                   {count}
@@ -140,48 +144,50 @@ export default function PedidosView({
         </div>
       </div>
 
-      {/* Orders Table Container matching reference image */}
-      <div className="overflow-x-auto rounded-xl border border-gray-800 bg-th-161719 shadow-sm">
-        <table className="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr className="border-b border-gray-800 bg-th-131416 text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
-              <th className="py-3 px-2 w-8"></th>
-              <th className="py-3 px-3 min-w-[95px]">ID</th>
-              <th className="py-3 px-3 min-w-[100px]">FECHA</th>
-              <th className="py-3 px-3 min-w-[130px]">CLIENTE</th>
-              <th className="py-3 px-3 min-w-[180px]">DETALLE</th>
-              <th className="py-3 px-3 text-right min-w-[95px]">TOTAL</th>
-              <th className="py-3 px-3 text-right min-w-[95px]">RESTANTE</th>
-              <th className="py-3 px-3 text-right min-w-[95px] text-emerald-500 dark:text-emerald-400">GANANCIA</th>
-              <th className="py-3 px-3 text-center min-w-[130px]">ESTATUS</th>
-              <th className="py-3 px-3 text-center min-w-[110px]">FACTURA</th>
-              <th className="py-3 px-3 text-center min-w-[110px]">ACCIONES</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-800/60">
-            {sorted.length > 0 ? (
-              sorted.map((order) => (
-                <MobileOrderCard
-                  key={order.id}
-                  order={order}
-                  onStatusClick={onStatusClick}
-                  onFacturaClick={onFacturaClick}
-                  onPdfClick={onPdfClick}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                />
-              ))
-            ) : (
-              <tr>
-                <td colSpan={11} className="py-12 text-center text-gray-500">
-                  <Package className="w-10 h-10 mx-auto text-gray-600 mb-2" />
-                  <p className="text-sm font-semibold">No se encontraron pedidos</p>
-                  <p className="text-xs mt-1">Crea uno nuevo con el botón superior "+ Pedido".</p>
-                </td>
+      {/* Orders Table Container */}
+      <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-2 sm:p-3 lg:p-4 overflow-hidden">
+        <div className="overflow-x-auto lg:overflow-x-visible">
+          <table className="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 dark:border-gray-800 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                <th className="py-3 px-1.5 w-7"></th>
+                <th className="py-3 px-1.5 xl:px-2.5">ID</th>
+                <th className="py-3 px-1.5 xl:px-2.5">Fecha</th>
+                <th className="py-3 px-1.5 xl:px-2.5">Cliente</th>
+                <th className="py-3 px-1.5 xl:px-2.5">Detalle</th>
+                <th className="py-3 px-1.5 xl:px-2.5 text-right">Total</th>
+                <th className="py-3 px-1.5 xl:px-2.5 text-right">Restante</th>
+                <th className="py-3 px-1.5 xl:px-2.5 text-right text-green-600">Ganancia</th>
+                <th className="py-3 px-1.5 xl:px-2.5 text-center">Estatus</th>
+                <th className="py-3 px-1.5 xl:px-2.5 text-center">Factura</th>
+                <th className="py-3 px-1.5 xl:px-2.5 text-center">Acciones</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">
+              {sorted.length > 0 ? (
+                sorted.map((order) => (
+                  <MobileOrderCard
+                    key={order.id}
+                    order={order}
+                    onStatusClick={onStatusClick}
+                    onFacturaClick={onFacturaClick}
+                    onPdfClick={onPdfClick}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                  />
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={11} className="py-12 text-center text-gray-400">
+                    <Package className="w-10 h-10 mx-auto text-gray-300 mb-2" />
+                    <p className="text-sm font-bold text-gray-500">No se encontraron pedidos</p>
+                    <p className="text-xs mt-1">Crea uno nuevo con el botón superior "+ Pedido".</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
