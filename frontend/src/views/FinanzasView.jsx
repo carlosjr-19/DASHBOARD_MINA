@@ -167,50 +167,46 @@ export default function FinanzasView({
 
   return (
     <div className="space-y-4">
-      {/* Top Highlights: Ingresos, Egresos, Flujo Neto dinámicos por cuenta o globales */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block truncate">
-              Total Ingresos {isFilteredCuenta && <strong className="text-orange-400 font-bold ml-1">({selectedCuenta})</strong>}
+      {/* Top Highlights: Ingresos, Egresos, Flujo Neto dinámicos (Estilo Jobie) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div className="bg-gradient-to-br from-[#00C988] to-[#059669] text-white p-5 rounded-3xl shadow-lg shadow-emerald-900/10 flex items-center justify-between">
+          <div>
+            <span className="text-[11px] text-emerald-100 uppercase font-bold tracking-wider block truncate mb-1">
+              Total Ingresos {isFilteredCuenta && <strong className="text-white font-extrabold ml-1">({selectedCuenta})</strong>}
             </span>
+            <span className="text-2xl sm:text-3xl font-black font-mono text-white">{formatMoney(totalIngresos)}</span>
           </div>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-sm sm:text-xl font-bold font-mono text-emerald-400 truncate">{formatMoney(totalIngresos)}</span>
-            <ArrowDownLeft className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 shrink-0" />
+          <div className="p-3 rounded-2xl bg-white/20 text-white backdrop-blur-sm">
+            <ArrowDownLeft className="w-6 h-6 stroke-[2.5]" />
           </div>
         </div>
 
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block truncate">
-              Total Egresos {isFilteredCuenta ? <strong className="text-orange-400 font-bold ml-1">({selectedCuenta})</strong> : '/ Gastos'}
+        <div className="bg-gradient-to-br from-[#FF4D6D] to-[#E63956] text-white p-5 rounded-3xl shadow-lg shadow-rose-900/10 flex items-center justify-between">
+          <div>
+            <span className="text-[11px] text-rose-100 uppercase font-bold tracking-wider block truncate mb-1">
+              Total Egresos {isFilteredCuenta ? <strong className="text-white font-extrabold ml-1">({selectedCuenta})</strong> : '/ Gastos'}
             </span>
+            <span className="text-2xl sm:text-3xl font-black font-mono text-white">{formatMoney(totalEgresos)}</span>
           </div>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-sm sm:text-xl font-bold font-mono text-rose-400 truncate">{formatMoney(totalEgresos)}</span>
-            <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-rose-400 shrink-0" />
+          <div className="p-3 rounded-2xl bg-white/20 text-white backdrop-blur-sm">
+            <ArrowUpRight className="w-6 h-6 stroke-[2.5]" />
           </div>
         </div>
 
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl shadow-sm col-span-2 sm:col-span-1">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block truncate">
-              {isFilteredCuenta ? <span>Flujo Neto <strong className="text-orange-400 font-bold">({selectedCuenta})</strong></span> : 'Flujo Neto en Caja'}
+        <div className="bg-gradient-to-br from-[#3511A3] to-[#4F26E2] text-white p-5 rounded-3xl shadow-lg shadow-indigo-900/10 flex items-center justify-between">
+          <div>
+            <span className="text-[11px] text-purple-200 uppercase font-bold tracking-wider block truncate mb-1">
+              {isFilteredCuenta ? <span>Flujo Neto <strong className="text-white font-extrabold">({selectedCuenta})</strong></span> : 'Flujo Neto en Caja'}
             </span>
+            <span className="text-2xl sm:text-3xl font-black font-mono text-white">{formatMoney(flujoNeto)}</span>
           </div>
-          <div className="flex items-center justify-between mt-1">
-            <span className={`text-sm sm:text-xl font-bold font-mono truncate ${
-              flujoNeto >= 0 ? 'text-emerald-400' : 'text-rose-400'
-            }`}>
-              {formatMoney(flujoNeto)}
-            </span>
-            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400 shrink-0" />
+          <div className="p-3 rounded-2xl bg-white/20 text-white backdrop-blur-sm">
+            <TrendingUp className="w-6 h-6 stroke-[2.5]" />
           </div>
         </div>
       </div>
 
-      {/* Saldos por Cuenta y Método de Pago */}
+      {/* Saldos por Cuenta{/* Saldos por Cuenta y Método de Pago */}
       <div className="space-y-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
@@ -231,14 +227,14 @@ export default function FinanzasView({
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={onOpenIngreso}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg shadow transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#00C988] hover:bg-[#00B377] text-white text-xs font-bold rounded-full shadow-md shadow-emerald-900/15 transition-all active:scale-95"
             >
               <ArrowDownLeft className="w-3.5 h-3.5 text-white" />
               <span>Ingreso</span>
             </button>
             <button
               onClick={onOpenEgreso}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-lg shadow transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-4 py-2 bg-[#FF4D6D] hover:bg-[#E63956] text-white text-xs font-bold rounded-full shadow-md shadow-rose-900/15 transition-all active:scale-95"
             >
               <ArrowUpRight className="w-3.5 h-3.5 text-white" />
               <span>Egreso</span>
@@ -246,7 +242,7 @@ export default function FinanzasView({
             {onOpenRecoleccion && (
               <button
                 onClick={onOpenRecoleccion}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold rounded-lg shadow transition-all active:scale-95"
+                className="flex items-center gap-1.5 px-4 py-2 bg-[#3511A3] hover:bg-[#2B0E85] text-white text-xs font-bold rounded-full shadow-md shadow-indigo-900/15 transition-all active:scale-95"
                 title="Registrar gastos de gasolina, comida y ruta prorrateada entre pedidos"
               >
                 <Truck className="w-3.5 h-3.5 text-white" />
@@ -265,7 +261,7 @@ export default function FinanzasView({
               <div
                 key={c}
                 onClick={() => setSelectedCuenta(isSelected ? 'TODAS' : c)}
-                className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                className={`p-4 rounded-2xl border cursor-pointer transition-all shadow-sm ${
                   isSelected
                     ? 'bg-orange-600/20 border-orange-500 ring-1 ring-orange-500'
                     : 'bg-th-1c1d1f border-gray-800 hover:border-gray-700'

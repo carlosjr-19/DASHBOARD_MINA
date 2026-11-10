@@ -79,7 +79,7 @@ export default function CotizacionesView({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-th-121314 text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full bg-th-121314 text-xs text-gray-100 pl-9 pr-3 py-2 rounded-full border border-gray-200 shadow-inner focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
@@ -93,7 +93,7 @@ export default function CotizacionesView({
       </div>
 
       {/* Cotizaciones Table Container matching reference image */}
-      <div className="overflow-x-auto rounded-xl border border-gray-800 bg-th-161719 shadow-sm">
+      <div className="overflow-x-auto rounded-3xl border border-gray-100 bg-white shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr className="border-b border-gray-800 bg-th-131416 text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">

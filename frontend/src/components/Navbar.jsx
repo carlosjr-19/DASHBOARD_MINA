@@ -18,6 +18,7 @@ export default function Navbar({
   onOpenNuevoEgreso
 }) {
   const tabLabels = {
+    pendientes: 'Pendientes',
     pedidos: 'Pedidos',
     cotizaciones: 'Cotizaciones',
     productos: 'Catálogo',
@@ -30,17 +31,17 @@ export default function Navbar({
   const currentTabLabel = tabLabels[currentTab] || 'Dashboard';
 
   return (
-    <header className="sticky top-0 z-40 bg-th-18191b/95 backdrop-blur border-b border-gray-800 no-print h-[57px] flex items-center">
-      <div className="w-full px-3 sm:px-6 flex items-center justify-between gap-2">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100 no-print h-[62px] flex items-center shadow-sm">
+      <div className="w-full px-4 sm:px-8 flex items-center justify-between gap-3">
         {/* Left Side: Sidebar Toggle & Brand */}
         <div className="flex items-center gap-3">
           {/* Toggle button */}
           <button
             onClick={onToggleSidebar}
-            className={`p-1.5 rounded-lg transition-all flex items-center justify-center active:scale-95 ${
+            className={`p-2 rounded-xl transition-all flex items-center justify-center active:scale-95 ${
               sidebarOpen
-                ? 'bg-orange-600/20 text-orange-400 border border-orange-500/40 hover:bg-orange-600/30'
-                : 'bg-gray-800/80 hover:bg-gray-700 text-gray-300 hover:text-gray-50 border border-gray-700/60'
+                ? 'bg-purple-50 text-[#3511A3] border border-purple-200'
+                : 'bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200'
             }`}
             title={sidebarOpen ? "Ocultar menú lateral" : "Mostrar menú lateral"}
             aria-label="Abrir o cerrar menú lateral"
@@ -48,50 +49,43 @@ export default function Navbar({
             <Menu className="w-5 h-5" />
           </button>
 
-          {/* Brand */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center font-bold text-white shadow-md shadow-orange-900/30 text-sm">
-              M
-            </div>
-            <div>
-              <span className="font-bold text-sm tracking-wide text-gray-50">MINA DESIGN</span>
-              <span className="text-[10px] text-orange-400 block -mt-0.5">ERP SYSTEM</span>
-            </div>
-          </div>
-
-          {/* Current section indicator */}
-          <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-gray-800 text-xs">
-            <span className="text-gray-500">/</span>
-            <span className="text-gray-200 font-semibold">{currentTabLabel}</span>
+          {/* Current section indicator (Jobie pill style) */}
+          <div className="flex items-center gap-2">
+            <span className="font-extrabold text-base text-gray-900 tracking-tight">
+              {currentTabLabel}
+            </span>
+            <span className="hidden sm:inline-flex items-center px-3 py-0.5 rounded-full text-[11px] font-bold bg-purple-50 text-[#3511A3] border border-purple-100">
+              MINA ERP
+            </span>
           </div>
         </div>
 
-        {/* Right Side: Action Buttons */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Right Side: Action Buttons (All Rounded Pills) */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
           <button
             onClick={onOpenNuevoPedido}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold rounded-lg shadow-sm active:scale-95 transition-all"
+            className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 bg-[#3511A3] hover:bg-[#2B0E85] text-white text-xs font-bold rounded-full shadow-md shadow-indigo-900/15 active:scale-95 transition-all"
             title="Crear nuevo pedido"
           >
-            <Plus className="w-4 h-4 text-white" />
+            <Plus className="w-4 h-4 text-white stroke-[2.5]" />
             <span className="hidden xs:inline sm:inline">Pedido</span>
           </button>
 
           <button
             onClick={onOpenNuevoIngreso}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg shadow-sm active:scale-95 transition-all"
+            className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 bg-[#00C988] hover:bg-[#00B377] text-white text-xs font-bold rounded-full shadow-md shadow-emerald-900/15 active:scale-95 transition-all"
             title="Registrar Ingreso"
           >
-            <ArrowDownLeft className="w-4 h-4 text-white" />
+            <ArrowDownLeft className="w-4 h-4 text-white stroke-[2.5]" />
             <span className="hidden sm:inline">Ingreso</span>
           </button>
 
           <button
             onClick={onOpenNuevoEgreso}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-lg shadow-sm active:scale-95 transition-all"
+            className="flex items-center gap-1.5 px-3.5 sm:px-4 py-2 bg-[#FF4D6D] hover:bg-[#E63956] text-white text-xs font-bold rounded-full shadow-md shadow-rose-900/15 active:scale-95 transition-all"
             title="Registrar Egreso"
           >
-            <ArrowUpRight className="w-4 h-4 text-white" />
+            <ArrowUpRight className="w-4 h-4 text-white stroke-[2.5]" />
             <span className="hidden sm:inline">Egreso</span>
           </button>
 
@@ -101,7 +95,7 @@ export default function Navbar({
           <div className="relative flex items-center pl-1">
             <button
               onClick={onLogout}
-              className="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 flex items-center justify-center text-xs font-bold text-orange-400 shadow transition-colors"
+              className="w-9 h-9 rounded-full bg-purple-50 hover:bg-purple-100 border border-purple-200 flex items-center justify-center text-xs font-extrabold text-[#3511A3] shadow-sm transition-colors"
               title={`Usuario: ${user?.nombre || 'Admin'} - Clic para cerrar sesión`}
             >
               {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'M'}

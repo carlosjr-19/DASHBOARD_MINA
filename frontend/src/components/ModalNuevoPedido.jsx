@@ -80,6 +80,7 @@ export default function ModalNuevoPedido({
   const [metodoPagoAnticipo, setMetodoPagoAnticipo] = useState(initialData?.metodoPagoAnticipo || savedDraft?.metodoPagoAnticipo || 'NU MINA');
   const [collapsedInsumos, setCollapsedInsumos] = useState({});
   const [collapsedMermas, setCollapsedMermas] = useState({});
+  const [activeCatalogoDropdown, setActiveCatalogoDropdown] = useState(null);
 
   // Products array
   const [productos, setProductos] = useState(() => {
@@ -546,7 +547,7 @@ export default function ModalNuevoPedido({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-sm overflow-y-auto cursor-pointer" onClick={onClose}>
       {/* Modal Container más amplio (max-w-5xl) para que no esté amontonado */}
-      <div className="bg-th-1b1c1e border border-gray-700 w-full max-w-7xl w-[96vw] rounded-2xl shadow-2xl overflow-hidden my-auto max-h-[95vh] flex flex-col animate-in fade-in zoom-in-95 cursor-default" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-th-1b1c1e border border-gray-700 w-full max-w-7xl w-[96vw] rounded-3xl shadow-2xl overflow-hidden my-auto max-h-[95vh] flex flex-col animate-in fade-in zoom-in-95 cursor-default" onClick={(e) => e.stopPropagation()}>
         
         {/* Header Superior Fijo */}
         <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-th-151618 shrink-0">
@@ -556,12 +557,12 @@ export default function ModalNuevoPedido({
             </span>
 
             {!isEditing && (
-              <div className="flex items-center bg-th-111213 rounded-lg p-0.5 border border-gray-700 text-xs">
+              <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-full p-1 border border-gray-200 dark:border-gray-700 text-xs">
                 <button
                   type="button"
                   onClick={() => setPedidoTipo('PEDIDO')}
-                  className={`px-3 py-1 rounded-md font-semibold transition-all ${
-                    pedidoTipo === 'PEDIDO' ? 'bg-orange-600 text-white shadow' : 'text-gray-400'
+                  className={`px-4 py-1 rounded-full font-bold transition-all ${
+                    pedidoTipo === 'PEDIDO' ? 'bg-[#3511A3] text-white shadow-md' : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   Pedido
@@ -569,8 +570,8 @@ export default function ModalNuevoPedido({
                 <button
                   type="button"
                   onClick={() => setPedidoTipo('COTIZACION')}
-                  className={`px-3 py-1 rounded-md font-semibold transition-all ${
-                    pedidoTipo === 'COTIZACION' ? 'bg-blue-600 text-white shadow' : 'text-gray-400'
+                  className={`px-4 py-1 rounded-full font-bold transition-all ${
+                    pedidoTipo === 'COTIZACION' ? 'bg-[#1E9AF1] text-white shadow-md' : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   Cotización
@@ -578,7 +579,7 @@ export default function ModalNuevoPedido({
               </div>
             )}
 
-            <span className="font-mono text-xs font-bold px-2.5 py-1 rounded bg-orange-950/80 text-orange-400 border border-orange-800/80">
+            <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-full px-3 py-1 bg-purple-50 text-[#3511A3] border border-purple-200">
               {folio}
             </span>
           </div>
@@ -799,21 +800,40 @@ export default function ModalNuevoPedido({
                           </span>
                         )}
                       </div>
-                      <input
-                        type="text"
-                        required
-                        list={`catalogo-list-${pIdx}`}
-                        value={prod.nombre}
-                        onChange={(e) => updateProducto(pIdx, 'nombre', e.target.value)}
-                        className="w-full bg-th-1c1d1f text-gray-100 p-2.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
-                      />
-                      <datalist id={`catalogo-list-${pIdx}`}>
-                        {catalogo.map((cat, cIdx) => (
-                          <option key={cIdx} value={cat.nombre}>
-                            {cat.nombre} - ${cat.precio} (Costo insumos: ${cat.costo})
-                          </option>
-                        ))}
-                      </datalist>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          required
+                          value={prod.nombre}
+                          onFocus={() => setActiveCatalogoDropdown(pIdx)}
+                          onChange={(e) => updateProducto(pIdx, 'nombre', e.target.value)}
+                          className="w-full bg-th-1c1d1f text-gray-100 px-4 py-2.5 rounded-full border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-[#3511A3] focus:border-[#3511A3] font-medium text-xs transition-all shadow-inner"
+                        />
+                        {activeCatalogoDropdown === pIdx && catalogo.length > 0 && (
+                          <div 
+                            className="absolute z-50 left-0 right-0 mt-2 bg-white dark:bg-gray-900 border border-purple-100 dark:border-gray-800 rounded-3xl shadow-2xl p-2.5 max-h-60 overflow-y-auto space-y-1 animate-in fade-in zoom-in-95"
+                            onMouseDown={(e) => e.preventDefault()}
+                          >
+                            {catalogo
+                              .filter(cat => !prod.nombre?.trim() || cat.nombre.toLowerCase().includes(prod.nombre.toLowerCase()))
+                              .map((cat, cIdx) => (
+                                <div
+                                  key={cIdx}
+                                  onClick={() => {
+                                    updateProducto(pIdx, 'nombre', cat.nombre);
+                                    setActiveCatalogoDropdown(null);
+                                  }}
+                                  className="w-full text-left px-4 py-2.5 rounded-full hover:bg-purple-50 dark:hover:bg-purple-950/40 text-gray-800 dark:text-gray-100 hover:text-[#3511A3] dark:hover:text-purple-300 text-xs font-bold cursor-pointer transition-all flex items-center justify-between group"
+                                >
+                                  <span className="truncate pr-2">{cat.nombre}</span>
+                                  <span className="text-[11px] font-extrabold text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/60 px-3 py-1 rounded-full shrink-0">
+                                    ${cat.precio}
+                                  </span>
+                                </div>
+                              ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     <div className="sm:col-span-2">

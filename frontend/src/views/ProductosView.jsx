@@ -103,7 +103,7 @@ export default function ProductosView({
       </div>
 
       {/* Product List Table matching Imagen 2 */}
-      <div className="overflow-x-auto rounded-xl border border-gray-800 bg-th-161719 shadow-sm">
+      <div className="overflow-x-auto rounded-3xl border border-gray-100 bg-white shadow-sm overflow-hidden">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr className="border-b border-gray-800 bg-th-131416 text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
