@@ -22,13 +22,23 @@ import ModalRecoleccion from './components/ModalRecoleccion';
 
 export default function App() {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('mina_user');
-    return saved ? JSON.parse(saved) : null;
+    try {
+      const saved = localStorage.getItem('mina_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      console.warn('Error reading mina_user from localStorage:', e);
+      localStorage.removeItem('mina_user');
+      return null;
+    }
   });
 
   // Mantener pestaña actual en localStorage tras recargar
   const [currentTab, setCurrentTab] = useState(() => {
-    return localStorage.getItem('mina_current_tab') || 'pedidos';
+    try {
+      return localStorage.getItem('mina_current_tab') || 'pedidos';
+    } catch {
+      return 'pedidos';
+    }
   });
 
   const handleTabChange = (tab) => {
@@ -38,8 +48,10 @@ export default function App() {
 
   // Estado para abrir y cerrar la barra lateral
   const [sidebarOpen, setSidebarOpen] = useState(() => {
-    const saved = localStorage.getItem('mina_sidebar_open');
-    if (saved !== null) return saved === 'true';
+    try {
+      const saved = localStorage.getItem('mina_sidebar_open');
+      if (saved !== null) return saved === 'true';
+    } catch {}
     return window.innerWidth >= 1024;
   });
 

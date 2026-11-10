@@ -31,6 +31,13 @@ app.include_router(clientes.router, prefix="/api")
 app.include_router(catalogo.router, prefix="/api")
 app.include_router(pendientes.router, prefix="/api")
 
+@app.post("/api/client-error")
+async def client_error(data: dict):
+    print("\n=================== BROWSER CLIENT ERROR ===================")
+    print(data)
+    print("===========================================================\n")
+    return {"status": "received"}
+
 @app.get("/api/health")
 def health_check():
     return {"status": "ok", "app": "MINA DESIGN ERP", "version": "2.0.0"}
