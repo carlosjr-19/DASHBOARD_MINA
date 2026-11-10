@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import { 
-  Wallet, 
   ArrowDownLeft, 
   ArrowUpRight, 
   Plus, 
-  Filter, 
   Trash2, 
   CreditCard,
-  Building,
   TrendingUp,
   DollarSign,
   Truck,
@@ -16,12 +13,9 @@ import {
   Fuel,
   Coffee,
   Tag,
-  Calendar,
-  Layers,
   FileSpreadsheet,
   Ban,
-  X,
-  AlertCircle
+  X
 } from 'lucide-react';
 import ResicoDeclaracionView from '../components/ResicoDeclaracionView';
 
@@ -56,7 +50,7 @@ export default function FinanzasView({
 }) {
   const [selectedCuenta, setSelectedCuenta] = useState('TODAS');
   const [selectedCategoria, setSelectedCategoria] = useState('TODAS');
-  const [activeTab, setActiveTab] = useState('movimientos'); // 'movimientos' | 'recolecciones'
+  const [activeTab, setActiveTab] = useState('movimientos'); // 'movimientos' | 'recolecciones' | 'resico'
   const [expandedGroups, setExpandedGroups] = useState({});
   const [expandedRecolecciones, setExpandedRecolecciones] = useState({});
   const [cancelModalMov, setCancelModalMov] = useState(null);
@@ -73,10 +67,8 @@ export default function FinanzasView({
 
   const formatDescripcion = (mov) => {
     let text = mov.detalle || mov.motivo || '';
-    // Quitar (X conceptos)
     text = text.replace(/\s*\(\d+\s*conceptos?\)/gi, '');
     
-    // Insumos del pedido PMD-xxx (Cliente) -> Insumos | PMD-xxx | Cliente
     const insMatch = text.match(/Insumos\s+(?:del\s+pedido\s+)?([A-Z0-9-]+)(?:\s*\(([^)]+)\))?/i);
     if (insMatch) {
       const ped = insMatch[1];
@@ -84,7 +76,6 @@ export default function FinanzasView({
       return cli ? `Insumos | ${ped} | ${cli}` : `Insumos | ${ped}`;
     }
     
-    // Recolección REC-xxx (Categoria) -> Recolección REC-xxx | Categoria
     const recMatch = text.match(/Recolecci[oó]n\s+([A-Z0-9-]+)(?:\s*\(([^)]+)\))?/i);
     if (recMatch) {
       const recId = recMatch[1];
@@ -95,7 +86,6 @@ export default function FinanzasView({
       return cat ? `Recolección ${recId} | ${cat}` : `Recolección ${recId}`;
     }
 
-    // Reemplazar paréntesis por pleca separadora
     text = text.replace(/\s*\(([^)]+)\)/g, ' | $1');
     return text.trim();
   };
@@ -124,7 +114,6 @@ export default function FinanzasView({
 
   const formatMoney = (val) => `$${(val || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
-  // Dinámica: Si hay cuenta seleccionada, calcular métricas de esa cuenta; si no, de todo
   const isFilteredCuenta = selectedCuenta !== 'TODAS';
   const relevantMovimientos = isFilteredCuenta
     ? movimientos.filter(m => m.cuenta === selectedCuenta)
@@ -140,7 +129,6 @@ export default function FinanzasView({
 
   const flujoNeto = totalIngresos - totalEgresos;
 
-  // Category spending breakdown (egresos only para la cuenta seleccionada o global)
   const categoryTotals = CATEGORIAS.reduce((acc, cat) => {
     acc[cat] = relevantMovimientos
       .filter(m => m.tipo === 'EGRESO' && !m.cancelado && normalizeCategoria(m.categoria) === cat)
@@ -152,111 +140,126 @@ export default function FinanzasView({
     const c = normalizeCategoria(cat);
     switch (c) {
       case 'Insumos':
-        return 'bg-amber-950/80 text-amber-300 border-amber-700/60';
+        return 'bg-amber-50 text-amber-800 border-amber-200';
       case 'Gasolina':
-        return 'bg-cyan-950/80 text-cyan-300 border-cyan-700/60';
+        return 'bg-cyan-50 text-cyan-800 border-cyan-200';
       case 'Alimentos':
-        return 'bg-purple-950/80 text-purple-300 border-purple-700/60';
+        return 'bg-purple-50 text-purple-800 border-purple-200';
       case 'Recolección':
-        return 'bg-yellow-950/80 text-yellow-300 border-yellow-700/60';
+        return 'bg-yellow-50 text-yellow-800 border-yellow-200';
       case 'Otros':
       default:
-        return 'bg-gray-800 text-gray-300 border-gray-700';
+        return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
 
+  const getAccountIconBg = (c) => {
+    if (c === 'NU MINA') return 'bg-purple-600';
+    if (c === 'NU EMI') return 'bg-purple-800';
+    if (c === 'MERCADO PAGO') return 'bg-blue-500';
+    if (c === 'EFECTIVO') return 'bg-green-600';
+    if (c === 'NU TDC') return 'bg-purple-950';
+    return 'bg-slate-700';
+  };
+
   return (
-    <div className="space-y-4">
-      {/* Top Highlights: Ingresos, Egresos, Flujo Neto dinámicos por cuenta o globales */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl shadow-sm">
+    <div className="space-y-5">
+      {/* Top Highlights: Ingresos, Egresos, Flujo Neto */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-3xl shadow-sm hover:shadow-md hover:border-green-200 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block truncate">
-              Total Ingresos {isFilteredCuenta && <strong className="text-orange-400 font-bold ml-1">({selectedCuenta})</strong>}
+            <span className="text-[11px] text-gray-500 uppercase font-bold tracking-wider block truncate">
+              Total Ingresos {isFilteredCuenta && <strong className="text-[#173865] font-black ml-1">({selectedCuenta})</strong>}
             </span>
           </div>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-sm sm:text-xl font-bold font-mono text-emerald-400 truncate">{formatMoney(totalIngresos)}</span>
-            <ArrowDownLeft className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 shrink-0" />
+          <div className="flex items-center justify-between mt-1.5">
+            <span className="text-base sm:text-xl font-black text-green-700 truncate">{formatMoney(totalIngresos)}</span>
+            <div className="w-9 h-9 rounded-full bg-green-50 text-green-600 flex items-center justify-center shrink-0">
+              <ArrowDownLeft className="w-4 h-4" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl shadow-sm">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-3xl shadow-sm hover:shadow-md hover:border-red-200 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block truncate">
-              Total Egresos {isFilteredCuenta ? <strong className="text-orange-400 font-bold ml-1">({selectedCuenta})</strong> : '/ Gastos'}
+            <span className="text-[11px] text-gray-500 uppercase font-bold tracking-wider block truncate">
+              Total Egresos {isFilteredCuenta ? <strong className="text-[#173865] font-black ml-1">({selectedCuenta})</strong> : '/ Gastos'}
             </span>
           </div>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-sm sm:text-xl font-bold font-mono text-rose-400 truncate">{formatMoney(totalEgresos)}</span>
-            <ArrowUpRight className="w-4 h-4 sm:w-5 sm:h-5 text-rose-400 shrink-0" />
+          <div className="flex items-center justify-between mt-1.5">
+            <span className="text-base sm:text-xl font-black text-red-600 truncate">{formatMoney(totalEgresos)}</span>
+            <div className="w-9 h-9 rounded-full bg-red-50 text-red-600 flex items-center justify-center shrink-0">
+              <ArrowUpRight className="w-4 h-4" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl shadow-sm col-span-2 sm:col-span-1">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-3xl shadow-sm hover:shadow-md hover:border-blue-200 transition-all col-span-2 sm:col-span-1">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block truncate">
-              {isFilteredCuenta ? <span>Flujo Neto <strong className="text-orange-400 font-bold">({selectedCuenta})</strong></span> : 'Flujo Neto en Caja'}
+            <span className="text-[11px] text-gray-500 uppercase font-bold tracking-wider block truncate">
+              {isFilteredCuenta ? <span>Flujo Neto <strong className="text-[#173865] font-black">({selectedCuenta})</strong></span> : 'Flujo Neto en Caja'}
             </span>
           </div>
-          <div className="flex items-center justify-between mt-1">
-            <span className={`text-sm sm:text-xl font-bold font-mono truncate ${
-              flujoNeto >= 0 ? 'text-emerald-400' : 'text-rose-400'
+          <div className="flex items-center justify-between mt-1.5">
+            <span className={`text-base sm:text-xl font-black truncate ${
+              flujoNeto >= 0 ? 'text-[#173865] dark:text-blue-400' : 'text-red-600'
             }`}>
               {formatMoney(flujoNeto)}
             </span>
-            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-orange-400 shrink-0" />
+            <div className="w-9 h-9 rounded-full bg-blue-50 text-[#173865] flex items-center justify-center shrink-0">
+              <TrendingUp className="w-4 h-4" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Saldos por Cuenta y Método de Pago */}
-      <div className="space-y-2">
+      <div className="space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
               Saldos por Cuenta y Método de Pago
             </span>
             {isFilteredCuenta && (
               <button
                 onClick={() => setSelectedCuenta('TODAS')}
-                className="text-[10px] font-bold text-orange-400 hover:text-orange-300 bg-orange-950/60 border border-orange-700/60 px-2 py-0.5 rounded-full transition-colors flex items-center gap-1 shadow-sm active:scale-95"
+                className="text-xs font-bold text-[#173865] bg-blue-50 border border-blue-100 px-3 py-1 rounded-full hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-colors flex items-center gap-1.5 shadow-sm"
                 title="Quitar filtro y ver todas las cuentas"
               >
-                <span>Filtro: {selectedCuenta}</span>
-                <span className="text-gray-400 hover:text-white ml-0.5">✕</span>
+                <span>{selectedCuenta}</span>
+                <X className="w-3 h-3" />
               </button>
             )}
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={onOpenIngreso}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg shadow transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-4 py-2 bg-white border border-green-100 text-green-700 hover:bg-green-50 text-xs font-bold rounded-full shadow-sm transition-colors active:scale-95"
             >
-              <ArrowDownLeft className="w-3.5 h-3.5 text-white" />
+              <ArrowDownLeft className="w-3.5 h-3.5" />
               <span>Ingreso</span>
             </button>
             <button
               onClick={onOpenEgreso}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold rounded-lg shadow transition-all active:scale-95"
+              className="flex items-center gap-1.5 px-4 py-2 bg-white border border-red-100 text-red-600 hover:bg-red-50 text-xs font-bold rounded-full shadow-sm transition-colors active:scale-95"
             >
-              <ArrowUpRight className="w-3.5 h-3.5 text-white" />
+              <ArrowUpRight className="w-3.5 h-3.5" />
               <span>Egreso</span>
             </button>
             {onOpenRecoleccion && (
               <button
                 onClick={onOpenRecoleccion}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold rounded-lg shadow transition-all active:scale-95"
+                className="flex items-center gap-1.5 px-4 py-2 bg-[#173865] hover:bg-blue-900 text-white text-xs font-bold rounded-full shadow-md transition-all active:scale-95"
                 title="Registrar gastos de gasolina, comida y ruta prorrateada entre pedidos"
               >
-                <Truck className="w-3.5 h-3.5 text-white" />
+                <Truck className="w-3.5 h-3.5" />
                 <span>Registrar Recolección</span>
               </button>
             )}
           </div>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {CUENTAS.map((c) => {
             const saldo = saldos[c] || 0;
             const isNegative = saldo < 0;
@@ -265,45 +268,48 @@ export default function FinanzasView({
               <div
                 key={c}
                 onClick={() => setSelectedCuenta(isSelected ? 'TODAS' : c)}
-                className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                className={`bg-white dark:bg-gray-900 p-3.5 md:p-4 rounded-3xl shadow-sm border transition-all cursor-pointer ${
                   isSelected
-                    ? 'bg-orange-600/20 border-orange-500 ring-1 ring-orange-500'
-                    : 'bg-th-1c1d1f border-gray-800 hover:border-gray-700'
+                    ? 'border-[#173865] ring-2 ring-[#173865]/20 scale-105'
+                    : 'border-gray-100 dark:border-gray-800 hover:border-blue-200 hover:shadow-md'
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase truncate">{c}</span>
-                  <CreditCard className="w-3 h-3 text-gray-500 shrink-0" />
+                <div className="flex justify-between items-start mb-2">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm text-xs ${getAccountIconBg(c)}`}>
+                    {c === 'EFECTIVO' ? <DollarSign className="w-3.5 h-3.5" /> : <CreditCard className="w-3.5 h-3.5" />}
+                  </div>
+                  {isSelected && <div className="w-2 h-2 rounded-full bg-[#173865] animate-pulse" />}
                 </div>
-                <div className={`mt-1 font-mono font-bold text-sm truncate ${
-                  isNegative ? 'text-rose-400' : 'text-emerald-400'
+                <h3 className="text-[11px] font-bold text-gray-500 uppercase tracking-wide mb-0.5 truncate" title={c}>{c}</h3>
+                <p className={`text-base xl:text-lg font-black whitespace-nowrap ${
+                  isNegative ? 'text-red-600' : 'text-gray-900 dark:text-gray-100'
                 }`}>
                   {formatMoney(saldo)}
-                </div>
+                </p>
               </div>
             );
           })}
         </div>
       </div>
 
-      {/* Tabs Switcher: [ Movimientos de Caja ] vs [ Historial de Recolecciones ] vs [ Declaración & RESICO SAT ] */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gray-800 pb-2">
-        <div className="flex items-center gap-2 flex-wrap">
+      {/* Tabs Switcher */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
+        <div className="flex items-center gap-2 flex-wrap bg-white dark:bg-gray-900 p-1.5 rounded-full shadow-sm border border-gray-100 dark:border-gray-800 w-max max-w-full">
           <button
             onClick={() => setActiveTab('movimientos')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all ${
               activeTab === 'movimientos'
-                ? 'bg-orange-600 text-white shadow-md'
-                : 'bg-th-1c1d1f text-gray-400 hover:text-gray-200 border border-gray-800'
+                ? 'bg-[#173865] text-white shadow-md'
+                : 'text-gray-500 hover:text-gray-800'
             }`}
           >
             <CreditCard className="w-4 h-4" />
             <span>Movimientos de Caja</span>
             <span
-              className={`min-w-[18px] h-4 px-1 rounded-full text-xs font-bold flex items-center justify-center leading-none ${
+              className={`min-w-[18px] h-4 px-1.5 rounded-full text-[11px] font-bold flex items-center justify-center leading-none ${
                 activeTab === 'movimientos'
-                  ? 'bg-white text-orange-600 shadow-sm'
-                  : 'bg-gray-800 text-gray-200 border border-gray-700/60'
+                  ? 'bg-white text-[#173865]'
+                  : 'bg-gray-100 text-gray-700'
               }`}
             >
               {filtered.length}
@@ -312,19 +318,19 @@ export default function FinanzasView({
 
           <button
             onClick={() => setActiveTab('recolecciones')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all ${
               activeTab === 'recolecciones'
-                ? 'bg-orange-600 text-white shadow-md'
-                : 'bg-th-1c1d1f text-gray-400 hover:text-gray-200 border border-gray-800'
+                ? 'bg-[#173865] text-white shadow-md'
+                : 'text-gray-500 hover:text-gray-800'
             }`}
           >
             <Truck className="w-4 h-4" />
             <span>Historial de Recolecciones</span>
             <span
-              className={`min-w-[18px] h-4 px-1 rounded-full text-xs font-bold flex items-center justify-center leading-none ${
+              className={`min-w-[18px] h-4 px-1.5 rounded-full text-[11px] font-bold flex items-center justify-center leading-none ${
                 activeTab === 'recolecciones'
-                  ? 'bg-white text-orange-600 shadow-sm'
-                  : 'bg-gray-800 text-gray-200 border border-gray-700/60'
+                  ? 'bg-white text-[#173865]'
+                  : 'bg-gray-100 text-gray-700'
               }`}
             >
               {recolecciones.length}
@@ -333,19 +339,19 @@ export default function FinanzasView({
 
           <button
             onClick={() => setActiveTab('resico')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold transition-all ${
               activeTab === 'resico'
-                ? 'bg-orange-600 text-white shadow-md'
-                : 'bg-th-1c1d1f text-gray-400 hover:text-gray-200 border border-gray-800'
+                ? 'bg-[#173865] text-white shadow-md'
+                : 'text-gray-500 hover:text-gray-800'
             }`}
           >
             <FileSpreadsheet className="w-4 h-4" />
             <span>Declaración & RESICO SAT</span>
             <span
-              className={`min-w-[18px] h-4 px-1.5 rounded-full text-xs font-bold flex items-center justify-center leading-none ${
+              className={`min-w-[18px] h-4 px-1.5 rounded-full text-[10px] font-bold flex items-center justify-center leading-none ${
                 activeTab === 'resico'
-                  ? 'bg-white text-orange-600 shadow-sm'
-                  : 'bg-orange-500/20 text-orange-400 border border-orange-500/40'
+                  ? 'bg-white text-[#173865]'
+                  : 'bg-blue-50 text-[#173865]'
               }`}
             >
               SAT
@@ -356,41 +362,40 @@ export default function FinanzasView({
         {activeTab === 'recolecciones' && onOpenRecoleccion && (
           <button
             onClick={onOpenRecoleccion}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold rounded-lg shadow transition-all active:scale-95 self-start sm:self-auto"
+            className="flex items-center gap-1.5 px-4 py-2 bg-[#173865] hover:bg-blue-900 text-white text-xs font-bold rounded-full shadow-md transition-all active:scale-95 self-start sm:self-auto"
           >
-            <Plus className="w-3.5 h-3.5 text-white" />
+            <Plus className="w-3.5 h-3.5" />
             <span>Nueva Recolección</span>
           </button>
         )}
       </div>
 
-      {/* Category Expenses Breakdown & Filters (Shown for Movimientos de Caja) */}
+      {/* Category Expenses Breakdown & Filters */}
       {activeTab === 'movimientos' && (
-        <div className="bg-th-18191b p-3 rounded-xl border border-gray-800 space-y-2.5">
+        <div className="bg-white dark:bg-gray-900 p-4 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
-              <Tag className="w-3.5 h-3.5 text-orange-400" />
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+              <Tag className="w-3.5 h-3.5 text-[#173865]" />
               Gastos por Categoría
             </span>
-            <span className="text-[11px] text-gray-500">Filtrar transacciones:</span>
+            <span className="text-xs text-gray-400">Filtrar transacciones:</span>
           </div>
 
-          {/* Category Pills with Total Spent */}
           <div className="flex items-center gap-1.5 flex-wrap">
             <button
               onClick={() => setSelectedCategoria('TODAS')}
-              className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                 selectedCategoria === 'TODAS'
-                  ? 'bg-orange-600 text-white shadow-sm border border-orange-500'
-                  : 'bg-th-151617 text-gray-400 hover:text-gray-200 border border-gray-800 hover:border-gray-700'
+                  ? 'bg-[#173865] text-white shadow-sm'
+                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200'
               }`}
             >
               <span>Todas</span>
               <span
-                className={`min-w-[18px] h-4 px-1 rounded-full text-xs font-bold font-mono flex items-center justify-center leading-none tracking-tight ${
+                className={`min-w-[18px] h-4 px-1.5 rounded-full text-[11px] font-bold flex items-center justify-center leading-none ${
                   selectedCategoria === 'TODAS'
-                    ? 'bg-white text-orange-600 shadow-sm'
-                    : 'bg-gray-800 text-gray-200 border border-gray-700/60'
+                    ? 'bg-white text-[#173865]'
+                    : 'bg-gray-200 text-gray-700'
                 }`}
               >
                 {relevantMovimientos.length}
@@ -404,18 +409,18 @@ export default function FinanzasView({
                 <button
                   key={cat}
                   onClick={() => setSelectedCategoria(isSelected ? 'TODAS' : cat)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                     isSelected
-                      ? 'bg-orange-600 text-white shadow-sm border border-orange-500'
-                      : 'bg-th-151617 text-gray-400 hover:text-gray-200 border border-gray-800 hover:border-gray-700'
+                      ? 'bg-[#173865] text-white shadow-sm'
+                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200'
                   }`}
                 >
                   <span>{cat}</span>
                   <span
-                    className={`min-w-[18px] h-4 px-1 rounded-full text-xs font-bold font-mono flex items-center justify-center leading-none tracking-tight ${
+                    className={`min-w-[18px] h-4 px-1.5 rounded-full text-[11px] font-bold flex items-center justify-center leading-none ${
                       isSelected
-                        ? 'bg-white text-orange-600 shadow-sm'
-                        : 'bg-gray-800 text-gray-200 border border-gray-700/60'
+                        ? 'bg-white text-[#173865]'
+                        : 'bg-gray-200 text-gray-700'
                     }`}
                   >
                     {formatMoney(spent)}
@@ -427,31 +432,31 @@ export default function FinanzasView({
         </div>
       )}
 
-      {/* TAB 1: MOVIMIENTOS DE CAJA (Horizontal Single-Row Table) */}
+      {/* TAB 1: MOVIMIENTOS DE CAJA */}
       {activeTab === 'movimientos' && (
-        <div className="bg-th-18191b rounded-xl border border-gray-800 overflow-hidden shadow-lg">
-          <div className="p-3 border-b border-gray-800 flex items-center justify-between">
-            <span className="text-xs font-bold text-gray-300">
-              Historial de Movimientos {selectedCuenta !== 'TODAS' ? `(${selectedCuenta})` : ''} {selectedCategoria !== 'TODAS' ? `• [${selectedCategoria}]` : ''}
-            </span>
-            <span className="text-xs text-gray-500">{filtered.length} registrados</span>
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-base font-bold text-gray-800 dark:text-gray-100">
+              Movimientos de Caja {selectedCuenta !== 'TODAS' ? `(${selectedCuenta})` : ''} {selectedCategoria !== 'TODAS' ? `• [${selectedCategoria}]` : ''}
+            </h2>
+            <span className="text-xs font-semibold text-gray-400">{filtered.length} registrados</span>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+          <div className="overflow-x-auto p-2 sm:p-4">
+            <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="bg-th-141517 text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
-                  <th className="py-2.5 px-2 text-center w-8"></th>
-                  <th className="py-2.5 px-3 text-center min-w-[90px]">TIPO</th>
-                  <th className="py-2.5 px-3 text-center min-w-[100px]">FECHA</th>
-                  <th className="py-2.5 px-3 text-center min-w-[110px]">MÉTODO PAGO</th>
-                  <th className="py-2.5 px-3 min-w-[220px]">DESCRIPCIÓN</th>
-                  <th className="py-2.5 px-3 text-center min-w-[110px]">CATEGORÍA</th>
-                  <th className="py-2.5 px-3 text-right min-w-[110px]">MONTO</th>
-                  <th className="py-2.5 px-2 text-center w-10"></th>
+                <tr className="text-gray-400 border-b border-gray-100 text-xs uppercase font-bold tracking-wider">
+                  <th className="py-3 px-2 text-center w-8"></th>
+                  <th className="py-3 px-3 text-center min-w-[90px]">Tipo</th>
+                  <th className="py-3 px-3 text-center min-w-[100px]">Fecha</th>
+                  <th className="py-3 px-3 text-center min-w-[110px]">Cuenta</th>
+                  <th className="py-3 px-3 min-w-[220px]">Motivo / Pedido</th>
+                  <th className="py-3 px-3 text-center min-w-[110px]">Categoría</th>
+                  <th className="py-3 px-3 text-right min-w-[110px]">Monto</th>
+                  <th className="py-3 px-2 text-center w-10"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800/60">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">
                 {filtered.length > 0 ? (
                   filtered.map((mov) => {
                     const isIng = mov.tipo === 'INGRESO';
@@ -460,90 +465,81 @@ export default function FinanzasView({
 
                     return (
                       <React.Fragment key={mov.id}>
-                        {/* Horizontal Single-Line Movement Row */}
                         <tr 
                           onClick={() => isGroup && toggleGroup(mov.id)}
-                          className={`hover:bg-th-1f2022 transition-colors ${isGroup ? 'cursor-pointer' : ''}`}
+                          className={`transition-colors ${isExpanded ? 'bg-blue-50/40' : 'hover:bg-gray-50/80'} ${isGroup ? 'cursor-pointer' : ''} ${mov.cancelado ? 'opacity-50 line-through grayscale' : ''}`}
                         >
-                          {/* Col 0: Chevron / Expand */}
-                          <td className="py-2.5 px-2 text-center">
+                          <td className="py-3 px-2 text-center">
                             {isGroup ? (
                               <button 
                                 type="button" 
-                                className="p-1 hover:text-gray-50 rounded text-gray-400 transition-colors"
+                                className="p-1 hover:text-[#173865] rounded-full text-gray-400 transition-colors"
                                 onClick={(e) => { e.stopPropagation(); toggleGroup(mov.id); }}
                               >
                                 {isExpanded ? (
-                                  <ChevronDown className="w-4 h-4 text-orange-400" />
+                                  <ChevronDown className="w-4 h-4 text-[#173865]" />
                                 ) : (
                                   <ChevronRight className="w-4 h-4 text-gray-400" />
                                 )}
                               </button>
                             ) : (
-                              <div className="w-4 h-4 flex items-center justify-center mx-auto text-gray-600">•</div>
+                              <div className="w-4 h-4 flex items-center justify-center mx-auto text-gray-300">•</div>
                             )}
                           </td>
 
-                          {/* Col 1: Tipo */}
-                          <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase border ${
+                          <td className="py-3 px-3 text-center whitespace-nowrap">
+                            <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase border ${
                               isIng 
-                                ? 'bg-emerald-950/80 text-emerald-400 border-emerald-700/60' 
-                                : 'bg-rose-950/80 text-rose-400 border-rose-700/60'
+                                ? 'bg-green-50 text-green-700 border-green-200' 
+                                : 'bg-red-50 text-red-600 border-red-200'
                             }`}>
                               {mov.tipo}
                             </span>
                           </td>
 
-                          {/* Col 2: Fecha */}
-                          <td className="py-2.5 px-3 text-center whitespace-nowrap font-mono text-gray-400">
+                          <td className="py-3 px-3 text-center whitespace-nowrap text-xs text-gray-500 font-medium">
                             {mov.fecha ? new Date(mov.fecha).toLocaleDateString('es-MX') : '-'}
                           </td>
 
-                          {/* Col 3: Método de Pago */}
-                          <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-800/80 border border-gray-700/80 text-gray-300">
+                          <td className="py-3 px-3 text-center whitespace-nowrap">
+                            <span className="bg-gray-100 text-gray-700 font-bold px-3 py-1 rounded-full text-xs border border-gray-200">
                               {mov.cuenta}
                             </span>
                           </td>
 
-                          {/* Col 4: Descripción */}
-                          <td className="py-2.5 px-3 max-w-[320px]">
+                          <td className="py-3 px-3 max-w-[320px]">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="text-gray-200 font-medium">{formatDescripcion(mov)}</span>
+                              <span className="text-gray-800 dark:text-gray-100 font-bold text-xs uppercase tracking-wide">{formatDescripcion(mov)}</span>
                               {mov.nota && (
-                                <span className="text-[11px] text-amber-400/90 italic">({mov.nota})</span>
+                                <span className="text-xs text-amber-700 italic">({mov.nota})</span>
                               )}
                             </div>
                           </td>
 
-                          {/* Col 5: Categoría */}
-                          <td className="py-2.5 px-3 text-center whitespace-nowrap">
+                          <td className="py-3 px-3 text-center whitespace-nowrap">
                             {mov.categoria ? (
-                              <span className={`px-2 py-0.2 rounded-full text-[10px] font-semibold border ${getCategoriaBadge(mov.categoria)}`}>
+                              <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${getCategoriaBadge(mov.categoria)}`}>
                                 {normalizeCategoria(mov.categoria)}
                               </span>
                             ) : (
-                              <span className="text-gray-600">-</span>
+                              <span className="text-gray-300">-</span>
                             )}
                           </td>
 
-                          {/* Col 6: Monto */}
-                          <td className="py-2.5 px-3 text-right font-mono font-bold whitespace-nowrap">
-                            <span className={isIng ? 'text-emerald-400' : 'text-rose-400'}>
+                          <td className="py-3 px-3 text-right font-black whitespace-nowrap text-sm">
+                            <span className={isIng ? 'text-green-600' : 'text-red-500'}>
                               {isIng ? '+' : '-'}{formatMoney(mov.monto)}
                             </span>
                           </td>
 
-                          {/* Col 7: Acciones */}
-                          <td className="py-2.5 px-2 text-center">
+                          <td className="py-3 px-2 text-center">
                             {!isGroup && onDeleteMovimiento && (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   onDeleteMovimiento(mov.id);
                                 }}
-                                className="p-1 text-gray-600 hover:text-rose-400 transition-colors"
+                                className="w-7 h-7 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-colors"
                                 title="Eliminar movimiento"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -552,49 +548,49 @@ export default function FinanzasView({
                           </td>
                         </tr>
 
-                        {/* Expandable Grouped Insumos Sub-Table without redundant header */}
+                        {/* Expandable Grouped Insumos Sub-Table */}
                         {isGroup && isExpanded && (
-                          <tr className="bg-th-121315">
+                          <tr className="bg-gray-50/70 border-b border-gray-100">
                             <td colSpan={8} className="p-3 pl-8 pr-4">
-                              <div className="rounded-lg border border-gray-700/80 overflow-hidden bg-th-18191c">
+                              <div className="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
                                 <div className="overflow-x-auto">
                                   <table className="w-full text-left text-xs">
                                     <thead>
-                                      <tr className="bg-th-141517 text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
-                                        <th className="py-2.5 px-3">INSUMO / MATERIAL</th>
-                                        <th className="py-2.5 px-3 text-center">PROVEEDOR</th>
-                                        <th className="py-2.5 px-2 text-center">CANT.</th>
-                                        <th className="py-2.5 px-3 text-center">COSTO REAL</th>
-                                        <th className="py-2.5 px-3 text-center">COSTO TOTAL</th>
+                                      <tr className="bg-gray-50 text-gray-400 border-b border-gray-100 text-[10px] uppercase font-bold tracking-wider">
+                                        <th className="py-2.5 px-3">Insumo / Material</th>
+                                        <th className="py-2.5 px-3 text-center">Proveedor</th>
+                                        <th className="py-2.5 px-2 text-center">Cant.</th>
+                                        <th className="py-2.5 px-3 text-center">Costo Real</th>
+                                        <th className="py-2.5 px-3 text-center">Costo Total</th>
                                       </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-gray-800/60 font-mono text-[11px]">
+                                    <tbody className="divide-y divide-gray-100">
                                       {mov.insumos.map((ins, iIdx) => (
-                                        <tr key={iIdx} className="hover:bg-gray-800/40 text-gray-300 transition-colors">
-                                          <td className="py-2 px-3 font-sans font-medium text-gray-200">
+                                        <tr key={iIdx} className="hover:bg-gray-50 text-gray-700 transition-colors">
+                                          <td className="py-2.5 px-3 font-bold text-gray-900">
                                             {ins.insumo || ins.nombre}
                                           </td>
-                                          <td className="py-2 px-3 font-sans text-center text-gray-400">
+                                          <td className="py-2.5 px-3 text-center text-gray-500">
                                             {ins.proveedor || '-'}
                                           </td>
-                                          <td className="py-2 px-2 text-center font-bold text-gray-200">
+                                          <td className="py-2.5 px-2 text-center font-bold text-gray-800">
                                             {ins.cant}
                                           </td>
-                                          <td className="py-2 px-3 text-center text-gray-300">
+                                          <td className="py-2.5 px-3 text-center text-gray-600">
                                             {formatMoney(ins.costoReal)}
                                           </td>
-                                          <td className="py-2 px-3 text-center font-bold text-rose-300">
+                                          <td className="py-2.5 px-3 text-center font-black text-red-600">
                                             {formatMoney(ins.costoTotal)}
                                           </td>
                                         </tr>
                                       ))}
                                     </tbody>
                                     <tfoot>
-                                      <tr className="bg-th-141517 border-t border-gray-700 font-bold text-xs">
-                                        <td colSpan={4} className="py-2.5 px-3 text-right uppercase text-gray-400 font-sans">
+                                      <tr className="bg-gray-50 border-t border-gray-200 font-bold text-xs">
+                                        <td colSpan={4} className="py-2.5 px-3 text-right uppercase text-gray-500">
                                           Total Insumos Pagados ({mov.cuenta}):
                                         </td>
-                                        <td className="py-2.5 px-3 text-center font-mono text-rose-400">
+                                        <td className="py-2.5 px-3 text-center font-black text-red-600">
                                           -{formatMoney(mov.monto)}
                                         </td>
                                       </tr>
@@ -610,7 +606,7 @@ export default function FinanzasView({
                   })
                 ) : (
                   <tr>
-                    <td colSpan={8} className="p-8 text-center text-gray-500 text-xs">
+                    <td colSpan={8} className="p-10 text-center text-gray-400 font-bold text-xs">
                       No hay movimientos registrados que coincidan con los filtros.
                     </td>
                   </tr>
@@ -623,29 +619,29 @@ export default function FinanzasView({
 
       {/* TAB 2: HISTORIAL DE RECOLECCIONES */}
       {activeTab === 'recolecciones' && (
-        <div className="bg-th-18191b rounded-xl border border-gray-800 overflow-hidden shadow-lg">
-          <div className="p-3 border-b border-gray-800 flex items-center justify-between">
-            <span className="text-xs font-bold text-gray-300">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 overflow-hidden shadow-sm">
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 className="text-base font-bold text-gray-800 dark:text-gray-100">
               Historial de Recolecciones
-            </span>
-            <span className="text-xs text-gray-500">{recolecciones.length} registradas</span>
+            </h2>
+            <span className="text-xs font-semibold text-gray-400">{recolecciones.length} registradas</span>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
+          <div className="overflow-x-auto p-2 sm:p-4">
+            <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="bg-th-141517 text-gray-400 border-b border-gray-800 text-[10px] uppercase font-bold tracking-wider">
-                  <th className="py-2.5 px-2 text-center w-8"></th>
-                  <th className="py-2.5 px-3 text-center min-w-[90px]">FOLIO</th>
-                  <th className="py-2.5 px-3 text-center min-w-[100px]">FECHA</th>
-                  <th className="py-2.5 px-3 text-center min-w-[110px]">MÉTODO PAGO</th>
-                  <th className="py-2.5 px-3 min-w-[220px]">DESCRIPCIÓN / CONCEPTOS</th>
-                  <th className="py-2.5 px-3 text-center min-w-[130px]">PRORRATEO</th>
-                  <th className="py-2.5 px-3 text-right min-w-[110px]">TOTAL GASTO</th>
-                  <th className="py-2.5 px-2 text-center w-10"></th>
+                <tr className="text-gray-400 border-b border-gray-100 text-xs uppercase font-bold tracking-wider">
+                  <th className="py-3 px-2 text-center w-8"></th>
+                  <th className="py-3 px-3 text-center min-w-[90px]">Folio</th>
+                  <th className="py-3 px-3 text-center min-w-[100px]">Fecha</th>
+                  <th className="py-3 px-3 text-center min-w-[110px]">Cuenta</th>
+                  <th className="py-3 px-3 min-w-[220px]">Descripción / Conceptos</th>
+                  <th className="py-3 px-3 text-center min-w-[130px]">Prorrateo</th>
+                  <th className="py-3 px-3 text-right min-w-[110px]">Total Gasto</th>
+                  <th className="py-3 px-2 text-center w-10"></th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800/60">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">
                 {recolecciones && recolecciones.length > 0 ? (
                   recolecciones.map((rec) => {
                     const isExpanded = !!expandedRecolecciones[rec.id];
@@ -661,68 +657,67 @@ export default function FinanzasView({
 
                     return (
                       <React.Fragment key={rec.id}>
-                        {/* Single Horizontal Row */}
                         <tr 
                           onClick={() => toggleRecoleccion(rec.id)}
-                          className="hover:bg-th-1f2022 transition-colors cursor-pointer"
+                          className={`transition-colors cursor-pointer ${isExpanded ? 'bg-blue-50/40' : 'hover:bg-gray-50/80'}`}
                         >
-                          <td className="py-2.5 px-2 text-center">
+                          <td className="py-3 px-2 text-center">
                             <button 
                               type="button" 
-                              className="p-1 hover:text-gray-50 rounded text-gray-400 transition-colors"
+                              className="p-1 hover:text-[#173865] rounded-full text-gray-400 transition-colors"
                               onClick={(e) => { e.stopPropagation(); toggleRecoleccion(rec.id); }}
                             >
                               {isExpanded ? (
-                                <ChevronDown className="w-4 h-4 text-orange-400" />
+                                <ChevronDown className="w-4 h-4 text-[#173865]" />
                               ) : (
                                 <ChevronRight className="w-4 h-4 text-gray-400" />
                               )}
                             </button>
                           </td>
 
-                          <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                            <span className="px-2 py-0.5 rounded font-mono font-bold text-xs bg-orange-950 text-orange-300 border border-orange-700/70">
+                          <td className="py-3 px-3 text-center whitespace-nowrap">
+                            <span className="px-2.5 py-1 rounded-md font-mono font-bold text-xs bg-blue-50 text-[#173865] border border-blue-200">
                               {recIdLabel}
                             </span>
                           </td>
 
-                          <td className="py-2.5 px-3 text-center whitespace-nowrap font-mono text-gray-400">
+                          <td className="py-3 px-3 text-center whitespace-nowrap text-xs text-gray-500 font-medium">
                             {rec.fecha ? new Date(rec.fecha).toLocaleDateString('es-MX') : '-'}
                           </td>
 
-                          <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-gray-800 text-gray-300 border border-gray-700">
+                          <td className="py-3 px-3 text-center whitespace-nowrap">
+                            <span className="px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-700 border border-gray-200">
                               {rec.cuenta}
                             </span>
                           </td>
 
-                          <td className="py-2.5 px-3 max-w-[280px]">
+                          <td className="py-3 px-3 max-w-[280px]">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="text-gray-200 font-medium truncate">{descText}</span>
+                              <span className="text-gray-800 font-semibold text-xs truncate">{descText}</span>
                               {rec.nota && (
-                                <span className="text-[11px] text-amber-400/90 italic">({rec.nota})</span>
+                                <span className="text-xs text-amber-700 italic">({rec.nota})</span>
                               )}
                             </div>
                           </td>
 
-                          <td className="py-2.5 px-3 text-center whitespace-nowrap">
-                            <span className="text-amber-400 font-mono font-semibold text-[11px]">
+                          <td className="py-3 px-3 text-center whitespace-nowrap">
+                            <span className="text-[#173865] font-bold text-xs">
                               {numPeds} peds ({formatMoney(porcion)} c/u)
                             </span>
                           </td>
 
-                          <td className="py-2.5 px-3 text-right font-mono font-bold text-rose-400 whitespace-nowrap">
+                          <td className="py-3 px-3 text-right font-black text-red-600 whitespace-nowrap">
                             -{formatMoney(rec.totalGasto)}
                           </td>
 
-                          <td className="py-2.5 px-2 text-center">
+                          <td className="py-3 px-2 text-center">
                             {onDeleteRecoleccion && (
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   onDeleteRecoleccion(rec.id);
                                 }}
-                                className="p-1 text-gray-600 hover:text-rose-400 transition-colors"
+                                className="w-7 h-7 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-colors"
                                 title="Eliminar recolección"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -731,48 +726,44 @@ export default function FinanzasView({
                           </td>
                         </tr>
 
-                        {/* Expanded Detail */}
                         {isExpanded && (
-                          <tr className="bg-th-121315">
+                          <tr className="bg-gray-50/70 border-b border-gray-100">
                             <td colSpan={8} className="p-3 pl-8 pr-4">
-                              <div className="p-3.5 bg-th-161719 border border-gray-800 rounded-xl text-xs space-y-3 animate-in fade-in">
-                                {/* Expense Breakdown Grid */}
+                              <div className="p-4 bg-white border border-gray-200 rounded-2xl text-xs space-y-3 shadow-sm">
                                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                                  <div className="p-2.5 rounded-lg bg-cyan-950/30 border border-cyan-800/40 flex items-center justify-between">
+                                  <div className="p-3 rounded-2xl bg-cyan-50 border border-cyan-100 flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                      <Fuel className="w-4 h-4 text-cyan-400" />
-                                      <span className="text-gray-300 text-[11px]">Gasolina</span>
+                                      <Fuel className="w-4 h-4 text-cyan-600" />
+                                      <span className="text-gray-700 font-bold text-xs">Gasolina</span>
                                     </div>
-                                    <span className="font-mono font-bold text-cyan-300">{formatMoney(rec.gastoGasolina)}</span>
+                                    <span className="font-black text-cyan-800">{formatMoney(rec.gastoGasolina)}</span>
                                   </div>
 
-                                  <div className="p-2.5 rounded-lg bg-purple-950/30 border border-purple-800/40 flex items-center justify-between">
+                                  <div className="p-3 rounded-2xl bg-purple-50 border border-purple-100 flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                      <Coffee className="w-4 h-4 text-purple-400" />
-                                      <span className="text-gray-300 text-[11px]">Alimentos</span>
+                                      <Coffee className="w-4 h-4 text-purple-600" />
+                                      <span className="text-gray-700 font-bold text-xs">Alimentos</span>
                                     </div>
-                                    <span className="font-mono font-bold text-purple-300">{formatMoney(rec.gastoDesayuno)}</span>
+                                    <span className="font-black text-purple-800">{formatMoney(rec.gastoDesayuno)}</span>
                                   </div>
 
-                                  <div className="p-2.5 rounded-lg bg-gray-800/40 border border-gray-700/50 flex items-center justify-between">
+                                  <div className="p-3 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                      <DollarSign className="w-4 h-4 text-gray-400" />
-                                      <span className="text-gray-300 text-[11px]">Otros Gastos</span>
+                                      <DollarSign className="w-4 h-4 text-gray-500" />
+                                      <span className="text-gray-700 font-bold text-xs">Otros Gastos</span>
                                     </div>
-                                    <span className="font-mono font-bold text-gray-200">{formatMoney(rec.gastoOtros)}</span>
+                                    <span className="font-black text-gray-800">{formatMoney(rec.gastoOtros)}</span>
                                   </div>
                                 </div>
 
-                                {/* Note if any */}
                                 {rec.nota && (
-                                  <div className="p-2 rounded-lg bg-black/30 border border-gray-800 text-gray-300 text-[11px]">
-                                    <strong className="text-amber-400">Nota / Comentario de ruta:</strong> {rec.nota}
+                                  <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs">
+                                    <strong>Nota / Comentario de ruta:</strong> {rec.nota}
                                   </div>
                                 )}
 
-                                {/* List of orders included with real Client Name */}
                                 <div>
-                                  <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1.5">
+                                  <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500 block mb-2">
                                     Pedidos Beneficiados con el Reparto ({formatMoney(rec.totalGasto)} / {numPeds} = {formatMoney(porcion)} por pedido):
                                   </span>
                                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -780,14 +771,14 @@ export default function FinanzasView({
                                       const clientName = ped.cliente || (pedidos && pedidos.find(p => p.id === ped.pedidoId)?.cliente) || 'Cliente';
 
                                       return (
-                                        <div key={pIdx} className="p-2 rounded-lg bg-th-1a1b1e border border-gray-800 flex items-center justify-between text-[11px]">
+                                        <div key={pIdx} className="p-2.5 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-between text-xs">
                                           <div className="flex items-center gap-2 truncate">
-                                            <span className="font-mono font-bold text-orange-400 bg-orange-950/80 px-1.5 py-0.2 rounded border border-orange-800">
+                                            <span className="font-mono font-bold text-[#173865] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                                               {ped.pedidoId}
                                             </span>
-                                            <span className="text-gray-200 font-medium truncate">{clientName}</span>
+                                            <span className="text-gray-800 font-semibold truncate">{clientName}</span>
                                           </div>
-                                          <span className="font-mono font-bold text-amber-300 shrink-0">
+                                          <span className="font-black text-[#173865] shrink-0">
                                             +{formatMoney(ped.porcion)}
                                           </span>
                                         </div>
@@ -804,7 +795,7 @@ export default function FinanzasView({
                   })
                 ) : (
                   <tr>
-                    <td colSpan={8} className="p-8 text-center text-gray-500 text-xs">
+                    <td colSpan={8} className="p-10 text-center text-gray-400 font-bold text-xs">
                       No hay recolecciones registradas aún. Haz clic en "Nueva Recolección" para registrar gastos de ruta.
                     </td>
                   </tr>
@@ -819,18 +810,18 @@ export default function FinanzasView({
       {activeTab === 'resico' && (
         <ResicoDeclaracionView />
       )}
+
       {/* MODAL: CANCELAR MOVIMIENTO DE CAJA */}
       {cancelModalMov && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200 cursor-pointer" onClick={() => setCancelModalMov(null)}>
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col cursor-default" onClick={(e) => e.stopPropagation()}>
-            {/* Header */}
-            <div className="p-4 bg-gray-950 border-b border-gray-800 flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 bg-rose-500/10 text-rose-400 rounded-lg border border-rose-500/20">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-backdrop-in cursor-pointer" onClick={() => setCancelModalMov(null)}>
+          <div className="bg-white dark:bg-gray-900 border border-gray-100 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl flex flex-col cursor-default animate-modal-in" onClick={(e) => e.stopPropagation()}>
+            <div className="p-5 sm:p-6 bg-white border-b border-gray-100 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-red-50 text-red-600 rounded-full flex items-center justify-center">
                   <Ban className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-gray-100">
+                  <h3 className="text-lg font-black text-gray-900">
                     Cancelar Movimiento de Caja
                   </h3>
                   <p className="text-xs text-gray-400">
@@ -840,13 +831,12 @@ export default function FinanzasView({
               </div>
               <button
                 onClick={() => setCancelModalMov(null)}
-                className="text-gray-400 hover:text-gray-200 p-1.5 rounded-lg hover:bg-gray-800"
+                className="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Contenido / Info del movimiento */}
             <form
               onSubmit={async (e) => {
                 e.preventDefault();
@@ -865,39 +855,37 @@ export default function FinanzasView({
                   setCancelling(false);
                 }
               }}
-              className="p-4 space-y-3.5 text-xs"
+              className="p-6 space-y-4 text-xs"
             >
-              {/* Resumen del movimiento a cancelar */}
-              <div className="bg-gray-950 p-3 rounded-xl border border-gray-800 space-y-1">
+              <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200 space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <span className="text-[11px] text-gray-400">Monto del movimiento:</span>
-                  <span className={`font-mono font-bold text-sm ${cancelModalMov.tipo === 'INGRESO' ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  <span className="text-xs text-gray-500 font-semibold">Monto del movimiento:</span>
+                  <span className={`font-black text-sm ${cancelModalMov.tipo === 'INGRESO' ? 'text-green-600' : 'text-red-600'}`}>
                     {cancelModalMov.tipo === 'INGRESO' ? '+' : '-'}{formatMoney(cancelModalMov.monto)}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-gray-400">Cuenta:</span>
-                  <span className="text-gray-200 font-semibold">{cancelModalMov.cuenta}</span>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-gray-500 font-semibold">Cuenta:</span>
+                  <span className="text-gray-800 font-bold">{cancelModalMov.cuenta}</span>
                 </div>
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="text-gray-400">Concepto:</span>
-                  <span className="text-gray-200 truncate max-w-[220px]">{formatDescripcion(cancelModalMov)}</span>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-gray-500 font-semibold">Concepto:</span>
+                  <span className="text-gray-800 font-medium truncate max-w-[220px]">{formatDescripcion(cancelModalMov)}</span>
                 </div>
               </div>
 
-              {/* Selector de Quién lo cancela: Nathy o Emi */}
               <div>
-                <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                <label className="block text-xs font-bold text-gray-600 mb-1.5 pl-1">
                   ¿Quién cancela este movimiento?: *
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2.5">
                   <button
                     type="button"
                     onClick={() => setCancelAutor('Nathy')}
-                    className={`h-[36px] px-3 rounded-lg text-xs font-bold border transition-all flex items-center justify-center ${
+                    className={`h-[38px] px-3 rounded-full text-xs font-bold border transition-all flex items-center justify-center ${
                       cancelAutor === 'Nathy'
-                        ? 'bg-rose-600 text-white border-rose-500 shadow-md shadow-rose-950 ring-1 ring-rose-400'
-                        : 'bg-gray-950 text-rose-300 border-gray-700 hover:border-rose-700/50'
+                        ? 'bg-rose-600 text-white border-rose-600 shadow-md'
+                        : 'bg-white text-rose-600 border-gray-200 hover:border-rose-300'
                     }`}
                   >
                     Nathy
@@ -905,10 +893,10 @@ export default function FinanzasView({
                   <button
                     type="button"
                     onClick={() => setCancelAutor('Emi')}
-                    className={`h-[36px] px-3 rounded-lg text-xs font-bold border transition-all flex items-center justify-center ${
+                    className={`h-[38px] px-3 rounded-full text-xs font-bold border transition-all flex items-center justify-center ${
                       cancelAutor === 'Emi'
-                        ? 'bg-cyan-600 text-white border-cyan-500 shadow-md shadow-cyan-950 ring-1 ring-cyan-400'
-                        : 'bg-gray-950 text-cyan-300 border-gray-700 hover:border-cyan-700/50'
+                        ? 'bg-[#173865] text-white border-[#173865] shadow-md'
+                        : 'bg-white text-[#173865] border-gray-200 hover:border-blue-300'
                     }`}
                   >
                     Emi
@@ -916,9 +904,8 @@ export default function FinanzasView({
                 </div>
               </div>
 
-              {/* Motivo de cancelación obligatorio */}
               <div>
-                <label className="block text-[11px] font-semibold text-gray-300 mb-1">
+                <label className="block text-xs font-bold text-gray-600 mb-1.5 pl-1">
                   Motivo obligatorio de cancelación: *
                 </label>
                 <textarea
@@ -926,23 +913,22 @@ export default function FinanzasView({
                   required
                   value={cancelMotivo}
                   onChange={(e) => setCancelMotivo(e.target.value)}
-                  className="w-full bg-gray-950 border border-gray-700 focus:border-rose-500 rounded-lg p-2.5 text-xs text-gray-100 focus:outline-none"
+                  className="w-full bg-white border border-gray-200 focus:ring-2 focus:ring-red-500 rounded-2xl p-3 text-xs font-medium text-gray-800 focus:outline-none shadow-sm"
                 />
               </div>
 
-              {/* Botones de acción */}
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-800">
+              <div className="flex gap-3 pt-2 border-t border-gray-100">
                 <button
                   type="button"
                   onClick={() => setCancelModalMov(null)}
-                  className="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-xs font-medium"
+                  className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full text-xs font-bold transition-colors"
                 >
                   Volver
                 </button>
                 <button
                   type="submit"
                   disabled={cancelling || !cancelMotivo.trim()}
-                  className="flex items-center gap-1.5 px-4 py-1.5 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white rounded-lg text-xs font-bold shadow-md shadow-rose-950 transition-all"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-3 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white rounded-full text-xs font-bold shadow-md transition-all"
                 >
                   <Ban className="w-3.5 h-3.5" />
                   {cancelling ? 'Cancelando...' : 'Confirmar Cancelación'}

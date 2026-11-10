@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Printer, Download } from 'lucide-react';
+import { X, Printer } from 'lucide-react';
 
 export default function ModalCotizacionPdf({ order, onClose }) {
   if (!order) return null;
@@ -16,40 +16,40 @@ export default function ModalCotizacionPdf({ order, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto cursor-pointer" onClick={onClose}>
-      <div className="theme-fixed bg-white text-gray-900 w-full max-w-3xl rounded-xl shadow-2xl overflow-hidden my-auto border border-gray-300 cursor-default" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-gray-900/70 backdrop-blur-sm overflow-y-auto animate-backdrop-in cursor-pointer" onClick={onClose}>
+      <div className="bg-white text-gray-900 w-full max-w-3xl rounded-3xl shadow-2xl overflow-hidden my-auto border border-gray-100 animate-modal-in cursor-default" onClick={(e) => e.stopPropagation()}>
         {/* Modal Toolbar - Hidden during print */}
-        <div className="no-print bg-th-1e2022 text-gray-200 px-4 py-3 flex items-center justify-between border-b border-gray-700">
+        <div className="no-print bg-white text-gray-800 px-5 py-3.5 flex items-center justify-between border-b border-gray-100">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-sm">Vista Previa Formato Carta / A4</span>
-            <span className="text-xs text-orange-400 font-mono">({order.id})</span>
+            <span className="font-black text-sm text-gray-900">Vista Previa Formato Carta / A4</span>
+            <span className="text-xs text-[#173865] bg-blue-50 px-2.5 py-0.5 rounded-full font-mono font-bold">({order.id})</span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-orange-600 hover:bg-orange-500 shadow transition-all"
+              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white bg-[#173865] hover:bg-blue-900 shadow-md transition-all"
             >
               <Printer className="w-4 h-4" />
               <span>Imprimir / Guardar PDF</span>
             </button>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-100 p-1">
-              <X className="w-5 h-5" />
+            <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-colors">
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* Printable Document Container (Standard Letter / A4 proportion) */}
+        {/* Printable Document Container */}
         <div className="p-8 sm:p-12 bg-white text-gray-900 space-y-6 text-sm" id="printable-cotizacion">
           {/* Header */}
           <div className="flex items-start justify-between border-b pb-6 border-gray-200">
             <div>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-orange-600 flex items-center justify-center font-bold text-white text-xl">
+                <div className="w-10 h-10 rounded-xl bg-[#173865] flex items-center justify-center font-bold text-white text-xl">
                   M
                 </div>
                 <div>
                   <h1 className="text-xl font-bold tracking-tight text-gray-900">MINA DESIGN</h1>
-                  <p className="text-xs text-gray-500">Diseño, Impresión y Fabricación</p>
+                  <p className="text-xs text-[#173865] font-semibold">Diseño, Impresión y Fabricación</p>
                 </div>
               </div>
               <div className="mt-3 text-xs text-gray-600 space-y-0.5">
@@ -60,7 +60,7 @@ export default function ModalCotizacionPdf({ order, onClose }) {
             </div>
 
             <div className="text-right space-y-1">
-              <span className="inline-block px-3 py-1 bg-orange-100 text-orange-800 font-bold rounded text-xs uppercase tracking-wider">
+              <span className="inline-block px-3 py-1 bg-blue-50 text-[#173865] font-bold rounded-full text-xs uppercase tracking-wider border border-blue-100">
                 {order.tipo === 'COTIZACION' ? 'COTIZACIÓN' : 'PEDIDO'}
               </span>
               <p className="font-mono text-base font-bold text-gray-900">{order.id}</p>
@@ -76,7 +76,7 @@ export default function ModalCotizacionPdf({ order, onClose }) {
           </div>
 
           {/* Client Info */}
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 grid grid-cols-2 gap-4">
+          <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200 grid grid-cols-2 gap-4">
             <div>
               <span className="text-[11px] font-bold uppercase text-gray-400 block mb-1">Cliente</span>
               <p className="font-semibold text-gray-900 text-sm">{order.cliente}</p>
@@ -94,8 +94,8 @@ export default function ModalCotizacionPdf({ order, onClose }) {
             )}
           </div>
 
-          {/* Products Table - Spacious and cleanly separated */}
-          <div className="border border-gray-200 rounded-lg overflow-hidden">
+          {/* Products Table */}
+          <div className="border border-gray-200 rounded-2xl overflow-hidden">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-100 text-gray-700 text-xs font-bold uppercase tracking-wider border-b border-gray-200">
@@ -159,15 +159,15 @@ export default function ModalCotizacionPdf({ order, onClose }) {
               )}
               <div className="flex justify-between font-bold text-base text-gray-900 pt-2 border-t border-gray-200">
                 <span>Total:</span>
-                <span className="font-mono text-orange-600">{formatMoney(order.total)}</span>
+                <span className="font-mono text-[#173865]">{formatMoney(order.total)}</span>
               </div>
               <div className="flex justify-between text-gray-600 pt-1">
                 <span>Anticipo / Pagado:</span>
-                <span className="font-mono text-emerald-600">{formatMoney(order.pagado)}</span>
+                <span className="font-mono text-green-600">{formatMoney(order.pagado)}</span>
               </div>
               <div className="flex justify-between font-semibold text-gray-800">
                 <span>Saldo Pendiente:</span>
-                <span className="font-mono text-rose-600">{formatMoney(order.total - order.pagado)}</span>
+                <span className="font-mono text-red-600">{formatMoney(order.total - order.pagado)}</span>
               </div>
             </div>
           </div>

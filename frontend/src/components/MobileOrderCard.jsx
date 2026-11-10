@@ -1,22 +1,13 @@
 import React, { useState } from 'react';
 import { 
   ChevronDown, 
-  ChevronUp, 
   ChevronRight,
-  FileText, 
   FileCheck, 
   MessageCircle, 
   Printer, 
-  Trash2, 
   CheckCircle2, 
-  Clock, 
-  AlertCircle,
   Truck,
-  Building,
-  Calendar,
-  DollarSign,
   Edit3,
-  Tag,
   XCircle
 } from 'lucide-react';
 
@@ -35,41 +26,19 @@ export default function MobileOrderCard({
     switch (status) {
       case 'Completado':
       case 'Entregado':
-        return 'bg-emerald-950/80 text-emerald-400 border-emerald-700/60';
+        return 'bg-green-100 text-green-800 border-green-200 hover:bg-green-200';
       case 'En Producción':
       case 'En Progreso':
-        return 'bg-blue-950/80 text-blue-400 border-blue-700/60';
+        return 'bg-blue-100 text-blue-800 border-blue-200 hover:bg-blue-200';
       case 'Pendiente':
-        return 'bg-amber-950/80 text-amber-400 border-amber-700/60';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200 hover:bg-yellow-200';
       case 'Convertido':
-        return 'bg-blue-950/90 text-blue-300 border-blue-600/70';
+        return 'bg-blue-100 text-[#173865] border-blue-200 hover:bg-blue-200';
       case 'Cancelado':
-        return 'bg-rose-950/80 text-rose-400 border-rose-700/60';
+        return 'bg-red-100 text-red-800 border-red-200 hover:bg-red-200';
       default:
-        return 'bg-gray-800 text-gray-300 border-gray-700';
+        return 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200';
     }
-  };
-
-  const getFacturaBadge = () => {
-    if (!order.requiereFactura) return null;
-    const estatus = order.facturaEstatus || 'Pendiente';
-    const isDone = estatus === 'Facturado';
-    return (
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onFacturaClick(order);
-        }}
-        className={`px-2 py-0.5 rounded text-[11px] font-semibold border flex items-center gap-1 transition-all ${
-          isDone 
-            ? 'bg-emerald-950 text-emerald-300 border-emerald-600' 
-            : 'bg-yellow-950 text-yellow-300 border-yellow-600'
-        }`}
-      >
-        <FileCheck className="w-3 h-3" />
-        <span>{isDone ? 'CFDI Listo' : 'Factura Pendiente'}</span>
-      </button>
-    );
   };
 
   const formatMoney = (val) => {
@@ -97,22 +66,26 @@ export default function MobileOrderCard({
 
   return (
     <React.Fragment>
-      {/* Main Order Row matching image reference */}
+      {/* Main Order Row */}
       <tr 
         onClick={() => setExpanded(!expanded)} 
-        className={`hover:bg-gray-800/40 cursor-pointer transition-colors border-b border-gray-800/80 text-xs ${
-          isCancelled ? 'opacity-40 grayscale bg-th-121314/90 text-gray-500' : ''
+        className={`cursor-pointer transition-colors text-xs ${
+          isCancelled
+            ? 'opacity-45 grayscale bg-gray-50 text-gray-400'
+            : expanded
+              ? 'bg-blue-50/40'
+              : 'hover:bg-gray-50/80'
         }`}
       >
         {/* 1. Expand Chevron */}
-        <td className="py-3 px-2 text-center text-gray-400 w-8">
+        <td className="py-3.5 px-2 text-center text-gray-400 w-8">
           <button 
             type="button" 
-            className="p-1 hover:text-gray-50 rounded transition-colors"
+            className="p-1 hover:text-[#173865] rounded-full transition-colors"
             onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
           >
             {expanded ? (
-              <ChevronDown className="w-4 h-4 text-orange-400" />
+              <ChevronDown className="w-4 h-4 text-[#173865]" />
             ) : (
               <ChevronRight className="w-4 h-4 text-gray-400" />
             )}
@@ -120,143 +93,139 @@ export default function MobileOrderCard({
         </td>
 
         {/* 2. ID */}
-        <td className="py-3 px-3 whitespace-nowrap">
-          <span className={`px-2.5 py-1 rounded-md border font-mono font-bold text-xs shadow-sm ${
+        <td className="py-3.5 px-3 whitespace-nowrap">
+          <span className={`px-2.5 py-1 rounded-md font-mono font-bold text-xs ${
             isCancelled 
-              ? 'bg-gray-900/80 border-gray-800 text-gray-500 line-through' 
-              : 'bg-gray-800/80 border-gray-700/80 text-gray-200'
+              ? 'bg-gray-100 text-gray-400 line-through' 
+              : 'bg-gray-100 text-gray-700'
           }`}>
             {order.id}
           </span>
         </td>
 
         {/* 3. FECHA */}
-        <td className={`py-3 px-3 whitespace-nowrap font-mono ${isCancelled ? 'line-through text-gray-600' : 'text-gray-400'}`}>
+        <td className={`py-3.5 px-3 whitespace-nowrap text-xs font-medium ${isCancelled ? 'line-through text-gray-400' : 'text-gray-500'}`}>
           {order.fecha ? new Date(order.fecha).toLocaleDateString('es-MX') : '-'}
         </td>
 
         {/* 4. CLIENTE */}
-        <td className={`py-3 px-3 font-bold whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-500' : 'text-gray-100'}`}>
+        <td className={`py-3.5 px-3 font-bold whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-400' : 'text-gray-800 dark:text-gray-100'}`}>
           {order.cliente || 'Cliente sin nombre'}
         </td>
 
         {/* 5. DETALLE */}
-        <td className={`py-3 px-3 max-w-[200px] truncate ${isCancelled ? 'line-through text-gray-600' : 'text-gray-300'}`}>
+        <td className={`py-3.5 px-3 max-w-[200px] truncate text-xs ${isCancelled ? 'line-through text-gray-400' : 'text-gray-500'}`}>
           {detalleText}
         </td>
 
         {/* 6. TOTAL */}
-        <td className={`py-3 px-3 text-right font-mono font-bold whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-500' : 'text-gray-100'}`}>
+        <td className={`py-3.5 px-3 text-right font-bold whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-400' : 'text-gray-800 dark:text-gray-100'}`}>
           {formatMoney(order.total)}
         </td>
 
         {/* 7. RESTANTE */}
-        <td className={`py-3 px-3 text-right font-mono font-bold whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-600' : ''}`}>
+        <td className={`py-3.5 px-3 text-right font-black whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-400' : ''}`}>
           {restante > 0.001 ? (
-            <span className={isCancelled ? 'text-gray-600 line-through' : 'text-rose-500 font-bold'}>{formatMoney(restante)}</span>
+            <span className={isCancelled ? 'text-gray-400 line-through' : 'text-red-500'}>{formatMoney(restante)}</span>
           ) : (
-            <span className={isCancelled ? 'text-gray-600 line-through' : 'text-gray-900 dark:text-gray-300 font-bold'}>$0.00</span>
+            <span className={isCancelled ? 'text-gray-400 line-through' : 'text-green-600'}>$0.00</span>
           )}
         </td>
 
         {/* 8. GANANCIA DIRECTA */}
-        <td className={`py-3 px-3 text-right font-mono font-bold whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-500' : 'text-emerald-500 dark:text-emerald-400'}`}>
+        <td className={`py-3.5 px-3 text-right font-black whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-400' : 'text-green-600'}`}>
           {formatMoney(gananciaPedido)}
         </td>
 
-        {/* 8. ESTATUS */}
-        <td className="py-3 px-3 text-center whitespace-nowrap">
+        {/* 9. ESTATUS */}
+        <td className="py-3.5 px-3 text-center whitespace-nowrap">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onStatusClick(order);
             }}
-            className={`px-2 py-0.5 rounded text-[11px] font-semibold border inline-flex items-center gap-1 transition-all active:scale-95 leading-tight ${getStatusColor(
+            className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border shadow-sm inline-flex items-center gap-1.5 transition-all transform hover:scale-105 active:scale-95 ${getStatusColor(
               order.estatus
             )}`}
+            title="Haz clic para cambiar el estatus"
           >
             <span>{order.estatus}</span>
             <ChevronDown className="w-3 h-3 opacity-60" />
           </button>
           {order.estatus === 'Entregado' && order.fechaEntrega && (
-            <div className="text-[10px] text-emerald-400/90 mt-0.5 flex items-center justify-center gap-0.5 font-medium">
+            <div className="text-[10px] text-green-600 mt-1 flex items-center justify-center gap-0.5 font-bold">
               <span>✓ Entregado: {order.fechaEntrega}</span>
             </div>
           )}
         </td>
 
-        {/* 9. FACTURA */}
-        <td className="py-3 px-3 text-center whitespace-nowrap">
+        {/* 10. FACTURA */}
+        <td className="py-3.5 px-3 text-center whitespace-nowrap">
           {order.requiereFactura ? (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onFacturaClick(order);
               }}
-              className={`px-2 py-0.5 rounded text-[11px] font-semibold border inline-flex items-center gap-1 transition-all ${
+              className={`px-3 py-1 rounded-full text-[10px] font-black border shadow-sm inline-flex items-center gap-1 transition-all transform hover:scale-105 ${
                 order.facturaEstatus === 'Facturado'
-                  ? 'bg-emerald-950 text-emerald-300 border-emerald-600'
-                  : 'bg-yellow-950 text-yellow-300 border-yellow-600'
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600'
+                  : 'bg-red-600 hover:bg-red-700 text-white border-red-600'
               }`}
             >
               <FileCheck className="w-3 h-3" />
               <span>{order.facturaEstatus === 'Facturado' ? 'CFDI Listo' : 'Pendiente'}</span>
             </button>
           ) : (
-            <span className="text-gray-500 font-mono">-</span>
+            <span className="text-gray-300 text-xs">-</span>
           )}
         </td>
 
-        {/* 10. ACCIONES */}
-        <td className="py-3 px-3 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+        {/* 11. ACCIONES */}
+        <td className="py-3.5 px-3 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
           <div className="flex items-center justify-center gap-1.5">
-            {/* Imprimir / PDF */}
             <button
               onClick={() => onPdfClick(order)}
-              className="p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 transition-colors"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
               title="Ver PDF / Imprimir"
             >
-              <Printer className="w-3.5 h-3.5 text-orange-400" />
+              <Printer className="w-3.5 h-3.5" />
             </button>
 
-            {/* WhatsApp */}
             {order.telefono && (
               <button
                 onClick={sendWhatsApp}
-                className="p-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900 text-emerald-400 border border-emerald-800/60 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-green-50 hover:bg-green-100 text-green-600 transition-colors"
                 title="Contactar por WhatsApp"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
               </button>
             )}
 
-            {/* Editar */}
             {onEdit && (
               <button
                 onClick={() => onEdit(order)}
-                className="p-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 text-blue-300 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 text-[#173865] transition-colors"
                 title="Editar pedido"
               >
-                <Edit3 className="w-3.5 h-3.5 text-blue-400" />
+                <Edit3 className="w-3.5 h-3.5" />
               </button>
             )}
 
-            {/* Cancelar Registro */}
             {order.estatus !== 'Cancelado' && onStatusClick && (
               <button
                 onClick={() => onStatusClick({ ...order, estatus: 'Cancelado' })}
-                className="p-1.5 rounded-lg bg-rose-950/50 hover:bg-rose-900 text-rose-400 border border-rose-800/60 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 text-red-500 transition-colors"
                 title={`Cancelar ${order.tipo === 'COTIZACION' ? 'cotización' : 'pedido'}`}
               >
                 <XCircle className="w-3.5 h-3.5" />
               </button>
             )}
 
-            {/* Aprobar Cotización */}
             {order.tipo === 'COTIZACION' && !order.convertidaAPedido && order.estatus !== 'Aprobado' && order.estatus !== 'Convertido' && onAprobarCotizacion && (
               <button
                 onClick={() => onAprobarCotizacion(order)}
-                className="px-2 py-1 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-[11px] font-bold shadow-sm transition-all active:scale-95 flex items-center gap-1"
+                className="px-3 py-1.5 rounded-full bg-[#173865] hover:bg-blue-900 text-white text-[11px] font-bold shadow-sm transition-all active:scale-95 flex items-center gap-1"
                 title="Aprobar a Pedido"
               >
                 <CheckCircle2 className="w-3 h-3" />
@@ -269,299 +238,209 @@ export default function MobileOrderCard({
 
       {/* Expanded Details Section */}
       {expanded && (
-        <tr className="bg-th-151618">
-          <td colSpan={11} className="p-3.5 sm:p-4 border-b border-gray-800">
-            {/* Header of Desglose: DESGLOSE DE COSTOS E INSUMOS + Financial metrics */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1 border-b border-gray-800/80">
-              <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-gray-200">
-                DESGLOSE DE COSTOS E INSUMOS
-              </span>
-              {(() => {
-                const totalPiezas = (order.productos || []).reduce((acc, p) => acc + (parseFloat(p.cant) || 1), 0);
-                const ventaNum = parseFloat(order.total) || 0;
-                const costoInsumosNum = parseFloat(order.costoTotal) || 0;
-                const recoleccionNum = parseFloat(order.costoRecoleccion) || (order.recolecciones ? order.recolecciones.reduce((acc, r) => acc + (r.porcion || 0), 0) : 0);
-                const gananciaNetaReal = ventaNum - costoInsumosNum - recoleccionNum;
-                return (
-                  <div className="flex items-center gap-2 sm:gap-3.5 text-xs flex-wrap font-mono">
-                    <span className="text-gray-400">
-                      Total Productos: <strong className="text-gray-100">{totalPiezas} {totalPiezas === 1 ? 'pieza' : 'piezas'}</strong>
-                    </span>
-                    <span className="text-gray-400">
-                      Venta Total: <strong className="text-gray-100">{formatMoney(ventaNum)}</strong>
-                    </span>
-                    {recoleccionNum > 0 && (
-                      <span className="text-amber-400">
-                        Recolección: <strong className="text-amber-300">+{formatMoney(recoleccionNum)}</strong>
+        <tr className="bg-gray-50/70 border-b border-gray-100">
+          <td colSpan={11} className="p-4">
+            <div className="bg-gray-50/90 border border-gray-200 rounded-2xl p-4 w-full shadow-sm space-y-3">
+              {/* Header of Desglose */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-gray-200">
+                <span className="text-xs font-black uppercase tracking-wider text-gray-800">
+                  Desglose de Costos e Insumos
+                </span>
+                {(() => {
+                  const totalPiezas = (order.productos || []).reduce((acc, p) => acc + (parseFloat(p.cant) || 1), 0);
+                  const ventaNum = parseFloat(order.total) || 0;
+                  const costoInsumosNum = parseFloat(order.costoTotal) || 0;
+                  const recoleccionNum = parseFloat(order.costoRecoleccion) || (order.recolecciones ? order.recolecciones.reduce((acc, r) => acc + (r.porcion || 0), 0) : 0);
+                  const gananciaNetaReal = ventaNum - costoInsumosNum - recoleccionNum;
+                  return (
+                    <div className="flex items-center gap-3 text-xs flex-wrap">
+                      <span className="text-gray-600 font-medium">
+                        Total Productos: <strong className="text-gray-900 font-bold">{totalPiezas} {totalPiezas === 1 ? 'pieza' : 'piezas'}</strong>
                       </span>
-                    )}
-                    <span className="text-gray-400">
-                      Costo Total: <strong className="text-gray-100">{formatMoney(costoInsumosNum)}</strong>
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-600/70 text-emerald-400 font-semibold text-[11px] sm:text-xs">
-                      Ganancia Neta: {formatMoney(gananciaNetaReal)}
-                    </span>
-                  </div>
-                );
-              })()}
-            </div>
+                      <span className="text-gray-600 font-medium">
+                        Venta Total: <strong className="text-gray-900 font-bold">{formatMoney(ventaNum)}</strong>
+                      </span>
+                      {recoleccionNum > 0 && (
+                        <span className="text-amber-700 font-bold">
+                          Recolección: <strong>+{formatMoney(recoleccionNum)}</strong>
+                        </span>
+                      )}
+                      <span className="text-gray-600 font-medium">
+                        Costo Total: <strong className="text-gray-900 font-bold">{formatMoney(costoInsumosNum)}</strong>
+                      </span>
+                      <span className="px-3 py-0.5 rounded-full bg-green-100 border border-green-200 text-green-700 font-bold text-xs">
+                        Ganancia Neta: {formatMoney(gananciaNetaReal)}
+                      </span>
+                    </div>
+                  );
+                })()}
+              </div>
 
-          {/* Table matching reference structure: Compact layout without redundant thead */}
-          <div className="overflow-x-auto rounded-lg border border-gray-800 bg-th-141517">
-            <table className="w-full text-left border-collapse text-xs">
-              <tbody className="divide-y divide-gray-800/60">
-                {order.productos && order.productos.length > 0 ? (
-                  order.productos.map((prod, idx) => {
-                    const cantProd = parseFloat(prod.cant) || 1;
-                    const puProd = parseFloat(prod.precioUnitario) || 0;
-                    const precioCobradoProd = cantProd * puProd;
-                    
-                    const costoInsumosProd = (prod.insumos || []).reduce(
-                      (acc, ins) => acc + (parseFloat(ins.costo) || ((parseFloat(ins.cant) || 1) * (parseFloat(ins.costoUnitario) || 0))),
-                      0
-                    );
-                    const costoMermasProd = (prod.mermas || []).reduce(
-                      (acc, m) => acc + ((parseFloat(m.cant) || 1) * (parseFloat(m.costoUnitario) || 0)),
-                      0
-                    );
-                    const costoProdTotal = costoInsumosProd + costoMermasProd;
-                    const costoUnitProd = cantProd > 0 ? (costoProdTotal / cantProd) : costoProdTotal;
-                    const gananciaProd = precioCobradoProd - costoProdTotal;
+              {/* Sub-table */}
+              <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+                <table className="w-full text-left border-collapse text-xs">
+                  <tbody className="divide-y divide-gray-100">
+                    {order.productos && order.productos.length > 0 ? (
+                      order.productos.map((prod, idx) => {
+                        const cantProd = parseFloat(prod.cant) || 1;
+                        const puProd = parseFloat(prod.precioUnitario) || 0;
+                        const precioCobradoProd = cantProd * puProd;
+                        
+                        const costoInsumosProd = (prod.insumos || []).reduce(
+                          (acc, ins) => acc + (parseFloat(ins.costo) || ((parseFloat(ins.cant) || 1) * (parseFloat(ins.costoUnitario) || 0))),
+                          0
+                        );
+                        const costoMermasProd = (prod.mermas || []).reduce(
+                          (acc, m) => acc + ((parseFloat(m.cant) || 1) * (parseFloat(m.costoUnitario) || 0)),
+                          0
+                        );
+                        const costoProdTotal = costoInsumosProd + costoMermasProd;
+                        const costoUnitProd = cantProd > 0 ? (costoProdTotal / cantProd) : costoProdTotal;
+                        const gananciaProd = precioCobradoProd - costoProdTotal;
 
-                    return (
-                      <React.Fragment key={idx}>
-                        {/* Product Header Row - 9 Columns: Insumo, Detalle, Medida, Nota, Proveedor, Cant, Costo Unit, Subtotal, Método Pago */}
-                        <tr className="bg-th-1b1c20 border-t-2 border-b border-gray-700/80 font-medium">
-                          <td className="py-2.5 px-3 min-w-[170px]">
-                            <div className="font-bold text-gray-100 text-xs sm:text-sm">
-                              {cantProd}x {prod.nombre}
-                            </div>
-                            {prod.proveedor && (
-                              <div className="text-[10px] text-gray-400">
-                                {prod.proveedor}
-                              </div>
-                            )}
-                          </td>
-                          <td className="py-2.5 px-2 text-center min-w-[110px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
-                            DETALLE
-                          </td>
-                          <td className="py-2.5 px-2 text-center min-w-[95px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
-                            MEDIDA
-                          </td>
-                          <td className="py-2.5 px-2 text-center min-w-[110px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
-                            NOTA
-                          </td>
-                          <td className="py-2.5 px-2 text-center min-w-[100px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
-                            PROVEEDOR
-                          </td>
-                          <td className="py-2.5 px-2 text-center w-20 min-w-[65px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
-                            CANT.
-                          </td>
-                          <td className="py-2.5 px-2 text-center w-24 min-w-[80px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
-                            COSTO UNIT.
-                          </td>
-                          <td className="py-2.5 px-2 text-center w-24 min-w-[85px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
-                            SUBTOTAL COSTO
-                          </td>
-                          <td className="py-2.5 px-2 text-center w-28 min-w-[95px] text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
-                            MÉTODO DE PAGO
-                          </td>
-                        </tr>
-
-                        {/* Insumos Rows for this Product */}
-                        {prod.insumos && prod.insumos.length > 0 ? (
-                          prod.insumos.map((ins, iIdx) => {
-                            const cantIns = parseFloat(ins.cant) || 1;
-                            const cuIns = parseFloat(ins.costoUnitario) || (parseFloat(ins.costo) || 0) / cantIns;
-                            const subtotalIns = parseFloat(ins.costo) || (cantIns * cuIns);
-
-                            return (
-                              <tr key={iIdx} className="hover:bg-gray-800/30 text-gray-300 text-[11px] transition-colors">
-                                {/* INSUMO */}
-                                <td className="py-2 px-3 pl-4">
-                                  <div className="flex items-start gap-1.5">
-                                    <span className="text-gray-500 font-bold">•</span>
-                                    <span className="font-medium text-gray-200">{ins.nombre}</span>
+                        return (
+                          <React.Fragment key={idx}>
+                            <tr className="bg-gray-100/90 border-t border-b border-gray-200 font-bold">
+                              <td className="py-2.5 px-3 min-w-[170px]">
+                                <div className="font-black text-gray-900 text-xs">
+                                  {cantProd}x {prod.nombre}
+                                </div>
+                                {prod.proveedor && (
+                                  <div className="text-[11px] text-gray-500 font-normal">
+                                    ({prod.proveedor})
                                   </div>
-                                </td>
+                                )}
+                              </td>
+                              <td className="py-2.5 px-2 text-center min-w-[110px] text-[10px] font-bold uppercase text-gray-500">Detalle</td>
+                              <td className="py-2.5 px-2 text-center min-w-[95px] text-[10px] font-bold uppercase text-gray-500">Medida</td>
+                              <td className="py-2.5 px-2 text-center min-w-[110px] text-[10px] font-bold uppercase text-gray-500">Nota</td>
+                              <td className="py-2.5 px-2 text-center min-w-[100px] text-[10px] font-bold uppercase text-gray-500">Proveedor</td>
+                              <td className="py-2.5 px-2 text-center w-20 text-[10px] font-bold uppercase text-gray-500">Cant.</td>
+                              <td className="py-2.5 px-2 text-center w-24 text-[10px] font-bold uppercase text-gray-500">Costo Unit.</td>
+                              <td className="py-2.5 px-2 text-center w-24 text-[10px] font-bold uppercase text-gray-500">Subtotal Costo</td>
+                              <td className="py-2.5 px-2 text-center w-28 text-[10px] font-bold uppercase text-gray-500">Método Pago</td>
+                            </tr>
 
-                                {/* DETALLE */}
-                                <td className="py-2 px-2 text-center text-gray-300">
-                                  {ins.detalle || <span className="text-gray-600">-</span>}
-                                </td>
+                            {prod.insumos && prod.insumos.length > 0 ? (
+                              prod.insumos.map((ins, iIdx) => {
+                                const cantIns = parseFloat(ins.cant) || 1;
+                                const cuIns = parseFloat(ins.costoUnitario) || (parseFloat(ins.costo) || 0) / cantIns;
+                                const subtotalIns = parseFloat(ins.costo) || (cantIns * cuIns);
 
-                                {/* MEDIDA */}
-                                <td className="py-2 px-2 text-center text-gray-300 font-mono text-[11px]">
-                                  {ins.medida || <span className="text-gray-600">-</span>}
-                                </td>
-
-                                {/* NOTA */}
-                                <td className="py-2 px-2 text-center text-gray-400">
-                                  {ins.nota ? (
-                                    <span className="text-amber-400/90">{ins.nota}</span>
-                                  ) : (
-                                    <span className="text-gray-600">-</span>
-                                  )}
-                                </td>
-
-                                {/* PROVEEDOR */}
-                                <td className="py-2 px-2 text-center text-gray-400">
-                                  {ins.proveedor || <span className="text-gray-600">-</span>}
-                                </td>
-
-                                {/* CANT. */}
-                                <td className="py-2 px-2 text-center w-20 min-w-[65px] font-mono font-medium text-gray-200">
-                                  {cantIns}
-                                </td>
-
-                                {/* COSTO UNIT. */}
-                                <td className="py-2 px-2 text-center w-24 min-w-[80px] font-mono text-gray-300">
-                                  {formatMoney(cuIns)}
-                                </td>
-
-                                {/* SUBTOTAL COSTO */}
-                                <td className="py-2 px-2 text-center w-24 min-w-[85px] font-mono font-bold text-gray-100">
-                                  {formatMoney(subtotalIns)}
-                                </td>
-
-                                {/* MÉTODO DE PAGO */}
-                                <td className="py-2 px-2 text-center w-28 min-w-[95px]">
-                                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-gray-800/80 border border-gray-700/80 text-gray-300 inline-block">
-                                    {ins.metodoPago || 'STOCK'}
-                                  </span>
+                                return (
+                                  <tr key={iIdx} className="hover:bg-blue-50/30 text-gray-700 text-xs transition-colors">
+                                    <td className="py-2 px-3 pl-4">
+                                      <div className="flex items-start gap-1.5">
+                                        <span className="text-gray-400">•</span>
+                                        <span className="font-semibold text-gray-800">{ins.nombre}</span>
+                                      </div>
+                                    </td>
+                                    <td className="py-2 px-2 text-center text-gray-600">{ins.detalle || '-'}</td>
+                                    <td className="py-2 px-2 text-center text-gray-600 font-mono text-[11px]">{ins.medida || '-'}</td>
+                                    <td className="py-2 px-2 text-center text-amber-800 font-medium">{ins.nota || '-'}</td>
+                                    <td className="py-2 px-2 text-center text-gray-500">{ins.proveedor || '-'}</td>
+                                    <td className="py-2 px-2 text-center font-bold text-gray-700">{cantIns}</td>
+                                    <td className="py-2 px-2 text-center text-gray-600">{formatMoney(cuIns)}</td>
+                                    <td className="py-2 px-2 text-center font-bold text-gray-900">{formatMoney(subtotalIns)}</td>
+                                    <td className="py-2 px-2 text-center">
+                                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-gray-100 border border-gray-200 text-gray-700 inline-block">
+                                        {ins.metodoPago || 'STOCK'}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                );
+                              })
+                            ) : (
+                              <tr>
+                                <td colSpan={9} className="py-2 px-4 text-xs text-gray-400 italic pl-6">
+                                  Sin insumos registrados para este producto
                                 </td>
                               </tr>
-                            );
-                          })
-                        ) : (
-                          <tr>
-                            <td colSpan={9} className="py-2 px-4 text-[11px] text-gray-500 italic pl-6">
-                              Sin insumos registrados para este producto
-                            </td>
-                          </tr>
-                        )}
+                            )}
 
-                        {/* Mermas if any */}
-                        {prod.mermas && prod.mermas.length > 0 && prod.mermas.map((merma, mIdx) => {
-                          const cantMerma = parseFloat(merma.cant) || 1;
-                          const cuMerma = parseFloat(merma.costoUnitario) || 0;
-                          const subtotalMerma = cantMerma * cuMerma;
-                          return (
-                            <tr key={`merma-${mIdx}`} className="bg-rose-950/20 text-rose-300 text-[11px]">
-                              {/* INSUMO */}
-                              <td className="py-2 px-3 pl-4">
-                                <span className="font-semibold text-rose-400">• [Merma] {merma.material}</span>
-                              </td>
-                              {/* DETALLE */}
-                              <td className="py-2 px-2 text-center text-rose-400/70">
-                                Desperdicio
-                              </td>
-                              {/* MEDIDA */}
-                              <td className="py-2 px-2 text-center text-gray-600">
-                                -
-                              </td>
-                              {/* NOTA */}
-                              <td className="py-2 px-2 text-center text-rose-400/90">
-                                {merma.motivo || '-'}
-                              </td>
-                              {/* PROVEEDOR */}
-                              <td className="py-2 px-2 text-center text-rose-400/70">
-                                Propio
-                              </td>
-                              {/* CANT. */}
-                              <td className="py-2 px-2 text-center w-20 min-w-[65px] font-mono">
-                                {cantMerma}
-                              </td>
-                              {/* COSTO UNIT. */}
-                              <td className="py-2 px-2 text-center w-24 min-w-[80px] font-mono">
-                                {formatMoney(cuMerma)}
-                              </td>
-                              {/* SUBTOTAL COSTO */}
-                              <td className="py-2 px-2 text-center w-24 min-w-[85px] font-mono font-semibold">
-                                {formatMoney(subtotalMerma)}
-                              </td>
-                              {/* MÉTODO DE PAGO */}
-                              <td className="py-2 px-2 text-center w-28 min-w-[95px]">
-                                <span className="px-2 py-0.5 rounded text-[10px] font-semibold uppercase bg-rose-950/80 border border-rose-800/80 text-rose-300 inline-block">
-                                  {merma.metodoPago || 'STOCK'}
-                                </span>
+                            {prod.mermas && prod.mermas.length > 0 && prod.mermas.map((merma, mIdx) => {
+                              const cantMerma = parseFloat(merma.cant) || 1;
+                              const cuMerma = parseFloat(merma.costoUnitario) || 0;
+                              const subtotalMerma = cantMerma * cuMerma;
+                              return (
+                                <tr key={`merma-${mIdx}`} className="bg-red-50/70 text-red-700 text-xs">
+                                  <td className="py-2 px-3 pl-4 font-bold">• [Merma] {merma.material}</td>
+                                  <td className="py-2 px-2 text-center">Desperdicio</td>
+                                  <td className="py-2 px-2 text-center text-gray-400">-</td>
+                                  <td className="py-2 px-2 text-center">{merma.motivo || '-'}</td>
+                                  <td className="py-2 px-2 text-center">Propio</td>
+                                  <td className="py-2 px-2 text-center font-bold">{cantMerma}</td>
+                                  <td className="py-2 px-2 text-center">{formatMoney(cuMerma)}</td>
+                                  <td className="py-2 px-2 text-center font-bold">{formatMoney(subtotalMerma)}</td>
+                                  <td className="py-2 px-2 text-center">
+                                    <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-red-100 border border-red-200 text-red-700 inline-block">
+                                      {merma.metodoPago || 'STOCK'}
+                                    </span>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+
+                            <tr className="bg-gray-50 border-b border-gray-200">
+                              <td colSpan={9} className="py-2 px-3">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                                  <span className="text-[11px] uppercase font-bold text-gray-500">
+                                    Resumen de {prod.nombre}
+                                  </span>
+                                  <div className="flex items-center gap-3 text-xs flex-wrap justify-end">
+                                    <span className="text-gray-600">C. Unit.: <strong className="text-gray-900">{formatMoney(costoUnitProd)}</strong></span>
+                                    <span className="text-gray-600">Venta: <strong className="text-gray-900">{formatMoney(precioCobradoProd)}</strong></span>
+                                    <span className="text-gray-600">C. Total: <strong className="text-gray-900">{formatMoney(costoProdTotal)}</strong></span>
+                                    <span className="px-2.5 py-0.5 rounded-full bg-green-100 border border-green-200 text-green-800 font-black text-[11px]">
+                                      Ganancia: {formatMoney(gananciaProd)}
+                                    </span>
+                                  </div>
+                                </div>
                               </td>
                             </tr>
-                          );
-                        })}
+                          </React.Fragment>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan={9} className="py-4 text-center text-gray-400 italic">
+                          No hay productos registrados en este pedido
+                        </td>
+                      </tr>
+                    )}
 
-                        {/* Product Financial Metrics Footer (Recuadro Naranja movido a la parte de abajo) */}
-                        <tr className="bg-th-17181b border-b border-gray-800">
-                          <td colSpan={9} className="py-2 px-3">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-                              <span className="text-[10px] uppercase font-bold text-gray-400">
-                                Resumen de {prod.nombre}
+                    {order.recolecciones && order.recolecciones.length > 0 && order.recolecciones.map((rec, rIdx) => (
+                      <tr key={rIdx} className="bg-amber-50/70 border-t border-amber-200 text-xs">
+                        <td colSpan={9} className="py-2.5 px-3">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-amber-900">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <Truck className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                              <span className="font-mono font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-200 text-[10px]">
+                                {rec.recoleccionId}
                               </span>
-                              <div className="flex items-center gap-2 sm:gap-3.5 text-[11px] font-mono flex-wrap justify-end">
-                                <span className="text-gray-400">
-                                  C. Unit.: <strong className="text-gray-200">{formatMoney(costoUnitProd)}</strong>
-                                </span>
-                                <span className="text-gray-400">
-                                  Venta: <strong className="text-gray-200">{formatMoney(precioCobradoProd)}</strong>
-                                </span>
-                                <span className="text-gray-400">
-                                  C. Total: <strong className="text-gray-200">{formatMoney(costoProdTotal)}</strong>
-                                </span>
-                                <span className="px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-600/70 text-emerald-400 font-semibold text-[10px] sm:text-[11px]">
-                                  Ganancia: {formatMoney(gananciaProd)}
-                                </span>
-                              </div>
+                              <span className="text-amber-700 font-medium">
+                                {rec.fecha ? new Date(rec.fecha).toLocaleDateString('es-MX') : '-'}
+                              </span>
+                              <span>• Gasto de recolección {rec.recoleccionId}: {rec.conceptos || 'Logística'}</span>
+                              {rec.nota && <span className="text-amber-700 italic">— "{rec.nota}"</span>}
                             </div>
-                          </td>
-                        </tr>
-                      </React.Fragment>
-                    );
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={9} className="py-4 text-center text-gray-500 italic">
-                      No hay productos registrados en este pedido
-                    </td>
-                  </tr>
-                )}
+                            <div className="font-black text-amber-900 shrink-0">
+                              Porción asignada: +{formatMoney(rec.porcion)}
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-                {/* Gastos de Recolección / Logística en una sola línea */}
-                {order.recolecciones && order.recolecciones.length > 0 && order.recolecciones.map((rec, rIdx) => (
-                  <tr key={rIdx} className="bg-th-181613 border-t border-amber-900/40 text-[11px]">
-                    <td colSpan={9} className="py-2.5 px-3">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-gray-300">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <Truck className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                          <span className="font-mono font-bold text-amber-300 bg-amber-950 px-1.5 py-0.2 rounded border border-amber-700/60 text-[10px]">
-                            {rec.recoleccionId}
-                          </span>
-                          <span className="text-gray-400 font-mono">
-                            {rec.fecha ? new Date(rec.fecha).toLocaleDateString('es-MX') : '-'}
-                          </span>
-                          <span className="text-gray-300">
-                            • Gasto de recolección {rec.recoleccionId}: {rec.conceptos || 'Logística'}
-                          </span>
-                          {rec.nota && (
-                            <span className="text-amber-400/80 italic">— "{rec.nota}"</span>
-                          )}
-                        </div>
-                        <div className="font-mono text-amber-300 font-bold shrink-0">
-                          Porción asignada: +{formatMoney(rec.porcion)}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Motivo de Cancelación si aplica */}
-          {order.estatus === 'Cancelado' && order.motivoCancelacion && (
-            <div className="mt-2 p-2 rounded-lg bg-rose-950/40 border border-rose-800/60 text-xs text-rose-300">
-              <strong>Motivo de Cancelación:</strong> {order.motivoCancelacion}
+              {order.estatus === 'Cancelado' && order.motivoCancelacion && (
+                <div className="p-3 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-700 font-medium">
+                  <strong>Motivo de Cancelación:</strong> {order.motivoCancelacion}
+                </div>
+              )}
             </div>
-          )}
           </td>
         </tr>
       )}

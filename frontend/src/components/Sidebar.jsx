@@ -66,7 +66,7 @@ export default function Sidebar({
       {/* Backdrop overlay for mobile */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 lg:hidden no-print transition-opacity" 
+          className="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-40 lg:hidden no-print transition-opacity" 
           onClick={onClose}
           aria-hidden="true"
         />
@@ -75,26 +75,26 @@ export default function Sidebar({
       {/* Sidebar element */}
       <aside
         className={`
-          no-print flex flex-col bg-th-161719 border-r border-gray-800/80
+          no-print flex flex-col bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800
           /* Mobile styles (fixed drawer overlay) */
           fixed inset-y-0 left-0 z-50 w-64 transition-transform duration-300 ease-in-out lg:static lg:z-20
-          ${isOpen ? 'translate-x-0 shadow-2xl lg:shadow-none' : '-translate-x-full lg:translate-x-0'}
+          ${isOpen ? 'translate-x-0 shadow-2xl lg:shadow-sm' : '-translate-x-full lg:translate-x-0'}
           /* Desktop styles (collapsible visibility) */
           ${!isOpen ? 'lg:flex' : 'lg:flex'}
         `}
       >
         {/* Brand Header */}
-        <div className="p-4 border-b border-gray-800/80 flex items-center justify-between">
+        <div className="px-5 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center font-bold text-white shadow-md shadow-orange-900/40 text-sm">
+            <div className="w-10 h-10 rounded-xl bg-[#173865] flex items-center justify-center font-bold text-white shadow-md text-base">
               M
             </div>
             <div>
-              <h1 className="font-bold text-sm text-gray-100 tracking-wide">
-                MINA DESIGN
+              <h1 className="font-bold text-base text-gray-900 dark:text-gray-100 leading-tight tracking-tight">
+                MINA
               </h1>
-              <span className="text-[10px] text-gray-400 block -mt-0.5 font-medium">
-                SISTEMA INTEGRAL
+              <span className="text-xs font-semibold text-[#173865] dark:text-blue-400 uppercase block -mt-0.5 tracking-wide">
+                DESIGN
               </span>
             </div>
           </div>
@@ -102,7 +102,7 @@ export default function Sidebar({
           {/* Mobile close button */}
           <button 
             onClick={onClose}
-            className="lg:hidden text-gray-400 hover:text-gray-200 p-1 rounded-md"
+            className="lg:hidden text-gray-400 hover:text-gray-700 w-8 h-8 rounded-full hover:bg-gray-100 flex items-center justify-center transition-colors"
             aria-label="Cerrar menú"
           >
             ✕
@@ -110,7 +110,7 @@ export default function Sidebar({
         </div>
 
         {/* Navigation Tabs */}
-        <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = currentTab === tab.id;
@@ -122,16 +122,16 @@ export default function Sidebar({
                   setCurrentTab(tab.id);
                   onClose();
                 }}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+                className={`w-full flex items-center justify-between px-4 py-2.5 rounded-full text-sm transition-all group ${
                   isActive
-                    ? 'bg-orange-600/15 text-orange-400 border border-orange-500/30 shadow-sm'
-                    : 'text-gray-400 hover:text-gray-100 hover:bg-gray-800/60 border border-transparent'
+                    ? 'bg-blue-50 dark:bg-blue-950/60 text-[#173865] dark:text-blue-300 font-bold shadow-sm'
+                    : 'text-gray-500 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-200'
                 }`}
               >
-                <div className="flex items-center gap-2.5 truncate">
+                <div className="flex items-center gap-3 truncate">
                   <Icon 
                     className={`w-4 h-4 flex-shrink-0 transition-colors ${
-                      isActive ? 'text-orange-400' : 'text-gray-400 group-hover:text-gray-200'
+                      isActive ? 'text-[#173865] dark:text-blue-400' : 'text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300'
                     }`} 
                   />
                   <span className="truncate">{tab.label}</span>
@@ -139,14 +139,14 @@ export default function Sidebar({
 
                 {(tab.id === 'pedidos' || tab.badge > 0) && (
                   <span
-                    className={`min-w-[18px] h-4 px-1 rounded-full text-xs font-bold flex items-center justify-center leading-none ${
+                    className={`min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold flex items-center justify-center leading-none ${
                       tab.id === 'pendientes'
-                        ? 'bg-amber-500 text-white shadow-sm shadow-amber-950/60'
+                        ? 'bg-amber-100 text-amber-800 border border-amber-200'
                         : tab.id === 'pedidos'
-                          ? 'bg-orange-500 text-white shadow-sm shadow-orange-950/60'
+                          ? 'bg-[#173865] text-white shadow-sm'
                           : isActive
-                            ? 'bg-orange-500 text-white'
-                            : 'bg-gray-800 text-gray-300 group-hover:bg-gray-700'
+                            ? 'bg-[#173865] text-white'
+                            : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 group-hover:bg-gray-200'
                     }`}
                   >
                     {tab.badge}
@@ -158,17 +158,17 @@ export default function Sidebar({
         </nav>
 
         {/* User Card at bottom of sidebar */}
-        <div className="p-3 border-t border-gray-800/80 bg-th-131416">
+        <div className="p-3 border-t border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-900">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="w-7 h-7 rounded-full bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-xs font-bold text-orange-400 flex-shrink-0">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <div className="w-8 h-8 rounded-full bg-[#173865] text-white flex items-center justify-center text-xs font-black flex-shrink-0 shadow-sm">
                 {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'M'}
               </div>
               <div className="truncate">
-                <p className="text-xs font-semibold text-gray-200 truncate">
+                <p className="text-xs font-bold text-gray-800 dark:text-gray-200 truncate">
                   {user?.nombre || 'Admin'}
                 </p>
-                <span className="text-[10px] text-gray-400 capitalize block -mt-0.5">
+                <span className="text-[10px] text-gray-400 capitalize block -mt-0.5 font-medium">
                   {user?.rol || 'Administrador'}
                 </span>
               </div>
@@ -177,7 +177,7 @@ export default function Sidebar({
             {onLogout && (
               <button
                 onClick={onLogout}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex-shrink-0"
+                className="p-2 rounded-full text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors flex-shrink-0"
                 title="Cerrar sesión"
               >
                 <LogOut className="w-4 h-4" />

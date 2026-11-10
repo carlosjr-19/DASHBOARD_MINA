@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { 
   FileText, 
   Search, 
-  CheckCircle2, 
-  Printer, 
   Plus, 
   Clock, 
   DollarSign
@@ -43,98 +41,106 @@ export default function CotizacionesView({
   const pendientesCount = listCotizaciones.filter(c => c.estatus === 'Pendiente').length;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {/* Metrics Row */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-4">
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
-          <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Cotizaciones Emitidas</span>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-lg sm:text-2xl font-bold text-gray-100">{listCotizaciones.length}</span>
-            <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-3xl shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
+          <span className="text-[11px] text-gray-500 uppercase font-bold tracking-wider block">Cotizaciones Emitidas</span>
+          <div className="flex items-center justify-between mt-1.5">
+            <span className="text-xl sm:text-2xl font-black text-gray-900 dark:text-gray-100">{listCotizaciones.length}</span>
+            <div className="w-9 h-9 rounded-full bg-blue-50 text-[#173865] flex items-center justify-center">
+              <FileText className="w-4 h-4" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl">
-          <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Pendientes de Aprobación</span>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-lg sm:text-2xl font-bold text-amber-400">{pendientesCount}</span>
-            <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-3xl shadow-sm hover:shadow-md hover:border-amber-200 transition-all">
+          <span className="text-[11px] text-gray-500 uppercase font-bold tracking-wider block">Pendientes de Aprobación</span>
+          <div className="flex items-center justify-between mt-1.5">
+            <span className="text-xl sm:text-2xl font-black text-amber-600">{pendientesCount}</span>
+            <div className="w-9 h-9 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center">
+              <Clock className="w-4 h-4" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-th-1c1d1f border border-gray-800 p-3 sm:p-4 rounded-xl col-span-2 sm:col-span-1">
-          <span className="text-[10px] sm:text-xs text-gray-400 uppercase font-semibold block">Monto Presupuestado</span>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-sm sm:text-xl font-bold font-mono text-blue-400 truncate">{formatMoney(totalPresupuestado)}</span>
-            <DollarSign className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 shrink-0" />
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 p-4 rounded-3xl shadow-sm hover:shadow-md hover:border-blue-200 transition-all col-span-2 sm:col-span-1">
+          <span className="text-[11px] text-gray-500 uppercase font-bold tracking-wider block">Monto Presupuestado</span>
+          <div className="flex items-center justify-between mt-1.5">
+            <span className="text-base sm:text-xl font-black text-[#173865] dark:text-blue-400 truncate">{formatMoney(totalPresupuestado)}</span>
+            <div className="w-9 h-9 rounded-full bg-blue-50 text-[#173865] flex items-center justify-center shrink-0">
+              <DollarSign className="w-4 h-4" />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Search Toolbar */}
-      <div className="flex items-center justify-between gap-2.5 bg-th-18191b p-3 rounded-xl border border-gray-800">
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-gray-400" />
+      <div className="flex items-center justify-between gap-3 bg-white dark:bg-gray-900 p-3 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
+        <div className="relative flex-1 max-w-md">
+          <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-gray-400" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-th-121314 text-xs text-gray-100 pl-9 pr-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full bg-gray-50 dark:bg-gray-800 text-xs font-medium text-gray-800 dark:text-gray-100 pl-9 pr-4 py-2 rounded-full border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-[#173865] focus:bg-white transition"
           />
         </div>
 
         <button
           onClick={onOpenNuevoPedido}
-          className="flex items-center gap-1 px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg shadow transition-all active:scale-95"
+          className="flex items-center gap-1.5 px-5 py-2.5 bg-[#173865] hover:bg-blue-900 text-white text-xs font-bold rounded-full shadow-md hover:shadow-lg transition-all active:scale-95 shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Nueva Cotización</span>
         </button>
       </div>
 
-      {/* Cotizaciones Table Container matching reference image */}
-      <div className="overflow-x-auto rounded-xl border border-gray-800 bg-th-161719 shadow-sm">
-        <table className="w-full text-left border-collapse text-xs">
-          <thead>
-            <tr className="border-b border-gray-800 bg-th-131416 text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
-              <th className="py-3 px-2 w-8"></th>
-              <th className="py-3 px-3 min-w-[95px]">ID</th>
-              <th className="py-3 px-3 min-w-[100px]">FECHA</th>
-              <th className="py-3 px-3 min-w-[130px]">CLIENTE</th>
-              <th className="py-3 px-3 min-w-[180px]">DETALLE</th>
-              <th className="py-3 px-3 text-right min-w-[95px]">TOTAL</th>
-              <th className="py-3 px-3 text-right min-w-[95px]">RESTANTE</th>
-              <th className="py-3 px-3 text-right min-w-[95px] text-emerald-500 dark:text-emerald-400">GANANCIA</th>
-              <th className="py-3 px-3 text-center min-w-[130px]">ESTATUS</th>
-              <th className="py-3 px-3 text-center min-w-[110px]">FACTURA</th>
-              <th className="py-3 px-3 text-center min-w-[110px]">ACCIONES</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-800/60">
-            {sorted.length > 0 ? (
-              sorted.map((order) => (
-                <MobileOrderCard
-                  key={order.id}
-                  order={order}
-                  onStatusClick={onStatusClick}
-                  onFacturaClick={onFacturaClick}
-                  onPdfClick={onPdfClick}
-                  onAprobarCotizacion={onAprobarCotizacion}
-                  onEdit={onEdit}
-                  onDelete={onDelete}
-                />
-              ))
-            ) : (
-              <tr>
-                <td colSpan={11} className="py-12 text-center text-gray-500">
-                  <FileText className="w-10 h-10 mx-auto text-gray-600 mb-2" />
-                  <p className="text-sm font-semibold">No hay cotizaciones registradas</p>
-                  <p className="text-xs mt-1">Crea una cotización para enviarla en PDF al cliente.</p>
-                </td>
+      {/* Cotizaciones Table Container */}
+      <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-2 sm:p-4 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 dark:border-gray-800 text-xs font-bold uppercase tracking-wider text-gray-400">
+                <th className="py-3 px-2 w-8"></th>
+                <th className="py-3 px-3 min-w-[95px]">ID</th>
+                <th className="py-3 px-3 min-w-[100px]">Fecha</th>
+                <th className="py-3 px-3 min-w-[130px]">Cliente</th>
+                <th className="py-3 px-3 min-w-[180px]">Detalle</th>
+                <th className="py-3 px-3 text-right min-w-[95px]">Total</th>
+                <th className="py-3 px-3 text-right min-w-[95px]">Restante</th>
+                <th className="py-3 px-3 text-right min-w-[95px] text-green-600">Ganancia</th>
+                <th className="py-3 px-3 text-center min-w-[130px]">Estatus</th>
+                <th className="py-3 px-3 text-center min-w-[110px]">Factura</th>
+                <th className="py-3 px-3 text-center min-w-[110px]">Acciones</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">
+              {sorted.length > 0 ? (
+                sorted.map((order) => (
+                  <MobileOrderCard
+                    key={order.id}
+                    order={order}
+                    onStatusClick={onStatusClick}
+                    onFacturaClick={onFacturaClick}
+                    onPdfClick={onPdfClick}
+                    onAprobarCotizacion={onAprobarCotizacion}
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                  />
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={11} className="py-12 text-center text-gray-400">
+                    <FileText className="w-10 h-10 mx-auto text-gray-300 mb-2" />
+                    <p className="text-sm font-bold text-gray-500">No hay cotizaciones registradas</p>
+                    <p className="text-xs mt-1">Crea una cotización para enviarla en PDF al cliente.</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

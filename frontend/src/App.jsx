@@ -361,7 +361,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-th-121314 text-gray-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f4f7fc] dark:bg-gray-950 text-gray-800 dark:text-gray-100 flex flex-col font-sans">
       {/* Top Fixed Header with fast action buttons and sidebar toggle */}
       <Navbar
         currentTab={currentTab}
@@ -386,9 +386,9 @@ export default function App() {
 
       {/* Banner de Borrador Global (como Gmail) */}
       {draftOrderInfo && !isNuevoPedidoOpen && (
-        <div className="bg-gradient-to-r from-amber-950 via-amber-900 to-gray-900 border-b border-amber-600/50 px-4 py-2 flex flex-wrap items-center justify-between text-xs text-amber-200 z-30 shadow-md">
+        <div className="bg-blue-50 border-b border-blue-200 px-4 py-2.5 flex flex-wrap items-center justify-between text-xs text-[#173865] z-30 shadow-sm">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-[#173865] animate-pulse"></span>
             <span>
               Tienes un <strong>borrador no guardado de {draftOrderInfo.tipo === 'COTIZACION' ? 'cotización' : 'pedido'}</strong>
               {draftOrderInfo.clienteNombre ? ` para "${draftOrderInfo.clienteNombre}"` : ''} ({draftOrderInfo.productosCount} {draftOrderInfo.productosCount === 1 ? 'producto' : 'productos'}).
@@ -401,7 +401,7 @@ export default function App() {
                 setNuevoPedidoTipo(draftOrderInfo.tipo || 'PEDIDO');
                 setIsNuevoPedidoOpen(true);
               }}
-              className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold rounded-md shadow-sm transition-all text-xs"
+              className="px-4 py-1.5 bg-[#173865] hover:bg-blue-900 text-white font-bold rounded-full shadow-sm transition-all text-xs"
             >
               Retomar Borrador
             </button>
@@ -413,7 +413,7 @@ export default function App() {
                   window.dispatchEvent(new Event('mina_draft_updated'));
                 }
               }}
-              className="text-amber-300 hover:text-rose-400 underline font-medium text-xs transition-colors"
+              className="text-gray-500 hover:text-red-600 underline font-semibold text-xs transition-colors"
             >
               Descartar
             </button>

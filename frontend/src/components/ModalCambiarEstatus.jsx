@@ -39,22 +39,32 @@ export default function ModalCambiarEstatus({ order, onClose, onSave }) {
     }
   };
 
+  const getBtnClasses = (st) => {
+    const isSel = selectedStatus === st;
+    if (!isSel) return 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100';
+    if (st === 'Pendiente') return 'bg-yellow-100 text-yellow-800 border-yellow-300 ring-2 ring-yellow-400 font-black';
+    if (st === 'En Producción' || st === 'En Progreso') return 'bg-blue-100 text-blue-800 border-blue-300 ring-2 ring-blue-400 font-black';
+    if (st === 'Completado' || st === 'Entregado') return 'bg-green-100 text-green-800 border-green-300 ring-2 ring-green-400 font-black';
+    return 'bg-red-100 text-red-800 border-red-300 ring-2 ring-red-400 font-black';
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm cursor-pointer" onClick={onClose}>
-      <div className="bg-th-1e2022 border border-gray-700 w-full max-w-sm rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 cursor-default" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-4 border-b border-gray-800">
-          <h3 className="font-bold text-gray-100 text-sm">
-            Cambiar Estatus: <span className="text-orange-400 font-mono">{order?.id}</span>
-          </h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-200">
-            <X className="w-5 h-5" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm animate-backdrop-in cursor-pointer" onClick={onClose}>
+      <div className="bg-white dark:bg-gray-900 border border-gray-100 w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden animate-modal-in cursor-default p-6" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between mb-5 pb-3 border-b border-gray-100">
+          <div>
+            <h3 className="font-black text-gray-900 text-lg">Cambiar Estatus</h3>
+            <p className="text-xs text-gray-500 font-mono mt-0.5">{order?.id} - {order?.cliente}</p>
+          </div>
+          <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-colors">
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="p-4 space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-              Seleccionar Nuevo Estado
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block pl-1">
+              Selecciona el nuevo estatus:
             </label>
             <div className="grid grid-cols-2 gap-2">
               {ESTADOS.map((st) => (
@@ -62,11 +72,7 @@ export default function ModalCambiarEstatus({ order, onClose, onSave }) {
                   key={st}
                   type="button"
                   onClick={() => setSelectedStatus(st)}
-                  className={`px-3 py-2 text-xs font-medium rounded-lg border text-left transition-all ${
-                    selectedStatus === st
-                      ? 'bg-orange-600/30 text-orange-300 border-orange-500 ring-1 ring-orange-500'
-                      : 'bg-th-151617 text-gray-300 border-gray-800 hover:border-gray-700'
-                  }`}
+                  className={`py-2.5 px-3 rounded-2xl font-bold text-xs border transition-all text-center ${getBtnClasses(st)}`}
                 >
                   {st}
                 </button>
@@ -75,50 +81,50 @@ export default function ModalCambiarEstatus({ order, onClose, onSave }) {
           </div>
 
           {selectedStatus === 'Entregado' && (
-            <div className="space-y-1.5 bg-emerald-950/20 p-3 rounded-lg border border-emerald-900/40">
-              <label className="text-xs font-semibold text-emerald-300 flex items-center gap-1">
-                <Calendar className="w-3.5 h-3.5 text-emerald-400" />
-                Fecha de Entrega
+            <div className="space-y-2 bg-green-50 p-4 rounded-2xl border border-green-200">
+              <label className="text-xs font-black text-green-800 uppercase tracking-wide flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-green-600" />
+                ¿Qué día se entregó?
               </label>
               <input
                 type="date"
                 value={fechaEntrega}
                 onChange={(e) => setFechaEntrega(e.target.value)}
-                className="w-full bg-th-121314 text-xs text-gray-200 border border-emerald-900/60 rounded p-2 focus:ring-1 focus:ring-emerald-500 focus:outline-none"
+                className="w-full bg-white text-sm text-gray-800 border border-green-300 rounded-full px-4 py-2 font-bold shadow-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
               />
             </div>
           )}
 
           {selectedStatus === 'Cancelado' && (
-            <div className="space-y-1.5 bg-rose-950/20 p-3 rounded-lg border border-rose-900/40">
-              <label className="text-xs font-semibold text-rose-300 flex items-center gap-1">
-                <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+            <div className="space-y-2 bg-red-50 p-4 rounded-2xl border border-red-200">
+              <label className="text-xs font-black text-red-800 uppercase tracking-wide flex items-center gap-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-red-600" />
                 Motivo de Cancelación
               </label>
               <textarea
                 value={motivoCancelacion}
                 onChange={(e) => setMotivoCancelacion(e.target.value)}
                 rows={2}
-                className="w-full bg-th-121314 text-xs text-gray-200 border border-rose-900/60 rounded p-2 focus:ring-1 focus:ring-rose-500 focus:outline-none"
+                className="w-full bg-white text-xs font-medium text-gray-800 border border-red-300 rounded-2xl p-3 focus:ring-2 focus:ring-red-500 focus:outline-none"
               />
             </div>
           )}
         </div>
 
-        <div className="p-3 bg-th-17181a border-t border-gray-800 flex justify-end gap-2">
+        <div className="mt-6 flex gap-3 pt-2">
           <button
             onClick={onClose}
-            className="px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:text-gray-200 bg-gray-800"
+            className="flex-1 py-2.5 rounded-full text-xs font-bold text-gray-600 hover:bg-gray-200 bg-gray-100 transition-colors"
           >
             Cancelar
           </button>
           <button
             onClick={handleSave}
             disabled={loading}
-            className="px-4 py-1.5 rounded-lg text-xs font-semibold text-white bg-orange-600 hover:bg-orange-500 disabled:opacity-50 flex items-center gap-1.5 shadow"
+            className="flex-1 py-2.5 rounded-full text-xs font-bold text-white bg-[#173865] hover:bg-blue-900 disabled:opacity-50 flex items-center justify-center gap-1.5 shadow-md transition-all"
           >
             <CheckCircle className="w-3.5 h-3.5" />
-            <span>{loading ? 'Guardando...' : 'Actualizar Estado'}</span>
+            <span>{loading ? 'Guardando...' : 'Guardar'}</span>
           </button>
         </div>
       </div>

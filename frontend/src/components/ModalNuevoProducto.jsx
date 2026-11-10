@@ -6,10 +6,7 @@ import {
   DollarSign, 
   Percent, 
   Layers, 
-  Building, 
-  Tag, 
-  Save, 
-  AlertCircle 
+  Save
 } from 'lucide-react';
 
 export default function ModalNuevoProducto({
@@ -24,9 +21,9 @@ export default function ModalNuevoProducto({
   const [insumos, setInsumos] = useState([]);
   const [precioVenta, setPrecioVenta] = useState('');
   const [margenPorcentaje, setMargenPorcentaje] = useState('');
-  const [modoCalculo, setModoCalculo] = useState('precio'); // 'precio' o 'margen'
+  const [modoCalculo, setModoCalculo] = useState('precio');
+  const [activeInvDropdown, setActiveInvDropdown] = useState(null);
 
-  // Reset or initialize on open
   useEffect(() => {
     if (editingProduct) {
       setNombre(editingProduct.nombre || '');
@@ -67,18 +64,17 @@ export default function ModalNuevoProducto({
       setMargenPorcentaje('50');
       setModoCalculo('margen');
     }
+    setActiveInvDropdown(null);
   }, [editingProduct, isOpen]);
 
   if (!isOpen) return null;
 
-  // Costo Real = suma de todos los insumos
   const costoReal = insumos.reduce((acc, ins) => {
     const cant = parseFloat(ins.cant) || 0;
     const cu = parseFloat(ins.costoUnitario) || 0;
     return acc + (cant * cu);
   }, 0);
 
-  // Manejar cambio de precio de venta -> calcula margen
   const handlePrecioVentaChange = (val) => {
     setPrecioVenta(val);
     setModoCalculo('precio');
@@ -92,7 +88,6 @@ export default function ModalNuevoProducto({
     }
   };
 
-  // Manejar cambio de margen % -> calcula precio de venta
   const handleMargenChange = (val) => {
     setMargenPorcentaje(val);
     setModoCalculo('margen');
@@ -101,12 +96,10 @@ export default function ModalNuevoProducto({
     setPrecioVenta(precioCalc > 0 ? precioCalc.toFixed(2) : '0');
   };
 
-  // Recalcular si cambia costoReal
   const handleInsumoChange = (idx, field, value) => {
     const updated = [...insumos];
     updated[idx] = { ...updated[idx], [field]: value };
     
-    // Auto-fill price & provider if selecting an inventory item
     if (field === 'nombre') {
       const matchInv = inventario.find(inv => inv.nombre.toLowerCase() === value.toLowerCase());
       if (matchInv) {
@@ -115,13 +108,11 @@ export default function ModalNuevoProducto({
       }
     }
 
-    // Auto-calculate subtotal costo
     const cant = parseFloat(field === 'cant' ? value : updated[idx].cant) || 0;
     const cu = parseFloat(field === 'costoUnitario' ? value : updated[idx].costoUnitario) || 0;
     updated[idx].costo = cant * cu;
     setInsumos(updated);
 
-    // Ajustar precio o margen según modo activo
     const newCostoReal = updated.reduce((acc, i) => acc + ((parseFloat(i.cant) || 0) * (parseFloat(i.costoUnitario) || 0)), 0);
     if (modoCalculo === 'margen') {
       const numPct = parseFloat(margenPorcentaje) || 0;
@@ -204,17 +195,17 @@ export default function ModalNuevoProducto({
   const formatMoney = (val) => `$${(parseFloat(val) || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto cursor-pointer" onClick={onClose}>
-      <div className="bg-th-18191c border border-gray-800 rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-150 cursor-default" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-gray-900/60 backdrop-blur-sm overflow-y-auto animate-backdrop-in cursor-pointer" onClick={onClose}>
+      <div className="bg-white dark:bg-gray-900 border border-gray-100 rounded-3xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-modal-in cursor-default" onClick={(e) => { e.stopPropagation(); setActiveInvDropdown(null); }}>
         {/* Modal Header */}
-        <div className="px-5 py-4 border-b border-gray-800 flex items-center justify-between bg-th-151618 shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-orange-400">
+        <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-blue-50 text-[#173865] flex items-center justify-center">
               <Layers className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-gray-100">
-                {editingProduct ? 'Editar Producto / Servicio' : 'Nuevo Producto o Servicio'}
+              <h2 className="text-lg font-black text-gray-900">
+                {editingProduct ? 'Editar Producto / Servicio' : 'Nuevo Producto / Servicio'}
               </h2>
               <p className="text-xs text-gray-400">
                 Define su costo real agregando insumos y calcula tu precio final o ganancia
@@ -223,68 +214,67 @@ export default function ModalNuevoProducto({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-100 hover:bg-gray-800 transition-colors"
+            className="w-9 h-9 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Modal Body (Scrollable) */}
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5">
+        {/* Modal Body */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-5">
           {/* Section 1: Basic Info */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 bg-th-141517 p-3.5 rounded-xl border border-gray-800/80">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-300 mb-1">
-                Nombre del Producto / Servicio <span className="text-orange-400">*</span>
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1 pl-2">
+                Nombre del Producto / Servicio *
               </label>
               <input
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
                 required
-                className="w-full bg-th-1b1c1e text-xs text-gray-100 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
+                className="w-full bg-white text-xs text-gray-800 px-4 py-2.5 rounded-full border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#173865] font-bold"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-300 mb-1">
+              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wide mb-1 pl-2">
                 Proveedor Principal / Sugerido
               </label>
               <input
                 type="text"
                 value={proveedor}
                 onChange={(e) => setProveedor(e.target.value)}
-                className="w-full bg-th-1b1c1e text-xs text-gray-100 px-3 py-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full bg-white text-xs text-gray-800 px-4 py-2.5 rounded-full border border-gray-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#173865] font-bold"
               />
             </div>
           </div>
 
-          {/* Section 2: Insumos Infinitos */}
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between">
+          {/* Section 2: Insumos */}
+          <div className="bg-blue-50/50 rounded-3xl p-5 border border-blue-100 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-gray-300 block">
-                  Insumos Requeridos para su Elaboración ({insumos.length})
+                <span className="text-sm font-bold text-[#173865] block">
+                  Insumos Necesarios ({insumos.length})
                 </span>
-                <span className="text-[11px] text-gray-500">
-                  Agrega todos los materiales que intervienen para calcular el costo real de fabricación
+                <span className="text-xs text-gray-500">
+                  Agrega todos los materiales que intervienen para calcular el costo real
                 </span>
               </div>
               <button
                 type="button"
                 onClick={addInsumo}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 border border-orange-500/30 text-xs font-semibold transition-all active:scale-95"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white hover:bg-blue-50 text-[#173865] border border-blue-200 text-xs font-bold shadow-sm transition-all active:scale-95"
               >
-                <Plus className="w-3.5 h-3.5 text-gray-50" />
+                <Plus className="w-3.5 h-3.5" />
                 <span>Agregar Insumo</span>
               </button>
             </div>
 
-            {/* Insumos List / Table */}
-            <div className="overflow-x-auto rounded-xl border border-gray-800 bg-th-141517">
+            <div className="overflow-visible rounded-2xl border border-gray-200 bg-white">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-gray-800 bg-th-18191c text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">
+                  <tr className="border-b border-gray-100 text-[11px] font-bold uppercase text-gray-400">
                     <th className="py-2.5 px-3 min-w-[190px]">Nombre Insumo</th>
                     <th className="py-2.5 px-2 min-w-[130px]">Detalle / Medida</th>
                     <th className="py-2.5 px-2 min-w-[120px]">Proveedor</th>
@@ -294,53 +284,63 @@ export default function ModalNuevoProducto({
                     <th className="py-2.5 px-2 text-center w-9"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-800/60">
+                <tbody className="divide-y divide-gray-100">
                   {insumos.map((ins, idx) => {
                     const cant = parseFloat(ins.cant) || 0;
                     const cu = parseFloat(ins.costoUnitario) || 0;
                     const subtotal = cant * cu;
+                    const filteredInv = inventario.filter(item =>
+                      !ins.nombre || item.nombre.toLowerCase().includes(ins.nombre.toLowerCase())
+                    );
 
                     return (
-                      <tr key={idx} className="hover:bg-gray-800/20 transition-colors">
-                        {/* Nombre Insumo */}
-                        <td className="py-2 px-2.5">
+                      <tr key={idx} className="hover:bg-gray-50/60 transition-colors">
+                        <td className="py-2 px-2.5 relative">
                           <input
                             type="text"
-                            list={`inv-list-${idx}`}
                             value={ins.nombre}
-                            onChange={(e) => handleInsumoChange(idx, 'nombre', e.target.value)}
-                            className="w-full bg-th-1b1c1e text-xs text-gray-100 px-2.5 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
+                            onFocus={(e) => { e.stopPropagation(); setActiveInvDropdown(idx); }}
+                            onClick={(e) => e.stopPropagation()}
+                            onChange={(e) => { handleInsumoChange(idx, 'nombre', e.target.value); setActiveInvDropdown(idx); }}
+                            className="w-full bg-gray-50 text-xs text-gray-800 px-3 py-1.5 rounded-full border border-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#173865] font-semibold"
                           />
-                          <datalist id={`inv-list-${idx}`}>
-                            {inventario.map((item, iIdx) => (
-                              <option key={iIdx} value={item.nombre}>
-                                {item.nombre} | ${item.precio} | Stock: {item.stock}
-                              </option>
-                            ))}
-                          </datalist>
+                          {activeInvDropdown === idx && filteredInv.length > 0 && (
+                            <div
+                              onClick={(e) => e.stopPropagation()}
+                              className="absolute left-2.5 right-2.5 top-full mt-1 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 z-50 max-h-48 overflow-y-auto animate-modal-in"
+                            >
+                              {filteredInv.map((item, iIdx) => (
+                                <div
+                                  key={iIdx}
+                                  onClick={() => { handleInsumoChange(idx, 'nombre', item.nombre); setActiveInvDropdown(null); }}
+                                  className="px-3.5 py-2 hover:bg-blue-50 cursor-pointer text-xs font-bold text-gray-700 flex justify-between items-center transition-colors"
+                                >
+                                  <span className="truncate">{item.nombre}</span>
+                                  <span className="text-[11px] text-[#173865] font-black ml-2 whitespace-nowrap">${item.precio}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </td>
 
-                        {/* Detalle */}
                         <td className="py-2 px-2">
                           <input
                             type="text"
                             value={ins.detalle}
                             onChange={(e) => handleInsumoChange(idx, 'detalle', e.target.value)}
-                            className="w-full bg-th-1b1c1e text-xs text-gray-300 px-2 py-1.5 rounded-lg border border-gray-700/80 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                            className="w-full bg-gray-50 text-xs text-gray-700 px-3 py-1.5 rounded-full border border-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#173865]"
                           />
                         </td>
 
-                        {/* Proveedor */}
                         <td className="py-2 px-2">
                           <input
                             type="text"
                             value={ins.proveedor}
                             onChange={(e) => handleInsumoChange(idx, 'proveedor', e.target.value)}
-                            className="w-full bg-th-1b1c1e text-xs text-gray-300 px-2 py-1.5 rounded-lg border border-gray-700/80 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                            className="w-full bg-gray-50 text-xs text-gray-700 px-3 py-1.5 rounded-full border border-gray-200 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#173865]"
                           />
                         </td>
 
-                        {/* Cantidad */}
                         <td className="py-2 px-2 text-center">
                           <input
                             type="number"
@@ -348,11 +348,10 @@ export default function ModalNuevoProducto({
                             min="0"
                             value={ins.cant}
                             onChange={(e) => handleInsumoChange(idx, 'cant', e.target.value)}
-                            className="w-16 bg-th-1b1c1e text-xs text-gray-100 px-1.5 py-1.5 rounded-lg border border-gray-700 text-center font-mono focus:outline-none focus:ring-1 focus:ring-orange-500"
+                            className="w-16 bg-gray-50 text-xs text-gray-900 px-2 py-1.5 rounded-full border border-gray-200 text-center font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#173865]"
                           />
                         </td>
 
-                        {/* Costo Unitario */}
                         <td className="py-2 px-2 text-right">
                           <input
                             type="number"
@@ -360,22 +359,20 @@ export default function ModalNuevoProducto({
                             min="0"
                             value={ins.costoUnitario}
                             onChange={(e) => handleInsumoChange(idx, 'costoUnitario', e.target.value)}
-                            className="w-20 bg-th-1b1c1e text-xs text-gray-100 px-1.5 py-1.5 rounded-lg border border-gray-700 text-right font-mono focus:outline-none focus:ring-1 focus:ring-orange-500"
+                            className="w-20 bg-gray-50 text-xs text-gray-900 px-2 py-1.5 rounded-full border border-gray-200 text-right font-bold focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#173865]"
                           />
                         </td>
 
-                        {/* Subtotal */}
-                        <td className="py-2 px-2 text-right font-mono font-bold text-gray-200">
+                        <td className="py-2 px-2 text-right font-black text-gray-900">
                           {formatMoney(subtotal)}
                         </td>
 
-                        {/* Eliminar fila */}
                         <td className="py-2 px-2 text-center">
                           <button
                             type="button"
                             onClick={() => removeInsumo(idx)}
                             disabled={insumos.length === 1}
-                            className={`p-1 rounded text-rose-400 hover:bg-rose-950/40 transition-colors ${
+                            className={`w-7 h-7 rounded-full text-red-400 hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-colors ${
                               insumos.length === 1 ? 'opacity-30 cursor-not-allowed' : ''
                             }`}
                             title="Eliminar insumo"
@@ -392,47 +389,43 @@ export default function ModalNuevoProducto({
           </div>
 
           {/* Section 3: Costo Real, Ganancia y Precio Final */}
-          <div className="bg-th-141517 p-4 rounded-xl border border-gray-800 space-y-3.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-gray-300 block">
+          <div className="bg-gray-50 p-5 rounded-3xl border border-gray-100 space-y-4">
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-500 block">
               Cálculo de Costo Real, Precio y Margen de Ganancia
             </span>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {/* Costo Real */}
-              <div className="bg-th-1c1d20 p-3 rounded-xl border border-gray-700/80">
-                <span className="text-[10px] uppercase font-bold text-gray-400 block">Costo Real de Insumos</span>
-                <span className="text-xl font-bold font-mono text-gray-100 mt-1 block">
+              <div className="bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                <span className="text-[11px] uppercase font-bold text-gray-400 block">Costo Real de Insumos</span>
+                <span className="text-xl font-black text-gray-900 mt-1 block">
                   {formatMoney(costoReal)}
                 </span>
-                <span className="text-[10px] text-gray-500 block mt-0.5">Suma de insumos requeridos</span>
+                <span className="text-[11px] text-gray-400 block mt-0.5">Suma de insumos requeridos</span>
               </div>
 
-              {/* Opción A: Margen de Ganancia Deseado (%) */}
-              <div className="bg-th-1c1d20 p-3 rounded-xl border border-gray-700/80">
+              <div className="bg-white p-4 rounded-2xl border border-blue-100 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase font-bold text-gray-400">Margen Deseado (%)</span>
-                  <Percent className="w-3.5 h-3.5 text-blue-400" />
+                  <span className="text-[11px] uppercase font-bold text-[#173865]">Margen Deseado (%)</span>
+                  <Percent className="w-3.5 h-3.5 text-[#173865]" />
                 </div>
-                <div className="relative mt-1">
+                <div className="relative mt-1.5">
                   <input
                     type="number"
                     step="any"
                     value={margenPorcentaje}
                     onChange={(e) => handleMargenChange(e.target.value)}
-                    className="w-full bg-th-141517 text-base font-bold text-blue-400 px-2.5 py-1.5 rounded-lg border border-blue-500/40 font-mono focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    className="w-full bg-blue-50/50 text-base font-black text-[#173865] px-4 py-1.5 rounded-full border border-blue-200 focus:outline-none focus:ring-2 focus:ring-[#173865]"
                   />
-                  <span className="absolute right-2.5 top-2 text-xs text-blue-400/80 font-bold">%</span>
+                  <span className="absolute right-3.5 top-2 text-xs text-[#173865] font-bold">%</span>
                 </div>
-                <span className="text-[10px] text-gray-500 block mt-1">Calcula el precio final sugerido</span>
               </div>
 
-              {/* Opción B: Precio Final de Venta ($) */}
-              <div className="bg-th-1c1d20 p-3 rounded-xl border border-gray-700/80">
+              <div className="bg-white p-4 rounded-2xl border border-green-100 shadow-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] uppercase font-bold text-gray-400">Precio Final de Venta ($)</span>
-                  <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+                  <span className="text-[11px] uppercase font-bold text-green-700">Precio Final Venta ($)</span>
+                  <DollarSign className="w-3.5 h-3.5 text-green-600" />
                 </div>
-                <div className="relative mt-1">
+                <div className="relative mt-1.5">
                   <input
                     type="number"
                     step="any"
@@ -440,47 +433,44 @@ export default function ModalNuevoProducto({
                     value={precioVenta}
                     onChange={(e) => handlePrecioVentaChange(e.target.value)}
                     required
-                    className="w-full bg-th-141517 text-base font-bold text-emerald-400 px-2.5 py-1.5 rounded-lg border border-emerald-500/40 font-mono focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                    className="w-full bg-green-50/60 text-base font-black text-green-700 px-4 py-1.5 rounded-full border border-green-200 focus:outline-none focus:ring-2 focus:ring-green-500"
                   />
-                  <span className="absolute right-2.5 top-2 text-xs text-emerald-400/80 font-bold">MXN</span>
+                  <span className="absolute right-3.5 top-2 text-xs text-green-700 font-bold">MXN</span>
                 </div>
-                <span className="text-[10px] text-gray-500 block mt-1">O escribe el precio y calcula ganancia</span>
               </div>
             </div>
 
-            {/* Ganancia Neta Calculada Banner */}
-            <div className="bg-th-191b1e border border-gray-800 p-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="bg-white border border-gray-200 p-3.5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-sm">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
-                <span className="text-xs text-gray-300 font-medium">
+                <div className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse"></div>
+                <span className="text-xs text-gray-600 font-bold">
                   Ganancia Neta por Unidad:
                 </span>
-                <span className="font-mono font-bold text-base text-emerald-400">
+                <span className="font-black text-base text-green-600">
                   {formatMoney(gananciaNeta)}
                 </span>
               </div>
 
-              <div className="flex items-center gap-2 text-xs font-mono">
-                <span className="text-gray-400">Rendimiento:</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 border border-emerald-700/60 text-emerald-300 font-bold">
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-gray-500 font-semibold">Rendimiento:</span>
+                <span className="px-3 py-0.5 rounded-full bg-green-100 border border-green-200 text-green-800 font-black">
                   +{margenFinal}%
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Sticky Bottom Bar */}
-          <div className="sticky bottom-0 bg-th-151618 border-t border-gray-800 pt-3 pb-1 flex items-center justify-end gap-2.5 shrink-0">
+          <div className="sticky bottom-0 bg-white border-t border-gray-100 pt-4 pb-1 flex gap-3 shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-400 hover:text-gray-200 hover:bg-gray-800 transition-colors"
+              className="flex-1 py-3 rounded-full text-xs font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="flex items-center gap-1.5 px-5 py-2 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold shadow-lg shadow-orange-900/30 active:scale-95 transition-all"
+              className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-full bg-[#173865] hover:bg-blue-900 text-white text-xs font-bold shadow-md active:scale-95 transition-all"
             >
               <Save className="w-4 h-4" />
               <span>{editingProduct ? 'Actualizar Producto' : 'Guardar en Catálogo'}</span>

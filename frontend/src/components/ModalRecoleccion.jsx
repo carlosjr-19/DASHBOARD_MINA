@@ -7,9 +7,7 @@ import {
   DollarSign, 
   CheckSquare, 
   Square, 
-  Layers, 
   Scale, 
-  Percent,
   CreditCard
 } from 'lucide-react';
 
@@ -25,7 +23,6 @@ const CUENTAS = [
 export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
   const [fecha, setFecha] = useState(() => new Date().toISOString().split('T')[0]);
   
-  // Gastos individuales con su respectiva cuenta de pago
   const [gastoGasolina, setGastoGasolina] = useState('');
   const [cuentaGasolina, setCuentaGasolina] = useState('NU TDC');
 
@@ -36,16 +33,12 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
   const [cuentaOtros, setCuentaOtros] = useState('NU EMI');
 
   const [nota, setNota] = useState('');
-  const [modoReparto, setModoReparto] = useState('PROPORCIONAL'); // 'PROPORCIONAL' | 'EQUITATIVO'
+  const [modoReparto, setModoReparto] = useState('PROPORCIONAL');
 
-  // Pedidos activos disponibles para prorratear
   const pedidosDisponibles = useMemo(() => {
     return pedidos.filter(p => p.tipo !== 'COTIZACION' && p.estatus !== 'Cancelado');
   }, [pedidos]);
 
-  // Estado de pedidos seleccionados y productos seleccionados por cada pedido:
-  // selectedOrders: { [pedidoId]: boolean }
-  // selectedProducts: { [pedidoId]: { [prodIndex]: boolean } }
   const [selectedOrders, setSelectedOrders] = useState(() => {
     const init = {};
     pedidosDisponibles.forEach(p => {
@@ -68,7 +61,6 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
 
   const [loading, setLoading] = useState(false);
 
-  // Toggle order selection
   const toggleOrder = (orderId) => {
     const willBeChecked = !selectedOrders[orderId];
     setSelectedOrders(prev => ({
@@ -76,7 +68,6 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
       [orderId]: willBeChecked
     }));
 
-    // If order was checked, check all its products by default
     if (willBeChecked) {
       const order = pedidosDisponibles.find(p => p.id === orderId);
       const prods = order && order.productos && order.productos.length > 0 ? order.productos : [{ nombre: 'General' }];
@@ -93,13 +84,11 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
     }
   };
 
-  // Toggle individual product selection for an order
   const toggleProduct = (orderId, prodIdx) => {
     setSelectedProducts(prev => {
       const current = prev[orderId] ? { ...prev[orderId] } : {};
       current[prodIdx] = !current[prodIdx];
       
-      // If at least one product is checked, ensure order is checked
       const hasAnyChecked = Object.values(current).some(Boolean);
       if (hasAnyChecked && !selectedOrders[orderId]) {
         setSelectedOrders(oPrev => ({ ...oPrev, [orderId]: true }));
@@ -134,18 +123,15 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
     setSelectedProducts(newProds);
   };
 
-  // Financial calculations
   const gas = parseFloat(gastoGasolina) || 0;
   const des = parseFloat(gastoDesayuno) || 0;
   const otr = parseFloat(gastoOtros) || 0;
   const totalGasto = gas + des + otr;
 
-  // Active selected orders list
   const activeSelectedOrders = useMemo(() => {
     return pedidosDisponibles.filter(p => selectedOrders[p.id]);
   }, [pedidosDisponibles, selectedOrders]);
 
-  // Count items per order and total items
   const { orderItemCounts, totalItems } = useMemo(() => {
     const counts = {};
     let total = 0;
@@ -161,7 +147,6 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
         }
       });
 
-      // If order is checked but had 0 specific products checked, count as 1
       if (checkedInOrder === 0) checkedInOrder = 1;
 
       counts[order.id] = checkedInOrder;
@@ -171,7 +156,6 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
     return { orderItemCounts: counts, totalItems: total };
   }, [activeSelectedOrders, selectedProducts]);
 
-  // Calculate portion per order
   const repartoCalculado = useMemo(() => {
     if (activeSelectedOrders.length === 0 || totalGasto <= 0) return {};
 
@@ -183,7 +167,6 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
       activeSelectedOrders.forEach((p, idx) => {
         const items = orderItemCounts[p.id] || 1;
         if (idx === activeSelectedOrders.length - 1) {
-          // Adjust rounding on the last element so total matches exactly
           res[p.id] = Math.max(0, Math.round((totalGasto - sumDistributed) * 100) / 100);
         } else {
           const portion = Math.round((items * costPerItem) * 100) / 100;
@@ -192,7 +175,6 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
         }
       });
     } else {
-      // Partes iguales
       const numPeds = activeSelectedOrders.length;
       const equalPortion = Math.round((totalGasto / numPeds) * 100) / 100;
       let sumDistributed = 0;
@@ -253,26 +235,27 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
   const formatMoney = (val) => `$${(val || 0).toLocaleString('es-MX', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm overflow-y-auto cursor-pointer" onClick={onClose}>
-      <div className="bg-th-18191c border border-gray-700 w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 cursor-default" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-gray-900/60 backdrop-blur-sm overflow-y-auto animate-backdrop-in cursor-pointer" onClick={onClose}>
+      <div className="bg-white dark:bg-gray-900 border border-gray-100 w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden my-auto animate-modal-in cursor-default" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="p-4 border-b border-gray-800 flex items-center justify-between bg-th-1f2024">
-          <div className="flex items-center gap-2.5 text-orange-400">
-            <Truck className="w-5 h-5" />
+        <div className="p-5 sm:p-6 border-b border-gray-100 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-blue-50 text-[#173865] flex items-center justify-center">
+              <Truck className="w-5 h-5" />
+            </div>
             <div>
-              <h3 className="font-bold text-gray-100 text-sm">Registrar Gasto de Recolección / Logística</h3>
-              <p className="text-[11px] text-gray-400">Prorrateo proporcional con método de pago individual por concepto</p>
+              <h3 className="font-black text-gray-900 text-base sm:text-lg">Registrar Gasto de Recolección</h3>
+              <p className="text-xs text-gray-400">Prorrateo proporcional con método de pago individual</p>
             </div>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-200 p-1">
-            <X className="w-5 h-5" />
+          <button onClick={onClose} className="w-9 h-9 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 flex items-center justify-center transition-colors">
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-4 text-xs">
-          {/* Fecha del Viaje */}
+        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4 text-xs max-h-[82vh] overflow-y-auto">
           <div>
-            <label className="text-gray-400 font-semibold block mb-1 uppercase tracking-wider text-[10px]">
+            <label className="text-gray-500 font-bold block mb-1 uppercase tracking-wide text-[11px] pl-2">
               Fecha de Recolección
             </label>
             <input
@@ -280,20 +263,20 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
               required
               value={fecha}
               onChange={(e) => setFecha(e.target.value)}
-              className="w-full bg-th-121314 text-gray-200 p-2 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500 font-mono"
+              className="w-full bg-white text-gray-800 px-4 py-2 rounded-full border border-gray-200 font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-[#173865]"
             />
           </div>
 
-          {/* Desglose de Gastos con Método de Pago Individual */}
-          <div className="bg-th-131416 p-3.5 rounded-xl border border-gray-800 space-y-3">
-            <span className="text-[10px] uppercase font-bold text-gray-300 block tracking-wider flex items-center gap-1.5">
-              <CreditCard className="w-3.5 h-3.5 text-orange-400" />
+          {/* Desglose de Gastos */}
+          <div className="bg-gray-50 p-4 rounded-3xl border border-gray-100 space-y-3">
+            <span className="text-xs uppercase font-bold text-gray-600 block tracking-wider flex items-center gap-1.5 pl-1">
+              <CreditCard className="w-4 h-4 text-[#173865]" />
               Gastos del Viaje y Métodos de Pago
             </span>
 
             {/* 1. Gasolina */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center bg-th-18191c p-2.5 rounded-lg border border-gray-800">
-              <div className="sm:col-span-4 flex items-center gap-1.5 text-amber-400 font-semibold">
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+              <div className="sm:col-span-4 flex items-center gap-2 text-cyan-700 font-bold">
                 <Fuel className="w-4 h-4 shrink-0" />
                 <span>Gasolina ($)</span>
               </div>
@@ -303,14 +286,14 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                   step="any"
                   value={gastoGasolina}
                   onChange={(e) => setGastoGasolina(e.target.value)}
-                  className="w-full bg-th-121314 text-gray-100 font-mono p-1.5 rounded border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="w-full bg-gray-50 text-gray-900 font-bold px-3 py-1.5 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#173865] focus:bg-white text-center"
                 />
               </div>
               <div className="sm:col-span-4">
                 <select
                   value={cuentaGasolina}
                   onChange={(e) => setCuentaGasolina(e.target.value)}
-                  className="w-full bg-th-121314 text-gray-200 p-1.5 rounded border border-gray-700 text-[11px] focus:outline-none"
+                  className="select-pill w-full text-[11px] py-1.5"
                 >
                   {CUENTAS.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -318,10 +301,10 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
             </div>
 
             {/* 2. Desayuno / Comida */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center bg-th-18191c p-2.5 rounded-lg border border-gray-800">
-              <div className="sm:col-span-4 flex items-center gap-1.5 text-orange-400 font-semibold">
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+              <div className="sm:col-span-4 flex items-center gap-2 text-purple-700 font-bold">
                 <Coffee className="w-4 h-4 shrink-0" />
-                <span>Desayuno / Alimentos ($)</span>
+                <span>Alimentos ($)</span>
               </div>
               <div className="sm:col-span-4">
                 <input
@@ -329,14 +312,14 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                   step="any"
                   value={gastoDesayuno}
                   onChange={(e) => setGastoDesayuno(e.target.value)}
-                  className="w-full bg-th-121314 text-gray-100 font-mono p-1.5 rounded border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="w-full bg-gray-50 text-gray-900 font-bold px-3 py-1.5 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#173865] focus:bg-white text-center"
                 />
               </div>
               <div className="sm:col-span-4">
                 <select
                   value={cuentaDesayuno}
                   onChange={(e) => setCuentaDesayuno(e.target.value)}
-                  className="w-full bg-th-121314 text-gray-200 p-1.5 rounded border border-gray-700 text-[11px] focus:outline-none"
+                  className="select-pill w-full text-[11px] py-1.5"
                 >
                   {CUENTAS.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -344,8 +327,8 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
             </div>
 
             {/* 3. Otros */}
-            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center bg-th-18191c p-2.5 rounded-lg border border-gray-800">
-              <div className="sm:col-span-4 flex items-center gap-1.5 text-blue-400 font-semibold">
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+              <div className="sm:col-span-4 flex items-center gap-2 text-[#173865] font-bold">
                 <DollarSign className="w-4 h-4 shrink-0" />
                 <span>Otros ($)</span>
               </div>
@@ -355,14 +338,14 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                   step="any"
                   value={gastoOtros}
                   onChange={(e) => setGastoOtros(e.target.value)}
-                  className="w-full bg-th-121314 text-gray-100 font-mono p-1.5 rounded border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="w-full bg-gray-50 text-gray-900 font-bold px-3 py-1.5 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#173865] focus:bg-white text-center"
                 />
               </div>
               <div className="sm:col-span-4">
                 <select
                   value={cuentaOtros}
                   onChange={(e) => setCuentaOtros(e.target.value)}
-                  className="w-full bg-th-121314 text-gray-200 p-1.5 rounded border border-gray-700 text-[11px] focus:outline-none"
+                  className="select-pill w-full text-[11px] py-1.5"
                 >
                   {CUENTAS.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
@@ -370,69 +353,67 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
             </div>
 
             <div>
-              <label className="text-gray-400 block mb-1 text-[11px]">Nota / Detalle de la Ruta (Opcional)</label>
+              <label className="text-gray-500 font-bold block mb-1 text-[11px] pl-2">Nota / Detalle de la Ruta (Opcional)</label>
               <input
                 type="text"
                 value={nota}
                 onChange={(e) => setNota(e.target.value)}
-                className="w-full bg-th-1a1b1e text-gray-200 p-2 rounded border border-gray-700 text-xs focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full bg-white text-gray-800 px-4 py-2 rounded-full border border-gray-200 text-xs font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-[#173865]"
               />
             </div>
           </div>
 
-          {/* Modo de Reparto Selector */}
-          <div className="flex items-center justify-between bg-th-121314 p-2 rounded-xl border border-gray-800">
-            <span className="text-[11px] font-bold uppercase text-gray-400 ml-1">
+          {/* Modo de Reparto */}
+          <div className="flex flex-wrap items-center justify-between gap-2 bg-gray-50 p-2.5 rounded-full border border-gray-100">
+            <span className="text-[11px] font-bold uppercase text-gray-500 pl-3">
               Método de Prorrateo:
             </span>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 bg-white p-1 rounded-full border border-gray-100 shadow-sm">
               <button
                 type="button"
                 onClick={() => setModoReparto('PROPORCIONAL')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all ${
                   modoReparto === 'PROPORCIONAL'
-                    ? 'bg-orange-600 text-white shadow'
-                    : 'text-gray-400 hover:text-gray-200'
+                    ? 'bg-[#173865] text-white shadow'
+                    : 'text-gray-500 hover:text-gray-800'
                 }`}
-                title="Prorrateo justo según cuántos productos se fueron a retirar para cada pedido"
               >
                 <Scale className="w-3.5 h-3.5" />
-                <span>Por Productos (Proporcional)</span>
+                <span>Proporcional</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setModoReparto('EQUITATIVO')}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 transition-all ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 transition-all ${
                   modoReparto === 'EQUITATIVO'
-                    ? 'bg-orange-600 text-white shadow'
-                    : 'text-gray-400 hover:text-gray-200'
+                    ? 'bg-[#173865] text-white shadow'
+                    : 'text-gray-500 hover:text-gray-800'
                 }`}
-                title="Dividir en partes iguales entre los pedidos seleccionados"
               >
                 <span>Partes Iguales</span>
               </button>
             </div>
           </div>
 
-          {/* Selección de Pedidos y Desglose de Productos */}
+          {/* Selección de Pedidos */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-gray-300 font-bold block text-[11px] uppercase tracking-wider">
-                Pedidos y Productos a Recolectar ({activeSelectedOrders.length} pedidos • {totalItems} ítems)
+            <div className="flex items-center justify-between px-1">
+              <label className="text-gray-600 font-bold block text-[11px] uppercase tracking-wider">
+                Pedidos ({activeSelectedOrders.length} pedidos • {totalItems} ítems)
               </label>
               {pedidosDisponibles.length > 0 && (
                 <button
                   type="button"
                   onClick={toggleSelectAll}
-                  className="text-orange-400 hover:text-orange-300 text-[11px] font-semibold"
+                  className="text-[#173865] hover:underline text-xs font-bold"
                 >
                   {activeSelectedOrders.length === pedidosDisponibles.length ? 'Deseleccionar todos' : 'Seleccionar todos'}
                 </button>
               )}
             </div>
 
-            <div className="max-h-56 overflow-y-auto space-y-2 bg-th-121314 p-2.5 rounded-xl border border-gray-800">
+            <div className="max-h-52 overflow-y-auto space-y-2 bg-gray-50 p-3 rounded-2xl border border-gray-100">
               {pedidosDisponibles.length > 0 ? (
                 pedidosDisponibles.map((ped) => {
                   const isChecked = !!selectedOrders[ped.id];
@@ -443,46 +424,44 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                   return (
                     <div
                       key={ped.id}
-                      className={`rounded-xl border transition-colors ${
+                      className={`rounded-2xl border transition-all bg-white ${
                         isChecked 
-                          ? 'bg-th-1a1b1f border-orange-700/60' 
-                          : 'bg-th-151618 border-gray-800/80 opacity-70'
+                          ? 'border-blue-200 shadow-sm' 
+                          : 'border-gray-100 opacity-60'
                       }`}
                     >
-                      {/* Pedido Header Row */}
                       <div 
                         onClick={() => toggleOrder(ped.id)}
-                        className="p-2.5 flex items-center justify-between cursor-pointer hover:bg-gray-800/30 rounded-t-xl"
+                        className="p-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 rounded-2xl"
                       >
                         <div className="flex items-center gap-2 min-w-0">
                           {isChecked ? (
-                            <CheckSquare className="w-4 h-4 text-orange-400 shrink-0" />
+                            <CheckSquare className="w-4 h-4 text-[#173865] shrink-0" />
                           ) : (
-                            <Square className="w-4 h-4 text-gray-600 shrink-0" />
+                            <Square className="w-4 h-4 text-gray-300 shrink-0" />
                           )}
-                          <span className="font-mono font-bold text-xs text-orange-300">{ped.id}</span>
-                          <span className="text-gray-200 font-medium truncate">| {ped.cliente}</span>
+                          <span className="font-mono font-bold text-xs text-[#173865] bg-blue-50 px-2 py-0.5 rounded">{ped.id}</span>
+                          <span className="text-gray-800 font-bold truncate">{ped.cliente}</span>
                           {isChecked && (
-                            <span className="text-[10px] text-gray-400">
-                              ({checkedCount} {checkedCount === 1 ? 'producto' : 'productos'})
+                            <span className="text-[11px] text-gray-400 font-medium">
+                              ({checkedCount} {checkedCount === 1 ? 'prod.' : 'prods.'})
                             </span>
                           )}
                         </div>
 
                         <div className="flex items-center gap-2 shrink-0">
                           {isChecked && totalGasto > 0 && (
-                            <span className="font-mono font-bold text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-700/60 text-xs">
-                              Porción: +{formatMoney(porcionAsignada)}
+                            <span className="font-black text-[#173865] bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200 text-xs">
+                              +{formatMoney(porcionAsignada)}
                             </span>
                           )}
                         </div>
                       </div>
 
-                      {/* Desglose de Productos del Pedido si está seleccionado */}
                       {isChecked && modoReparto === 'PROPORCIONAL' && (
-                        <div className="px-3 pb-2.5 pt-1 border-t border-gray-800/60 space-y-1">
-                          <span className="text-[10px] uppercase font-bold text-gray-500 block mb-1">
-                            Selecciona los productos que sí se fueron a retirar:
+                        <div className="px-3 pb-3 pt-1 border-t border-gray-100 space-y-1">
+                          <span className="text-[10px] uppercase font-bold text-gray-400 block mb-1">
+                            Productos retirados:
                           </span>
                           <div className="space-y-1 pl-2">
                             {prods.map((prod, pIdx) => {
@@ -494,22 +473,22 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                                     e.stopPropagation();
                                     toggleProduct(ped.id, pIdx);
                                   }}
-                                  className={`flex items-center gap-2 p-1.5 rounded cursor-pointer transition-colors text-[11px] ${
+                                  className={`flex items-center gap-2 px-2.5 py-1.5 rounded-xl cursor-pointer transition-colors text-xs ${
                                     isProdChecked 
-                                      ? 'text-gray-200 bg-black/30' 
-                                      : 'text-gray-500 hover:text-gray-400'
+                                      ? 'text-gray-800 bg-blue-50/50 font-semibold' 
+                                      : 'text-gray-400 hover:bg-gray-50'
                                   }`}
                                 >
                                   {isProdChecked ? (
-                                    <CheckSquare className="w-3.5 h-3.5 text-orange-400 shrink-0" />
+                                    <CheckSquare className="w-3.5 h-3.5 text-[#173865] shrink-0" />
                                   ) : (
-                                    <Square className="w-3.5 h-3.5 text-gray-600 shrink-0" />
+                                    <Square className="w-3.5 h-3.5 text-gray-300 shrink-0" />
                                   )}
-                                  <span className="font-medium truncate">
+                                  <span className="truncate">
                                     {prod.cant > 1 ? `${prod.cant}x ` : ''}{prod.nombre}
                                   </span>
                                   {prod.proveedor && (
-                                    <span className="text-[10px] text-gray-500">({prod.proveedor})</span>
+                                    <span className="text-[10px] text-gray-400">({prod.proveedor})</span>
                                   )}
                                 </div>
                               );
@@ -521,49 +500,49 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                   );
                 })
               ) : (
-                <p className="text-gray-500 text-center py-4 italic">No hay pedidos activos disponibles.</p>
+                <p className="text-gray-400 text-center py-4 italic">No hay pedidos activos disponibles.</p>
               )}
             </div>
           </div>
 
-          {/* Resumen del Prorrateo en Vivo */}
-          <div className="bg-emerald-950/30 border border-emerald-800/60 p-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          {/* Resumen del Prorrateo */}
+          <div className="bg-blue-50 border border-blue-200 p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
-              <span className="text-[10px] uppercase font-bold text-emerald-400 block">
+              <span className="text-[10px] uppercase font-bold text-[#173865] block">
                 Total Gasto Recolección
               </span>
-              <span className="text-base font-bold font-mono text-emerald-300">
+              <span className="text-lg font-black text-[#173865]">
                 {formatMoney(totalGasto)}
               </span>
             </div>
 
             <div className="sm:text-right">
-              <span className="text-[10px] uppercase font-bold text-emerald-400 block">
+              <span className="text-[10px] uppercase font-bold text-[#173865] block">
                 {modoReparto === 'PROPORCIONAL' 
-                  ? `Distribución Proporcional (${totalItems} ítems en ${activeSelectedOrders.length} pedidos)`
-                  : `Distribución Equitativa (${activeSelectedOrders.length} pedidos)`}
+                  ? `Proporcional (${totalItems} ítems • ${activeSelectedOrders.length} peds)`
+                  : `Equitativa (${activeSelectedOrders.length} pedidos)`}
               </span>
-              <span className="text-xs font-mono text-gray-300">
+              <span className="text-xs font-bold text-gray-700">
                 {modoReparto === 'PROPORCIONAL' && totalItems > 0
-                  ? `~${formatMoney(totalGasto / totalItems)} por producto recolectado`
+                  ? `~${formatMoney(totalGasto / totalItems)} por producto`
                   : `${formatMoney(activeSelectedOrders.length > 0 ? (totalGasto / activeSelectedOrders.length) : 0)} c/u`}
               </span>
             </div>
           </div>
 
           {/* Botones de Acción */}
-          <div className="pt-2 flex justify-end gap-2 border-t border-gray-800">
+          <div className="pt-2 flex gap-3 border-t border-gray-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-3.5 py-2 rounded-lg text-xs text-gray-400 hover:text-gray-200 bg-gray-800 transition-colors"
+              className="flex-1 py-3 rounded-full text-xs font-bold text-gray-600 hover:bg-gray-200 bg-gray-100 transition-colors"
             >
               Cancelar
             </button>
             <button
               type="submit"
               disabled={loading || totalGasto <= 0 || activeSelectedOrders.length === 0}
-              className="px-4 py-2 rounded-lg text-xs font-semibold text-white bg-orange-600 hover:bg-orange-500 disabled:opacity-50 flex items-center gap-1.5 shadow transition-all active:scale-95"
+              className="flex-1 py-3 rounded-full text-xs font-bold text-white bg-[#173865] hover:bg-blue-900 disabled:opacity-50 flex items-center justify-center gap-1.5 shadow-md transition-all active:scale-95"
             >
               <Truck className="w-4 h-4" />
               <span>{loading ? 'Guardando...' : 'Registrar y Prorratear'}</span>
