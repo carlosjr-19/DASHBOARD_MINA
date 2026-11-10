@@ -285,31 +285,6 @@ export default function PendientesView({
 
   return (
     <div className="w-full space-y-4">
-      {/* 1. Header Superior: Título a la izquierda, SOLO botón "+ Nuevo Pendiente" a la derecha */}
-      <div className="flex items-center justify-between gap-4 bg-gray-900/80 p-4 rounded-xl border border-gray-800 shadow-md">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
-            <ListTodo className="w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-100 flex items-center gap-2">
-              Pendientes & Bitácora
-            </h1>
-            <p className="text-xs text-gray-400">
-              Control de tareas, requisiciones con tags y seguimiento de bitácora
-            </p>
-          </div>
-        </div>
-
-        <button
-          onClick={handleOpenNew}
-          className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md transition-all active:scale-95"
-        >
-          <Plus className="w-4 h-4 stroke-[2.5]" />
-          Nuevo Pendiente
-        </button>
-      </div>
-
       {/* 2. Tarjetas de Resumen de Métricas (Diseño idéntico a las tarjetas del ERP) */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {/* Total */}
@@ -402,17 +377,15 @@ export default function PendientesView({
           </div>
         </div>
       </div>
-
-      {/* 3. Barra de Búsqueda (filtrado de estatus se hace arriba con los rectángulos) */}
-      <div className="bg-gray-900/60 p-3 rounded-xl border border-gray-800 text-xs">
-        <label className="text-[11px] font-semibold text-gray-400 block mb-1">Buscar por título, detalle o tags:</label>
-        <div className="relative flex items-center">
+      {/* Barra de Búsqueda y Botón Nuevo Pendiente */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-gray-900/60 p-2.5 rounded-xl border border-gray-800 text-xs">
+        <div className="relative flex items-center w-full sm:w-80">
           <Search className="w-4 h-4 text-gray-500 absolute left-3 pointer-events-none" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-gray-950 border border-gray-800 focus:border-emerald-500 rounded-lg pl-9 pr-8 py-2 text-gray-200 focus:outline-none transition-colors"
+            className="w-full bg-gray-950 border border-gray-800 focus:border-emerald-500 rounded-lg pl-9 pr-8 py-2 text-gray-200 focus:outline-none transition-colors text-xs"
           />
           {searchTerm && (
             <button 
@@ -423,6 +396,14 @@ export default function PendientesView({
             </button>
           )}
         </div>
+
+        <button
+          onClick={handleOpenNew}
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md transition-all active:scale-95 shrink-0"
+        >
+          <Plus className="w-4 h-4 stroke-[2.5]" />
+          Nuevo Pendiente
+        </button>
       </div>
 
       {/* 4. Tabla / Lista de Pendientes (100% primera plana, sin scroll horizontal) */}
