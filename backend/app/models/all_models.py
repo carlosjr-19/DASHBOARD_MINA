@@ -40,6 +40,7 @@ class Pedido(Base):
     motivo_cancelacion = Column(Text, nullable=True)
     cotizacion_origen = Column(String, nullable=True)
     convertida_a_pedido = Column(String, nullable=True)
+    terminos = Column(Text, nullable=True)
 
     productos = relationship("PedidoProducto", back_populates="pedido", cascade="all, delete-orphan")
 

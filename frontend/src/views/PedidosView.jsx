@@ -93,7 +93,7 @@ export default function PedidosView({
       {/* Search & Filter Toolbar */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-gray-900 p-3 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
         {/* Buscador compacto en pastilla */}
-        <div className="relative w-full sm:w-64 shrink-0">
+        <div className="relative w-full sm:w-52 xl:w-64 shrink-0">
           <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-gray-400 pointer-events-none" />
           <input
             type="text"
@@ -104,7 +104,7 @@ export default function PedidosView({
         </div>
 
         {/* Status filters */}
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+        <div className="flex items-center gap-1.5 overflow-x-auto lg:overflow-visible lg:flex-wrap no-scrollbar py-0.5">
           {[
             { id: 'TODOS', label: 'Todos' },
             { id: 'Pendiente', label: 'Pendientes' },
@@ -145,22 +145,22 @@ export default function PedidosView({
       </div>
 
       {/* Orders Table Container */}
-      <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-2 sm:p-4 overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-2 sm:p-3 lg:p-4 overflow-hidden">
+        <div className="overflow-x-auto lg:overflow-x-visible">
           <table className="w-full text-left border-collapse text-sm">
             <thead>
-              <tr className="border-b border-gray-100 dark:border-gray-800 text-xs font-bold uppercase tracking-wider text-gray-400">
-                <th className="py-3 px-2 w-8"></th>
-                <th className="py-3 px-3 min-w-[95px]">ID</th>
-                <th className="py-3 px-3 min-w-[100px]">Fecha</th>
-                <th className="py-3 px-3 min-w-[130px]">Cliente</th>
-                <th className="py-3 px-3 min-w-[180px]">Detalle</th>
-                <th className="py-3 px-3 text-right min-w-[95px]">Total</th>
-                <th className="py-3 px-3 text-right min-w-[95px]">Restante</th>
-                <th className="py-3 px-3 text-right min-w-[95px] text-green-600">Ganancia</th>
-                <th className="py-3 px-3 text-center min-w-[130px]">Estatus</th>
-                <th className="py-3 px-3 text-center min-w-[110px]">Factura</th>
-                <th className="py-3 px-3 text-center min-w-[110px]">Acciones</th>
+              <tr className="border-b border-gray-100 dark:border-gray-800 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                <th className="py-3 px-1.5 w-7"></th>
+                <th className="py-3 px-1.5 xl:px-2.5">ID</th>
+                <th className="py-3 px-1.5 xl:px-2.5">Fecha</th>
+                <th className="py-3 px-1.5 xl:px-2.5">Cliente</th>
+                <th className="py-3 px-1.5 xl:px-2.5">Detalle</th>
+                <th className="py-3 px-1.5 xl:px-2.5 text-right">Total</th>
+                <th className="py-3 px-1.5 xl:px-2.5 text-right">Restante</th>
+                <th className="py-3 px-1.5 xl:px-2.5 text-right text-green-600">Ganancia</th>
+                <th className="py-3 px-1.5 xl:px-2.5 text-center">Estatus</th>
+                <th className="py-3 px-1.5 xl:px-2.5 text-center">Factura</th>
+                <th className="py-3 px-1.5 xl:px-2.5 text-center">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">

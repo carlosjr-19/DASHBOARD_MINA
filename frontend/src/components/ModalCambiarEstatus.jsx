@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, CheckCircle, AlertTriangle, Calendar } from 'lucide-react';
+import PillDatePicker from './PillDatePicker';
 
 const ESTADOS = [
   'Pendiente',
@@ -72,7 +73,7 @@ export default function ModalCambiarEstatus({ order, onClose, onSave }) {
                   key={st}
                   type="button"
                   onClick={() => setSelectedStatus(st)}
-                  className={`py-2.5 px-3 rounded-2xl font-bold text-xs border transition-all text-center ${getBtnClasses(st)}`}
+                  className={`py-2.5 px-3 rounded-full font-bold text-xs border transition-all text-center ${getBtnClasses(st)}`}
                 >
                   {st}
                 </button>
@@ -86,11 +87,12 @@ export default function ModalCambiarEstatus({ order, onClose, onSave }) {
                 <Calendar className="w-3.5 h-3.5 text-green-600" />
                 ¿Qué día se entregó?
               </label>
-              <input
-                type="date"
+              <PillDatePicker
+                required
+                accent="green"
                 value={fechaEntrega}
-                onChange={(e) => setFechaEntrega(e.target.value)}
-                className="w-full bg-white text-sm text-gray-800 border border-green-300 rounded-full px-4 py-2 font-bold shadow-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
+                onChange={setFechaEntrega}
+                className="bg-white text-sm text-gray-800 border border-green-300 rounded-full px-4 py-2 font-bold shadow-sm"
               />
             </div>
           )}

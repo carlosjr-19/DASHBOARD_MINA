@@ -361,7 +361,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f7fc] dark:bg-gray-950 text-gray-800 dark:text-gray-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#f4f7fc] dark:bg-gray-950 text-gray-800 dark:text-gray-100 flex flex-col font-sans overflow-x-hidden">
       {/* Top Fixed Header with fast action buttons and sidebar toggle */}
       <Navbar
         currentTab={currentTab}
@@ -440,7 +440,7 @@ export default function App() {
         />
 
         {/* Main Content Area */}
-        <main className={`flex-1 min-w-0 p-3 sm:p-6 pb-20 overflow-y-auto transition-all duration-300 ${sidebarOpen ? 'w-full' : 'max-w-7xl mx-auto w-full'}`}>
+        <main className="flex-1 min-w-0 p-3 sm:p-6 pb-20 overflow-y-auto transition-all duration-300 w-full">
         {currentTab === 'pendientes' && (
           <PendientesView
             pendientes={pendientes}

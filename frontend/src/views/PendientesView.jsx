@@ -16,6 +16,8 @@ import {
   History,
   Hourglass
 } from 'lucide-react';
+import PillSelect from '../components/PillSelect';
+import PillDatePicker from '../components/PillDatePicker';
 
 const ESTATUS_CONFIG = {
   'Pendiente': {
@@ -527,17 +529,14 @@ export default function PendientesView({
 
                   {/* Status Dropdown Pastilla */}
                   <div className="hidden md:flex md:w-36 justify-center">
-                    <select
+                    <PillSelect
                       value={normStatus}
-                      onChange={(e) => handleStatusChange(item, e.target.value)}
-                      className={`text-[11px] font-bold rounded-full pl-3 pr-7 py-1.5 border shadow-sm focus:outline-none transition-all cursor-pointer ${cfg.badge}`}
-                    >
-                      {ESTATUS_OPTIONS.map(st => (
-                        <option key={st} value={st} className="bg-white text-gray-800">
-                          {st}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(val) => handleStatusChange(item, val)}
+                      options={ESTATUS_OPTIONS}
+                      hasCustomColors
+                      menuMinWidth={150}
+                      className={`text-[11px] font-bold rounded-full px-3.5 py-1.5 border shadow-sm transition-all ${cfg.badge}`}
+                    />
                   </div>
 
                   {/* Botón Bitácora */}
@@ -717,16 +716,12 @@ export default function PendientesView({
                   <label className="block text-[11px] font-bold text-gray-500 mb-1 pl-2">
                     Cambiar estatus con este comentario:
                   </label>
-                  <select
+                  <PillSelect
                     value={comentarioNuevoEstatus || normalizeStatus(bitacoraItem.estatus)}
-                    onChange={(e) => setComentarioNuevoEstatus(e.target.value)}
-                    className="select-pill w-full h-[38px] py-1 text-xs"
-                  >
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="En espera">En espera</option>
-                    <option value="Atendido">Atendido</option>
-                    <option value="Culminado">Culminado</option>
-                  </select>
+                    onChange={setComentarioNuevoEstatus}
+                    options={ESTATUS_OPTIONS}
+                    className="w-full h-[38px] px-4 py-1 text-xs"
+                  />
                 </div>
               </div>
 
@@ -846,11 +841,11 @@ export default function PendientesView({
                   <label className="block text-xs font-bold text-gray-500 mb-1 pl-2">
                     Fecha Límite / Entrega:
                   </label>
-                  <input
-                    type="date"
+                  <PillDatePicker
                     value={formFechaEntrega}
-                    onChange={(e) => setFormFechaEntrega(e.target.value)}
-                    className="w-full bg-white border border-gray-200 focus:ring-2 focus:ring-[#173865] rounded-full px-4 py-2 text-xs font-bold text-gray-800 shadow-sm focus:outline-none"
+                    onChange={setFormFechaEntrega}
+                    placeholder="Sin fecha"
+                    className="bg-white border border-gray-200 rounded-full px-4 py-2 text-xs font-bold text-gray-800 shadow-sm"
                   />
                 </div>
 
@@ -858,15 +853,12 @@ export default function PendientesView({
                   <label className="block text-xs font-bold text-gray-500 mb-1 pl-2">
                     Estatus inicial:
                   </label>
-                  <select
+                  <PillSelect
                     value={formEstatus}
-                    onChange={(e) => setFormEstatus(e.target.value)}
-                    className="select-pill w-full text-xs py-2"
-                  >
-                    {ESTATUS_OPTIONS.map(st => (
-                      <option key={st} value={st}>{st}</option>
-                    ))}
-                  </select>
+                    onChange={setFormEstatus}
+                    options={ESTATUS_OPTIONS}
+                    className="w-full px-4 py-2 text-xs"
+                  />
                 </div>
               </div>
 

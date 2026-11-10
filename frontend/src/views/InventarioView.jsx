@@ -150,18 +150,18 @@ export default function InventarioView({
           <span className="text-xs font-semibold text-gray-400">{filtered.length} registrados</span>
         </div>
 
-        <div className="overflow-x-auto p-2 sm:p-4">
+        <div className="overflow-x-auto lg:overflow-x-visible p-2 sm:p-4">
           <table className="w-full text-left border-collapse text-sm">
             <thead>
-              <tr className="text-gray-400 border-b border-gray-100 dark:border-gray-800 text-xs uppercase font-bold tracking-wider">
-                <th className="py-3 px-2 text-center w-8"></th>
-                <th className="py-3 px-3 min-w-[200px]">Material / Insumo</th>
-                <th className="py-3 px-3 text-center min-w-[130px]">Proveedor</th>
-                <th className="py-3 px-3 text-center min-w-[100px]">Costo / P. Unit</th>
-                <th className="py-3 px-3 text-center min-w-[120px]">Stock Disponible</th>
-                <th className="py-3 px-3 text-center min-w-[100px]">Estado</th>
-                <th className="py-3 px-3 text-right min-w-[110px]">Valor Total</th>
-                <th className="py-3 px-3 text-center min-w-[90px]">Acciones</th>
+              <tr className="text-gray-400 border-b border-gray-100 dark:border-gray-800 text-[11px] uppercase font-bold tracking-wider">
+                <th className="py-3 px-1.5 text-center w-7"></th>
+                <th className="py-3 px-2">Material / Insumo</th>
+                <th className="py-3 px-2 text-center">Proveedor</th>
+                <th className="py-3 px-2 text-center">Costo / P. Unit</th>
+                <th className="py-3 px-2 text-center">Stock Disponible</th>
+                <th className="py-3 px-2 text-center">Estado</th>
+                <th className="py-3 px-2 text-right">Valor Total</th>
+                <th className="py-3 px-2 text-center">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">

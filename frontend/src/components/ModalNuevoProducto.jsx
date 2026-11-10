@@ -307,13 +307,13 @@ export default function ModalNuevoProducto({
                           {activeInvDropdown === idx && filteredInv.length > 0 && (
                             <div
                               onClick={(e) => e.stopPropagation()}
-                              className="absolute left-2.5 right-2.5 top-full mt-1 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 z-50 max-h-48 overflow-y-auto animate-modal-in"
+                              className="absolute left-2.5 min-w-[230px] top-full mt-1.5 bg-white rounded-[26px] shadow-[0_14px_38px_-6px_rgba(23,56,101,0.22)] border border-gray-100 p-1.5 z-50 max-h-48 overflow-y-auto animate-modal-in"
                             >
                               {filteredInv.map((item, iIdx) => (
                                 <div
                                   key={iIdx}
                                   onClick={() => { handleInsumoChange(idx, 'nombre', item.nombre); setActiveInvDropdown(null); }}
-                                  className="px-3.5 py-2 hover:bg-blue-50 cursor-pointer text-xs font-bold text-gray-700 flex justify-between items-center transition-colors"
+                                  className="px-3.5 py-2 rounded-full hover:bg-[#eff4ff] hover:text-[#173865] cursor-pointer text-xs font-bold text-gray-700 flex justify-between items-center transition-colors"
                                 >
                                   <span className="truncate">{item.nombre}</span>
                                   <span className="text-[11px] text-[#173865] font-black ml-2 whitespace-nowrap">${item.precio}</span>

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { X, Upload, CheckCircle2, FileText, Download } from 'lucide-react';
+import PillSelect from './PillSelect';
+import PillDatePicker from './PillDatePicker';
 
 export default function ModalFactura({ order, onClose, onSave }) {
   const [estatus, setEstatus] = useState(order?.facturaEstatus || 'Pendiente');
@@ -70,25 +72,25 @@ export default function ModalFactura({ order, onClose, onSave }) {
               <label className="text-xs font-bold text-gray-500 uppercase block mb-1 pl-2">
                 Estado Factura
               </label>
-              <select
+              <PillSelect
                 value={estatus}
-                onChange={(e) => setEstatus(e.target.value)}
-                className="select-pill w-full text-xs py-2"
-              >
-                <option value="Pendiente">Pendiente</option>
-                <option value="Facturado">Facturado (Emitida)</option>
-              </select>
+                onChange={setEstatus}
+                options={[
+                  { value: 'Pendiente', label: 'Pendiente' },
+                  { value: 'Facturado', label: 'Facturado (Emitida)' }
+                ]}
+                className="w-full px-4 py-2 text-xs"
+              />
             </div>
 
             <div>
               <label className="text-xs font-bold text-gray-500 uppercase block mb-1 pl-2">
                 Fecha Emisión
               </label>
-              <input
-                type="date"
+              <PillDatePicker
                 value={fecha}
-                onChange={(e) => setFecha(e.target.value)}
-                className="w-full bg-white text-gray-800 border border-gray-200 rounded-full px-4 py-2 text-xs font-bold shadow-sm focus:ring-2 focus:ring-[#173865] focus:outline-none"
+                onChange={setFecha}
+                className="bg-white text-gray-800 border border-gray-200 rounded-full px-4 py-2 text-xs font-bold shadow-sm"
               />
             </div>
           </div>

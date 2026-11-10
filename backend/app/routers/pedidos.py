@@ -19,6 +19,8 @@ def init_pedidos_db():
         with engine.connect() as conn:
             if "metodo_pago_anticipo" not in ped_cols:
                 conn.exec_driver_sql("ALTER TABLE pedidos ADD COLUMN metodo_pago_anticipo VARCHAR DEFAULT 'NU MINA'")
+            if "terminos" not in ped_cols:
+                conn.exec_driver_sql("ALTER TABLE pedidos ADD COLUMN terminos TEXT DEFAULT '[]'")
             ins_cols = [c["name"] for c in inspector.get_columns("pedido_insumos")]
             if "medida" not in ins_cols:
                 conn.exec_driver_sql("ALTER TABLE pedido_insumos ADD COLUMN medida VARCHAR DEFAULT ''")
@@ -82,6 +84,16 @@ def listar_pedidos(db: Session = Depends(get_db)):
         costo_total_real = costo_base + costo_recoleccion_total
         ganancia_real = (p.total or 0.0) - costo_total_real
 
+        terminos_raw = getattr(p, "terminos", None)
+        terminos_list = []
+        if terminos_raw:
+            try:
+                parsed_t = json.loads(terminos_raw)
+                if isinstance(parsed_t, list):
+                    terminos_list = [str(t) for t in parsed_t if str(t).strip()]
+            except Exception:
+                terminos_list = [line.strip() for line in str(terminos_raw).splitlines() if line.strip()]
+
         resultado.append({
             "id": p.id,
             "tipo": p.tipo,
@@ -111,6 +123,7 @@ def listar_pedidos(db: Session = Depends(get_db)):
             "motivoCancelacion": p.motivo_cancelacion,
             "cotizacionOrigen": p.cotizacion_origen,
             "convertidaAPedido": p.convertida_a_pedido if (p.tipo == "COTIZACION" or p.id.startswith("CMD-")) else None,
+            "terminos": terminos_list,
             "productos": prods
         })
     return resultado
@@ -119,6 +132,8 @@ def listar_pedidos(db: Session = Depends(get_db)):
 def guardar_pedido(data: schemas.PedidoCreateSchema, db: Session = Depends(get_db)):
     pedido_existente = db.query(models.Pedido).filter(models.Pedido.id == data.id).first()
     
+    terminos_json = json.dumps([str(t).strip() for t in (getattr(data, "terminos", None) or []) if str(t).strip()], ensure_ascii=False)
+
     if pedido_existente:
         # Actualizar campos
         pedido_existente.fecha = data.fecha or datetime.date.today().isoformat()
@@ -139,6 +154,7 @@ def guardar_pedido(data: schemas.PedidoCreateSchema, db: Session = Depends(get_d
         pedido_existente.factura_fecha = data.facturaFecha
         pedido_existente.fecha_entrega = data.fechaEntrega
         pedido_existente.motivo_cancelacion = data.motivoCancelacion
+        pedido_existente.terminos = terminos_json
         pedido_obj = pedido_existente
         
         # Limpiar insumos, mermas y productos previos para reconstruir sin duplicados
@@ -171,7 +187,8 @@ def guardar_pedido(data: schemas.PedidoCreateSchema, db: Session = Depends(get_d
             fecha_entrega=data.fechaEntrega,
             motivo_cancelacion=data.motivoCancelacion,
             cotizacion_origen=data.cotizacionOrigen,
-            convertida_a_pedido=data.convertidaAPedido
+            convertida_a_pedido=data.convertidaAPedido,
+            terminos=terminos_json
         )
         db.add(pedido_obj)
         db.flush()
@@ -446,7 +463,8 @@ def cambiar_estatus(pedido_id: str, payload: dict, db: Session = Depends(get_db)
                 regimen_fiscal=pedido.regimen_fiscal,
                 uso_cfdi=pedido.uso_cfdi,
                 cotizacion_origen=viejo_id,
-                convertida_a_pedido=None
+                convertida_a_pedido=None,
+                terminos=getattr(pedido, "terminos", "[]")
             )
             db.add(nuevo_pedido)
             db.flush()

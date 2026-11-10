@@ -108,19 +108,19 @@ export default function ProductosView({
       </div>
 
       {/* Product List Table */}
-      <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-3 sm:p-6 overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm p-3 sm:p-5 overflow-hidden">
+        <div className="overflow-x-auto lg:overflow-x-visible">
           <table className="w-full text-left border-collapse text-sm">
             <thead>
-              <tr className="border-b border-gray-100 dark:border-gray-800 text-xs font-bold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-gray-100 dark:border-gray-800 text-[11px] font-bold uppercase tracking-wider text-gray-400">
                 <th className="py-3.5 px-2 w-8 text-center"></th>
-                <th className="py-3.5 px-3 min-w-[200px]">Producto / Servicio</th>
-                <th className="py-3.5 px-3 text-center min-w-[130px]">Proveedor</th>
-                <th className="py-3.5 px-3 text-center w-28 min-w-[110px]">Costo Real</th>
-                <th className="py-3.5 px-3 text-center w-28 min-w-[110px]">Margen %</th>
-                <th className="py-3.5 px-3 text-center w-28 min-w-[110px] text-green-600">Ganancia</th>
-                <th className="py-3.5 px-3 text-center w-28 min-w-[110px] text-[#173865]">Precio Final</th>
-                <th className="py-3.5 px-3 text-center w-24 min-w-[90px]">Acciones</th>
+                <th className="py-3.5 px-2.5">Producto / Servicio</th>
+                <th className="py-3.5 px-2.5 text-center">Proveedor</th>
+                <th className="py-3.5 px-2.5 text-center">Costo Real</th>
+                <th className="py-3.5 px-2.5 text-center">Margen %</th>
+                <th className="py-3.5 px-2.5 text-center text-green-600">Ganancia</th>
+                <th className="py-3.5 px-2.5 text-center text-[#173865]">Precio Final</th>
+                <th className="py-3.5 px-2.5 text-center">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">

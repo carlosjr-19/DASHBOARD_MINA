@@ -25,6 +25,8 @@ import {
   X,
   FileCheck
 } from 'lucide-react';
+import PillSelect from './PillSelect';
+import PillDatePicker from './PillDatePicker';
 
 export default function ResicoDeclaracionView() {
   const currentYear = new Date().getFullYear();
@@ -259,41 +261,35 @@ export default function ResicoDeclaracionView() {
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase text-gray-500">Año:</span>
-            <select
+            <PillSelect
               value={selectedYear}
-              onChange={(e) => setSelectedYear(Number(e.target.value))}
-              className="select-pill text-xs py-2"
-            >
-              {[currentYear - 1, currentYear, currentYear + 1].map(y => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
+              onChange={(val) => setSelectedYear(Number(val))}
+              options={[currentYear - 1, currentYear, currentYear + 1].map((y) => ({ value: y, label: String(y) }))}
+              className="px-4 py-2 text-xs min-w-[90px]"
+            />
           </div>
 
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold uppercase text-gray-500">Mes:</span>
-            <select
+            <PillSelect
               value={selectedMonth}
-              onChange={(e) => setSelectedMonth(Number(e.target.value))}
-              className="select-pill text-xs py-2"
-            >
-              {[
-                { id: 1, name: 'Enero' },
-                { id: 2, name: 'Febrero' },
-                { id: 3, name: 'Marzo' },
-                { id: 4, name: 'Abril' },
-                { id: 5, name: 'Mayo' },
-                { id: 6, name: 'Junio' },
-                { id: 7, name: 'Julio' },
-                { id: 8, name: 'Agosto' },
-                { id: 9, name: 'Septiembre' },
-                { id: 10, name: 'Octubre' },
-                { id: 11, name: 'Noviembre' },
-                { id: 12, name: 'Diciembre' }
-              ].map(m => (
-                <option key={m.id} value={m.id}>{m.name}</option>
-              ))}
-            </select>
+              onChange={(val) => setSelectedMonth(Number(val))}
+              options={[
+                { value: 1, label: 'Enero' },
+                { value: 2, label: 'Febrero' },
+                { value: 3, label: 'Marzo' },
+                { value: 4, label: 'Abril' },
+                { value: 5, label: 'Mayo' },
+                { value: 6, label: 'Junio' },
+                { value: 7, label: 'Julio' },
+                { value: 8, label: 'Agosto' },
+                { value: 9, label: 'Septiembre' },
+                { value: 10, label: 'Octubre' },
+                { value: 11, label: 'Noviembre' },
+                { value: 12, label: 'Diciembre' }
+              ]}
+              className="px-4 py-2 text-xs min-w-[130px]"
+            />
           </div>
 
           <span className="px-3.5 py-1.5 rounded-full text-[11px] font-bold bg-blue-50 text-[#173865] border border-blue-100">
@@ -978,24 +974,24 @@ export default function ResicoDeclaracionView() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-gray-500 font-bold block mb-1 pl-2">Tipo de Factura</label>
-                  <select
+                  <PillSelect
                     value={manualForm.tipo}
-                    onChange={(e) => setManualForm({ ...manualForm, tipo: e.target.value })}
-                    className="select-pill w-full text-xs py-2"
-                  >
-                    <option value="RECIBIDA">Recibida (Gasto)</option>
-                    <option value="EMITIDA">Emitida (Venta)</option>
-                  </select>
+                    onChange={(val) => setManualForm({ ...manualForm, tipo: val })}
+                    options={[
+                      { value: 'RECIBIDA', label: 'Recibida (Gasto)' },
+                      { value: 'EMITIDA', label: 'Emitida (Venta)' }
+                    ]}
+                    className="w-full px-4 py-2 text-xs"
+                  />
                 </div>
 
                 <div>
                   <label className="text-gray-500 font-bold block mb-1 pl-2">Fecha de Emisión</label>
-                  <input
-                    type="date"
-                    value={manualForm.fecha}
-                    onChange={(e) => setManualForm({ ...manualForm, fecha: e.target.value })}
-                    className="w-full bg-white text-gray-800 px-4 py-2 rounded-full border border-gray-200 font-bold shadow-sm focus:ring-2 focus:ring-[#173865] outline-none"
+                  <PillDatePicker
                     required
+                    value={manualForm.fecha}
+                    onChange={(val) => setManualForm({ ...manualForm, fecha: val })}
+                    className="bg-white text-gray-800 px-4 py-2 rounded-full border border-gray-200 font-bold shadow-sm text-xs"
                   />
                 </div>
               </div>
@@ -1013,17 +1009,12 @@ export default function ResicoDeclaracionView() {
 
                 <div>
                   <label className="text-gray-500 font-bold block mb-1 pl-2">Categoría</label>
-                  <select
+                  <PillSelect
                     value={manualForm.categoria}
-                    onChange={(e) => setManualForm({ ...manualForm, categoria: e.target.value })}
-                    className="select-pill w-full text-xs py-2"
-                  >
-                    <option value="Insumos">Insumos</option>
-                    <option value="Gasolina">Gasolina</option>
-                    <option value="Alimentos">Alimentos</option>
-                    <option value="Servicios">Servicios</option>
-                    <option value="Otros">Otros</option>
-                  </select>
+                    onChange={(val) => setManualForm({ ...manualForm, categoria: val })}
+                    options={['Insumos', 'Gasolina', 'Alimentos', 'Servicios', 'Otros']}
+                    className="w-full px-4 py-2 text-xs"
+                  />
                 </div>
               </div>
 

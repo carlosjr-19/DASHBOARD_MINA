@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, ArrowDown, ArrowUpRight, ChevronDown, Check } from 'lucide-react';
+import PillSelect from './PillSelect';
 
 const CUENTAS = [
   'NU MINA',
@@ -171,12 +172,12 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                 {dropdownOpen && (
                   <div 
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-50 max-h-56 overflow-y-auto animate-modal-in"
+                    className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-[26px] shadow-[0_14px_38px_-6px_rgba(23,56,101,0.22)] border border-gray-100 p-1.5 z-50 max-h-56 overflow-y-auto animate-modal-in space-y-0.5"
                   >
                     <div
                       onClick={() => handleSelectOrder(null)}
-                      className={`px-4 py-2.5 hover:bg-blue-50 cursor-pointer text-xs font-bold flex justify-between items-center transition-colors border-b border-gray-50 ${
-                        !selectedPedidoId ? 'bg-blue-50 text-[#173865]' : 'text-gray-700'
+                      className={`px-4 py-2 rounded-full hover:bg-[#eff4ff] cursor-pointer text-xs font-bold flex justify-between items-center transition-colors ${
+                        !selectedPedidoId ? 'bg-[#eff4ff] text-[#173865]' : 'text-gray-700'
                       }`}
                     >
                       <div className="flex items-center gap-2">
@@ -197,13 +198,13 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                           <div
                             key={p.id}
                             onClick={() => handleSelectOrder(p)}
-                            className={`px-4 py-2.5 hover:bg-blue-50 cursor-pointer text-xs font-bold flex justify-between items-center transition-colors ${
-                              isThisSelected ? 'bg-blue-50 text-[#173865]' : 'text-gray-700'
+                            className={`px-4 py-2 rounded-full hover:bg-[#eff4ff] cursor-pointer text-xs font-bold flex justify-between items-center transition-colors ${
+                              isThisSelected ? 'bg-[#eff4ff] text-[#173865]' : 'text-gray-700'
                             }`}
                           >
                             <div className="flex items-center gap-2 truncate">
                               {isThisSelected && <Check className="w-3.5 h-3.5 text-[#173865] shrink-0" />}
-                              <span className="bg-blue-50 text-[#173865] px-2 py-0.5 rounded font-mono text-[10px] font-bold">
+                              <span className="bg-blue-50 text-[#173865] px-2 py-0.5 rounded-full font-mono text-[10px] font-bold">
                                 {p.id}
                               </span>
                               <span className="truncate">{p.cliente || 'Sin nombre'}</span>
@@ -275,15 +276,12 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1 pl-2">
                     Cuenta Destino
                   </label>
-                  <select
+                  <PillSelect
                     value={cuenta}
-                    onChange={(e) => setCuenta(e.target.value)}
-                    className="select-pill w-full text-xs"
-                  >
-                    {CUENTAS.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+                    onChange={setCuenta}
+                    options={CUENTAS}
+                    className="w-full px-4 py-2.5 text-xs"
+                  />
                 </div>
               </div>
             </>
@@ -325,15 +323,12 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1 pl-2">
                     Cuenta Origen
                   </label>
-                  <select
+                  <PillSelect
                     value={cuenta}
-                    onChange={(e) => setCuenta(e.target.value)}
-                    className="select-pill w-full text-xs"
-                  >
-                    {CUENTAS.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+                    onChange={setCuenta}
+                    options={CUENTAS}
+                    className="w-full px-4 py-2.5 text-xs"
+                  />
                 </div>
               </div>
 
@@ -342,16 +337,12 @@ export default function ModalMovimientoCaja({ tipo = 'INGRESO', pedidos = [], on
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wide block mb-1 pl-2">
                     Categoría
                   </label>
-                  <select
+                  <PillSelect
                     value={categoria}
-                    onChange={(e) => setCategoria(e.target.value)}
-                    className="select-pill w-full text-xs"
-                  >
-                    <option value="Insumos">Insumos</option>
-                    <option value="Gasolina">Gasolina</option>
-                    <option value="Alimentos">Alimentos</option>
-                    <option value="Otros">Otros</option>
-                  </select>
+                    onChange={setCategoria}
+                    options={['Insumos', 'Gasolina', 'Alimentos', 'Otros']}
+                    className="w-full px-4 py-2 text-xs"
+                  />
                 </div>
 
                 <div>

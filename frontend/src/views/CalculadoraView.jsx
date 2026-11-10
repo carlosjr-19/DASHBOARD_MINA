@@ -288,10 +288,10 @@ export default function CalculadoraView({
               {matDropdownOpen && (
                 <>
                   <div className="fixed inset-0 z-30" onClick={() => setMatDropdownOpen(false)} />
-                  <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 z-40 max-h-56 overflow-y-auto animate-modal-in">
+                  <div className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-[26px] shadow-[0_14px_38px_-6px_rgba(23,56,101,0.22)] border border-gray-100 p-1.5 z-40 max-h-56 overflow-y-auto animate-modal-in space-y-0.5">
                     <div
                       onClick={() => { handleSelectMaterial(null); setMatDropdownOpen(false); }}
-                      className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-xs font-semibold text-gray-500 border-b border-gray-50 transition-colors"
+                      className="px-4 py-2 rounded-full hover:bg-[#eff4ff] cursor-pointer text-xs font-semibold text-gray-500 transition-colors"
                     >
                       -- Sin selección --
                     </div>
@@ -299,8 +299,8 @@ export default function CalculadoraView({
                       <div
                         key={m.id}
                         onClick={() => { handleSelectMaterial(m); setMatDropdownOpen(false); }}
-                        className={`px-4 py-2.5 hover:bg-blue-50 cursor-pointer text-xs font-bold flex justify-between items-center transition-colors ${
-                          String(selectedMatId) === String(m.id) ? 'bg-blue-50 text-[#173865]' : 'text-gray-700'
+                        className={`px-4 py-2 rounded-full hover:bg-[#eff4ff] cursor-pointer text-xs font-bold flex justify-between items-center transition-colors ${
+                          String(selectedMatId) === String(m.id) ? 'bg-[#eff4ff] text-[#173865]' : 'text-gray-700'
                         }`}
                       >
                         <div className="flex items-center gap-2 truncate">

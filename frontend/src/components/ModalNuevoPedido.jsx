@@ -7,6 +7,8 @@ import {
   DollarSign, 
   ChevronDown
 } from 'lucide-react';
+import PillSelect from './PillSelect';
+import PillDatePicker from './PillDatePicker';
 
 const METODOS_PAGO = [
   'STOCK',
@@ -68,8 +70,14 @@ export default function ModalNuevoPedido({
   const [usoCfdi, setUsoCfdi] = useState(initialData?.usoCfdi || savedDraft?.usoCfdi || 'G03 Gastos en general');
   const [pagado, setPagado] = useState(initialData?.pagado ?? savedDraft?.pagado ?? 0);
   const [metodoPagoAnticipo, setMetodoPagoAnticipo] = useState(initialData?.metodoPagoAnticipo || savedDraft?.metodoPagoAnticipo || 'NU MINA');
-  const [collapsedInsumos, setCollapsedInsumos] = useState({});
-  const [collapsedMermas, setCollapsedMermas] = useState({});
+  const [expandedInsumos, setExpandedInsumos] = useState({});
+  const [expandedMermas, setExpandedMermas] = useState({});
+  const [terminos, setTerminos] = useState(() => {
+    const raw = initialData?.terminos ?? savedDraft?.terminos;
+    if (Array.isArray(raw)) return raw.map(t => String(t));
+    if (typeof raw === 'string' && raw.trim()) return raw.split('\n').map(s => s.trim()).filter(Boolean);
+    return [];
+  });
 
   // UI states for custom floating pill dropdowns (replaces native datalist)
   const [openClientDrop, setOpenClientDrop] = useState(false);
@@ -184,6 +192,7 @@ export default function ModalNuevoPedido({
         usoCfdi,
         pagado,
         metodoPagoAnticipo,
+        terminos,
         productos,
         updatedAt: new Date().toISOString()
       };
@@ -206,6 +215,7 @@ export default function ModalNuevoPedido({
     usoCfdi,
     pagado,
     metodoPagoAnticipo,
+    terminos,
     productos
   ]);
 
@@ -227,6 +237,9 @@ export default function ModalNuevoPedido({
       setUsoCfdi('G03 Gastos en general');
       setPagado(0);
       setMetodoPagoAnticipo('NU MINA');
+      setExpandedInsumos({});
+      setExpandedMermas({});
+      setTerminos([]);
       setProductos([
         {
           nombre: '',
@@ -476,6 +489,7 @@ export default function ModalNuevoPedido({
         facturaFecha: initialData?.facturaFecha || null,
         facturaArchivoData: initialData?.facturaArchivoData || null,
         facturaArchivoNombre: initialData?.facturaArchivoNombre || null,
+        terminos: terminos.map(t => t.trim()).filter(Boolean),
         productos: productos.map((p) => {
           const cIns = (p.insumos || []).reduce((acc, i) => acc + (parseFloat(i.costo) || 0), 0);
           const cMer = (p.mermas || []).reduce((acc, m) => acc + ((parseFloat(m.cant) || 1) * (parseFloat(m.costoUnitario) || 0)), 0);
@@ -614,7 +628,7 @@ export default function ModalNuevoPedido({
                 {openClientDrop && clientes.filter(c => !clienteNombre || c.nombre.toLowerCase().includes(clienteNombre.toLowerCase())).length > 0 && (
                   <div
                     onClick={(e) => e.stopPropagation()}
-                    className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 z-50 max-h-52 overflow-y-auto animate-modal-in"
+                    className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-[26px] shadow-[0_14px_38px_-6px_rgba(23,56,101,0.22)] border border-gray-100 p-1.5 z-50 max-h-52 overflow-y-auto animate-modal-in"
                   >
                     {clientes
                       .filter(c => !clienteNombre || c.nombre.toLowerCase().includes(clienteNombre.toLowerCase()))
@@ -622,7 +636,7 @@ export default function ModalNuevoPedido({
                         <div
                           key={i}
                           onClick={() => { handleSelectCliente(c.nombre); setOpenClientDrop(false); }}
-                          className="px-4 py-2 hover:bg-blue-50 cursor-pointer text-xs font-bold text-gray-700 flex justify-between items-center transition-colors"
+                          className="px-4 py-2 rounded-full hover:bg-[#eff4ff] hover:text-[#173865] cursor-pointer text-xs font-bold text-gray-700 flex justify-between items-center transition-colors"
                         >
                           <span>{c.nombre}</span>
                           {c.telefono && <span className="text-[11px] text-gray-400 font-normal">{c.telefono}</span>}
@@ -644,12 +658,11 @@ export default function ModalNuevoPedido({
 
               <div>
                 <label className="text-gray-500 font-bold block mb-1 pl-2">Fecha de Solicitud (Clic para cambiar)</label>
-                <input
-                  type="date"
+                <PillDatePicker
+                  required
                   value={fechaEntrega}
-                  onClick={(e) => e.target.showPicker && e.target.showPicker()}
-                  onChange={(e) => setFechaEntrega(e.target.value)}
-                  className="w-full bg-gray-50 text-gray-800 px-4 py-2.5 rounded-full border border-gray-200 font-bold focus:bg-white focus:ring-2 focus:ring-[#173865] focus:outline-none cursor-pointer transition"
+                  onChange={setFechaEntrega}
+                  className="bg-gray-50 text-gray-800 px-4 py-2.5 rounded-full border border-gray-200 font-bold focus:bg-white text-xs shadow-sm"
                 />
               </div>
             </div>
@@ -807,13 +820,13 @@ export default function ModalNuevoPedido({
                       {openCatalogoDrop === pIdx && filteredCat.length > 0 && (
                         <div
                           onClick={(e) => e.stopPropagation()}
-                          className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 z-50 max-h-52 overflow-y-auto animate-modal-in"
+                          className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-[26px] shadow-[0_14px_38px_-6px_rgba(23,56,101,0.22)] border border-gray-100 p-1.5 z-50 max-h-52 overflow-y-auto animate-modal-in"
                         >
                           {filteredCat.map((cat, cIdx) => (
                             <div
                               key={cIdx}
                               onClick={() => { updateProducto(pIdx, 'nombre', cat.nombre); setOpenCatalogoDrop(null); }}
-                              className="px-4 py-2.5 hover:bg-blue-50 cursor-pointer text-xs font-bold text-gray-700 flex justify-between items-center transition-colors"
+                              className="px-4 py-2.5 rounded-full hover:bg-[#eff4ff] hover:text-[#173865] cursor-pointer text-xs font-bold text-gray-700 flex justify-between items-center transition-colors"
                             >
                               <span className="truncate">{cat.nombre}</span>
                               <span className="text-xs text-[#173865] font-black ml-2 whitespace-nowrap">${cat.precio}</span>
@@ -884,16 +897,16 @@ export default function ModalNuevoPedido({
                     <div className="flex items-center justify-between">
                       <button
                         type="button"
-                        onClick={() => setCollapsedInsumos(prev => ({ ...prev, [pIdx]: !prev[pIdx] }))}
+                        onClick={() => setExpandedInsumos(prev => ({ ...prev, [pIdx]: !prev[pIdx] }))}
                         className="text-xs font-bold text-[#173865] bg-blue-50 px-3.5 py-1.5 rounded-full hover:bg-blue-100 transition-colors flex items-center gap-1.5"
                       >
-                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${collapsedInsumos[pIdx] ? '-rotate-90' : 'rotate-0'}`} />
+                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${expandedInsumos[pIdx] ? 'rotate-0' : '-rotate-90'}`} />
                         <span>Insumos ({prod.insumos?.length || 0})</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => {
-                          setCollapsedInsumos(prev => ({ ...prev, [pIdx]: false }));
+                          setExpandedInsumos(prev => ({ ...prev, [pIdx]: true }));
                           addInsumo(pIdx);
                         }}
                         className="text-xs bg-white border border-gray-200 px-3.5 py-1.5 rounded-full shadow-sm text-[#173865] font-bold hover:bg-gray-50 flex items-center gap-1 transition-colors"
@@ -903,7 +916,7 @@ export default function ModalNuevoPedido({
                       </button>
                     </div>
 
-                    {!collapsedInsumos[pIdx] && (
+                    {expandedInsumos[pIdx] && (
                       <div className="bg-gray-50 p-3.5 rounded-2xl border border-gray-200 space-y-2">
                         {prod.insumos && prod.insumos.length > 0 && (
                           <div className={`hidden sm:grid ${
@@ -962,13 +975,13 @@ export default function ModalNuevoPedido({
                                 {openInsumoDrop === insDropKey && filteredInv.length > 0 && (
                                   <div
                                     onClick={(e) => e.stopPropagation()}
-                                    className="absolute left-0 min-w-[220px] top-full mt-1 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 z-50 max-h-48 overflow-y-auto animate-modal-in"
+                                    className="absolute left-0 min-w-[230px] top-full mt-1.5 bg-white rounded-[26px] shadow-[0_14px_38px_-6px_rgba(23,56,101,0.22)] border border-gray-100 p-1.5 z-50 max-h-48 overflow-y-auto animate-modal-in"
                                   >
                                     {filteredInv.map((inv) => (
                                       <div
                                         key={inv.id || inv.nombre}
                                         onClick={() => { handleSelectInsumoStock(pIdx, iIdx, inv.nombre); setOpenInsumoDrop(null); }}
-                                        className="px-3.5 py-2 hover:bg-blue-50 cursor-pointer text-xs font-bold text-gray-700 flex justify-between items-center transition-colors"
+                                        className="px-3.5 py-2 rounded-full hover:bg-[#eff4ff] hover:text-[#173865] cursor-pointer text-xs font-bold text-gray-700 flex justify-between items-center transition-colors"
                                       >
                                         <span className="truncate">{inv.nombre}</span>
                                         <span className="text-[11px] text-[#173865] font-black ml-2 whitespace-nowrap">${parseFloat(inv.precio || 0).toFixed(2)}</span>
@@ -1047,15 +1060,14 @@ export default function ModalNuevoPedido({
 
                               {pedidoTipo === 'PEDIDO' && (
                                 <div>
-                                  <select
+                                  <PillSelect
                                     value={ins.metodoPago || 'STOCK'}
-                                    onChange={(e) => updateInsumo(pIdx, iIdx, 'metodoPago', e.target.value)}
-                                    className="select-pill w-full py-1.5 pl-3 pr-7 text-[11px] font-bold"
-                                  >
-                                    {METODOS_PAGO.map((m) => (
-                                      <option key={m} value={m}>{m}</option>
-                                    ))}
-                                  </select>
+                                    onChange={(val) => updateInsumo(pIdx, iIdx, 'metodoPago', val)}
+                                    options={METODOS_PAGO}
+                                    menuMinWidth={155}
+                                    align="right"
+                                    className="w-full px-3 py-1.5 text-[11px]"
+                                  />
                                 </div>
                               )}
 
@@ -1083,16 +1095,16 @@ export default function ModalNuevoPedido({
                     <div className="flex items-center justify-between pt-2">
                       <button
                         type="button"
-                        onClick={() => setCollapsedMermas(prev => ({ ...prev, [pIdx]: !prev[pIdx] }))}
+                        onClick={() => setExpandedMermas(prev => ({ ...prev, [pIdx]: !prev[pIdx] }))}
                         className="text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3.5 py-1.5 rounded-full hover:bg-amber-100 transition-colors flex items-center gap-1.5"
                       >
-                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${collapsedMermas[pIdx] ? '-rotate-90' : 'rotate-0'}`} />
+                        <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${expandedMermas[pIdx] ? 'rotate-0' : '-rotate-90'}`} />
                         <span>Mermas ({prod.mermas?.length || 0})</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => {
-                          setCollapsedMermas(prev => ({ ...prev, [pIdx]: false }));
+                          setExpandedMermas(prev => ({ ...prev, [pIdx]: true }));
                           addMerma(pIdx);
                         }}
                         className="text-xs bg-white border border-amber-300 px-3.5 py-1.5 rounded-full shadow-sm text-amber-900 font-bold hover:bg-amber-100 flex items-center gap-1 transition-colors"
@@ -1102,22 +1114,24 @@ export default function ModalNuevoPedido({
                       </button>
                     </div>
 
-                    {!collapsedMermas[pIdx] && prod.mermas && prod.mermas.length > 0 && (
+                    {expandedMermas[pIdx] && (
                       <div className="bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200 space-y-2">
-                        <div className="hidden sm:grid sm:grid-cols-12 gap-2 text-[10px] font-bold uppercase text-amber-800/70 px-2 pb-1">
-                          <div className="sm:col-span-3 text-center">Material / Insumo</div>
-                          <div className={pedidoTipo === 'PEDIDO' ? 'sm:col-span-2 text-center' : 'sm:col-span-3 text-center'}>
-                            Motivo Merma
+                        {prod.mermas && prod.mermas.length > 0 && (
+                          <div className="hidden sm:grid sm:grid-cols-12 gap-2 text-[10px] font-bold uppercase text-amber-800/70 px-2 pb-1">
+                            <div className="sm:col-span-3 text-center">Material / Insumo</div>
+                            <div className={pedidoTipo === 'PEDIDO' ? 'sm:col-span-2 text-center' : 'sm:col-span-3 text-center'}>
+                              Motivo Merma
+                            </div>
+                            <div className="sm:col-span-1 text-center">Cant</div>
+                            <div className="sm:col-span-2 text-center">Costo Unit.</div>
+                            <div className="sm:col-span-2 text-center">Pérdida Total</div>
+                            {pedidoTipo === 'PEDIDO' ? (
+                              <div className="sm:col-span-2 text-center">Método Pago</div>
+                            ) : (
+                              <div className="sm:col-span-1 text-center"></div>
+                            )}
                           </div>
-                          <div className="sm:col-span-1 text-center">Cant</div>
-                          <div className="sm:col-span-2 text-center">Costo Unit.</div>
-                          <div className="sm:col-span-2 text-center">Pérdida Total</div>
-                          {pedidoTipo === 'PEDIDO' ? (
-                            <div className="sm:col-span-2 text-center">Método Pago</div>
-                          ) : (
-                            <div className="sm:col-span-1 text-center"></div>
-                          )}
-                        </div>
+                        )}
 
                         {prod.mermas.map((merma, mIdx) => {
                           const cantMerma = parseFloat(merma.cant) || 1;
@@ -1153,7 +1167,7 @@ export default function ModalNuevoPedido({
                                 {openMermaDrop === merDropKey && filteredMerInv.length > 0 && (
                                   <div
                                     onClick={(e) => e.stopPropagation()}
-                                    className="absolute left-0 right-0 top-full mt-1 bg-white rounded-2xl shadow-xl border border-gray-100 py-1.5 z-50 max-h-48 overflow-y-auto animate-modal-in"
+                                    className="absolute left-0 right-0 top-full mt-1.5 bg-white rounded-[26px] shadow-[0_14px_38px_-6px_rgba(23,56,101,0.22)] border border-gray-100 p-1.5 z-50 max-h-48 overflow-y-auto animate-modal-in"
                                   >
                                     {filteredMerInv.map((inv) => (
                                       <div
@@ -1164,7 +1178,7 @@ export default function ModalNuevoPedido({
                                           updateMerma(pIdx, mIdx, 'metodoPago', 'STOCK');
                                           setOpenMermaDrop(null);
                                         }}
-                                        className="px-3.5 py-2 hover:bg-amber-50 cursor-pointer text-xs font-bold text-gray-700 flex justify-between items-center transition-colors"
+                                        className="px-3.5 py-2 rounded-full hover:bg-amber-50 hover:text-amber-900 cursor-pointer text-xs font-bold text-gray-700 flex justify-between items-center transition-colors"
                                       >
                                         <span className="truncate">{inv.nombre}</span>
                                         <span className="text-[11px] text-amber-800 font-black ml-2 whitespace-nowrap">${parseFloat(inv.precio || 0).toFixed(2)}</span>
@@ -1215,15 +1229,14 @@ export default function ModalNuevoPedido({
 
                               {pedidoTipo === 'PEDIDO' ? (
                                 <div className="sm:col-span-2 flex items-center gap-1.5">
-                                  <select
+                                  <PillSelect
                                     value={merma.metodoPago || 'STOCK'}
-                                    onChange={(e) => updateMerma(pIdx, mIdx, 'metodoPago', e.target.value)}
-                                    className="select-pill w-full py-1.5 pl-3 pr-7 text-[11px] font-bold"
-                                  >
-                                    {METODOS_PAGO.map((m) => (
-                                      <option key={m} value={m}>{m}</option>
-                                    ))}
-                                  </select>
+                                    onChange={(val) => updateMerma(pIdx, mIdx, 'metodoPago', val)}
+                                    options={METODOS_PAGO}
+                                    menuMinWidth={155}
+                                    align="right"
+                                    className="w-full px-3 py-1.5 text-[11px]"
+                                  />
 
                                   <button
                                     type="button"
@@ -1249,12 +1262,71 @@ export default function ModalNuevoPedido({
                             </div>
                           );
                         })}
+
+                        {(!prod.mermas || prod.mermas.length === 0) && (
+                          <div className="text-xs text-amber-700/70 italic text-center py-2">Sin mermas registradas.</div>
+                        )}
                       </div>
                     )}
                   </div>
                 </div>
               );
             })}
+          </div>
+
+          {/* Términos y Condiciones (Opcional) */}
+          <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-500 block">
+                  Términos y Condiciones (Opcional)
+                </span>
+                <span className="text-[11px] text-gray-400">
+                  {terminos.length > 0
+                    ? `${terminos.length} ${terminos.length === 1 ? 'término agregado' : 'términos agregados'} (se mostrarán al imprimir)`
+                    : 'Si no agregas ninguno, este apartado no aparecerá al imprimir.'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTerminos(prev => [...prev, ''])}
+                className="flex items-center gap-1.5 text-xs text-[#173865] hover:bg-blue-100 font-bold px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 shadow-sm transition-all active:scale-95 shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Añadir Término</span>
+              </button>
+            </div>
+
+            {terminos.length > 0 && (
+              <div className="space-y-2 pt-1">
+                {terminos.map((term, tIdx) => (
+                  <div key={tIdx} className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-blue-50 text-[#173865] font-bold text-[11px] flex items-center justify-center shrink-0">
+                      {tIdx + 1}
+                    </span>
+                    <input
+                      type="text"
+                      value={term}
+                      onChange={(e) => {
+                        const next = [...terminos];
+                        next[tIdx] = e.target.value;
+                        setTerminos(next);
+                      }}
+                      placeholder={`Escribe el término o condición #${tIdx + 1}...`}
+                      className="w-full bg-gray-50 text-gray-800 px-4 py-2 rounded-full border border-gray-200 text-xs font-medium focus:bg-white focus:ring-2 focus:ring-[#173865] focus:outline-none transition"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setTerminos(prev => prev.filter((_, idx) => idx !== tIdx))}
+                      className="w-8 h-8 rounded-full text-red-400 hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-colors shrink-0"
+                      title="Eliminar término"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </form>
 
@@ -1332,18 +1404,13 @@ export default function ModalNuevoPedido({
               {parseFloat(pagado) > 0 && (
                 <div>
                   <span className="text-[11px] text-[#173865] block font-bold mb-0.5 pl-2">Método de Pago Anticipo:</span>
-                  <select
+                  <PillSelect
                     value={metodoPagoAnticipo}
-                    onChange={(e) => setMetodoPagoAnticipo(e.target.value)}
-                    className="select-pill py-1.5 text-xs font-bold"
-                  >
-                    <option value="NU MINA">NU MINA</option>
-                    <option value="NU EMI">NU EMI</option>
-                    <option value="MERCADO PAGO">MERCADO PAGO</option>
-                    <option value="EFECTIVO">EFECTIVO</option>
-                    <option value="NU TDC">NU TDC</option>
-                    <option value="PLATA TDC">PLATA TDC</option>
-                  </select>
+                    onChange={setMetodoPagoAnticipo}
+                    options={METODOS_PAGO.filter(m => m !== 'STOCK')}
+                    menuMinWidth={165}
+                    className="px-4 py-1.5 text-xs"
+                  />
                 </div>
               )}
 

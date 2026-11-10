@@ -62,6 +62,7 @@ class PedidoCreateSchema(BaseModel):
     motivoCancelacion: Optional[str] = None
     cotizacionOrigen: Optional[str] = None
     convertidaAPedido: Optional[str] = None
+    terminos: Optional[List[str]] = []
     productos: List[ProductoItemSchema] = []
 
 # --- CLIENTES ---

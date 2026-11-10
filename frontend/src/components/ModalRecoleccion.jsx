@@ -10,6 +10,8 @@ import {
   Scale, 
   CreditCard
 } from 'lucide-react';
+import PillSelect from './PillSelect';
+import PillDatePicker from './PillDatePicker';
 
 const CUENTAS = [
   'NU MINA',
@@ -258,12 +260,11 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
             <label className="text-gray-500 font-bold block mb-1 uppercase tracking-wide text-[11px] pl-2">
               Fecha de Recolección
             </label>
-            <input
-              type="date"
+            <PillDatePicker
               required
               value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
-              className="w-full bg-white text-gray-800 px-4 py-2 rounded-full border border-gray-200 font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-[#173865]"
+              onChange={setFecha}
+              className="bg-white text-gray-800 px-4 py-2 rounded-full border border-gray-200 font-bold shadow-sm text-xs"
             />
           </div>
 
@@ -290,13 +291,12 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                 />
               </div>
               <div className="sm:col-span-4">
-                <select
+                <PillSelect
                   value={cuentaGasolina}
-                  onChange={(e) => setCuentaGasolina(e.target.value)}
-                  className="select-pill w-full text-[11px] py-1.5"
-                >
-                  {CUENTAS.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                  onChange={setCuentaGasolina}
+                  options={CUENTAS}
+                  className="w-full px-3.5 py-1.5 text-[11px]"
+                />
               </div>
             </div>
 
@@ -316,13 +316,12 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                 />
               </div>
               <div className="sm:col-span-4">
-                <select
+                <PillSelect
                   value={cuentaDesayuno}
-                  onChange={(e) => setCuentaDesayuno(e.target.value)}
-                  className="select-pill w-full text-[11px] py-1.5"
-                >
-                  {CUENTAS.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                  onChange={setCuentaDesayuno}
+                  options={CUENTAS}
+                  className="w-full px-3.5 py-1.5 text-[11px]"
+                />
               </div>
             </div>
 
@@ -342,13 +341,12 @@ export default function ModalRecoleccion({ pedidos = [], onClose, onSave }) {
                 />
               </div>
               <div className="sm:col-span-4">
-                <select
+                <PillSelect
                   value={cuentaOtros}
-                  onChange={(e) => setCuentaOtros(e.target.value)}
-                  className="select-pill w-full text-[11px] py-1.5"
-                >
-                  {CUENTAS.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                  onChange={setCuentaOtros}
+                  options={CUENTAS}
+                  className="w-full px-3.5 py-1.5 text-[11px]"
+                />
               </div>
             </div>
 

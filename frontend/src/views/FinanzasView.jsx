@@ -442,18 +442,18 @@ export default function FinanzasView({
             <span className="text-xs font-semibold text-gray-400">{filtered.length} registrados</span>
           </div>
 
-          <div className="overflow-x-auto p-2 sm:p-4">
+          <div className="overflow-x-auto lg:overflow-x-visible p-2 sm:p-4">
             <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="text-gray-400 border-b border-gray-100 text-xs uppercase font-bold tracking-wider">
-                  <th className="py-3 px-2 text-center w-8"></th>
-                  <th className="py-3 px-3 text-center min-w-[90px]">Tipo</th>
-                  <th className="py-3 px-3 text-center min-w-[100px]">Fecha</th>
-                  <th className="py-3 px-3 text-center min-w-[110px]">Cuenta</th>
-                  <th className="py-3 px-3 min-w-[220px]">Motivo / Pedido</th>
-                  <th className="py-3 px-3 text-center min-w-[110px]">Categoría</th>
-                  <th className="py-3 px-3 text-right min-w-[110px]">Monto</th>
-                  <th className="py-3 px-2 text-center w-10"></th>
+                <tr className="text-gray-400 border-b border-gray-100 text-[11px] uppercase font-bold tracking-wider">
+                  <th className="py-3 px-1.5 text-center w-7"></th>
+                  <th className="py-3 px-2 text-center">Tipo</th>
+                  <th className="py-3 px-2 text-center">Fecha</th>
+                  <th className="py-3 px-2 text-center">Cuenta</th>
+                  <th className="py-3 px-2">Motivo / Pedido</th>
+                  <th className="py-3 px-2 text-center">Categoría</th>
+                  <th className="py-3 px-2 text-right">Monto</th>
+                  <th className="py-3 px-1.5 text-center w-9"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">
@@ -627,18 +627,18 @@ export default function FinanzasView({
             <span className="text-xs font-semibold text-gray-400">{recolecciones.length} registradas</span>
           </div>
 
-          <div className="overflow-x-auto p-2 sm:p-4">
+          <div className="overflow-x-auto lg:overflow-x-visible p-2 sm:p-4">
             <table className="w-full text-left border-collapse text-sm">
               <thead>
-                <tr className="text-gray-400 border-b border-gray-100 text-xs uppercase font-bold tracking-wider">
-                  <th className="py-3 px-2 text-center w-8"></th>
-                  <th className="py-3 px-3 text-center min-w-[90px]">Folio</th>
-                  <th className="py-3 px-3 text-center min-w-[100px]">Fecha</th>
-                  <th className="py-3 px-3 text-center min-w-[110px]">Cuenta</th>
-                  <th className="py-3 px-3 min-w-[220px]">Descripción / Conceptos</th>
-                  <th className="py-3 px-3 text-center min-w-[130px]">Prorrateo</th>
-                  <th className="py-3 px-3 text-right min-w-[110px]">Total Gasto</th>
-                  <th className="py-3 px-2 text-center w-10"></th>
+                <tr className="text-gray-400 border-b border-gray-100 text-[11px] uppercase font-bold tracking-wider">
+                  <th className="py-3 px-1.5 text-center w-7"></th>
+                  <th className="py-3 px-2 text-center">Folio</th>
+                  <th className="py-3 px-2 text-center">Fecha</th>
+                  <th className="py-3 px-2 text-center">Cuenta</th>
+                  <th className="py-3 px-2">Descripción / Conceptos</th>
+                  <th className="py-3 px-2 text-center">Prorrateo</th>
+                  <th className="py-3 px-2 text-right">Total Gasto</th>
+                  <th className="py-3 px-1.5 text-center w-9"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">

@@ -78,7 +78,7 @@ export default function MobileOrderCard({
         }`}
       >
         {/* 1. Expand Chevron */}
-        <td className="py-3.5 px-2 text-center text-gray-400 w-8">
+        <td className="py-3 px-1.5 text-center text-gray-400 w-7">
           <button 
             type="button" 
             className="p-1 hover:text-[#173865] rounded-full transition-colors"
@@ -93,8 +93,8 @@ export default function MobileOrderCard({
         </td>
 
         {/* 2. ID */}
-        <td className="py-3.5 px-3 whitespace-nowrap">
-          <span className={`px-2.5 py-1 rounded-md font-mono font-bold text-xs ${
+        <td className="py-3 px-1.5 xl:px-2.5 whitespace-nowrap">
+          <span className={`px-2 py-1 rounded-md font-mono font-bold text-[11px] xl:text-xs ${
             isCancelled 
               ? 'bg-gray-100 text-gray-400 line-through' 
               : 'bg-gray-100 text-gray-700'
@@ -104,27 +104,27 @@ export default function MobileOrderCard({
         </td>
 
         {/* 3. FECHA */}
-        <td className={`py-3.5 px-3 whitespace-nowrap text-xs font-medium ${isCancelled ? 'line-through text-gray-400' : 'text-gray-500'}`}>
+        <td className={`py-3 px-1.5 xl:px-2.5 whitespace-nowrap text-[11px] xl:text-xs font-medium ${isCancelled ? 'line-through text-gray-400' : 'text-gray-500'}`}>
           {order.fecha ? new Date(order.fecha).toLocaleDateString('es-MX') : '-'}
         </td>
 
         {/* 4. CLIENTE */}
-        <td className={`py-3.5 px-3 font-bold whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-400' : 'text-gray-800 dark:text-gray-100'}`}>
+        <td className={`py-3 px-1.5 xl:px-2.5 font-bold max-w-[125px] xl:max-w-[170px] truncate text-xs xl:text-sm ${isCancelled ? 'line-through text-gray-400' : 'text-gray-800 dark:text-gray-100'}`} title={order.cliente || 'Cliente sin nombre'}>
           {order.cliente || 'Cliente sin nombre'}
         </td>
 
         {/* 5. DETALLE */}
-        <td className={`py-3.5 px-3 max-w-[200px] truncate text-xs ${isCancelled ? 'line-through text-gray-400' : 'text-gray-500'}`}>
+        <td className={`py-3 px-1.5 xl:px-2.5 max-w-[120px] xl:max-w-[180px] truncate text-[11px] xl:text-xs ${isCancelled ? 'line-through text-gray-400' : 'text-gray-500'}`} title={detalleText}>
           {detalleText}
         </td>
 
         {/* 6. TOTAL */}
-        <td className={`py-3.5 px-3 text-right font-bold whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-400' : 'text-gray-800 dark:text-gray-100'}`}>
+        <td className={`py-3 px-1.5 xl:px-2.5 text-right font-bold whitespace-nowrap text-xs xl:text-sm ${isCancelled ? 'line-through text-gray-400' : 'text-gray-800 dark:text-gray-100'}`}>
           {formatMoney(order.total)}
         </td>
 
         {/* 7. RESTANTE */}
-        <td className={`py-3.5 px-3 text-right font-black whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-400' : ''}`}>
+        <td className={`py-3 px-1.5 xl:px-2.5 text-right font-black whitespace-nowrap text-xs xl:text-sm ${isCancelled ? 'line-through text-gray-400' : ''}`}>
           {restante > 0.001 ? (
             <span className={isCancelled ? 'text-gray-400 line-through' : 'text-red-500'}>{formatMoney(restante)}</span>
           ) : (
@@ -133,18 +133,18 @@ export default function MobileOrderCard({
         </td>
 
         {/* 8. GANANCIA DIRECTA */}
-        <td className={`py-3.5 px-3 text-right font-black whitespace-nowrap text-sm ${isCancelled ? 'line-through text-gray-400' : 'text-green-600'}`}>
+        <td className={`py-3 px-1.5 xl:px-2.5 text-right font-black whitespace-nowrap text-xs xl:text-sm ${isCancelled ? 'line-through text-gray-400' : 'text-green-600'}`}>
           {formatMoney(gananciaPedido)}
         </td>
 
         {/* 9. ESTATUS */}
-        <td className="py-3.5 px-3 text-center whitespace-nowrap">
+        <td className="py-3 px-1.5 xl:px-2.5 text-center whitespace-nowrap">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onStatusClick(order);
             }}
-            className={`px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider border shadow-sm inline-flex items-center gap-1.5 transition-all transform hover:scale-105 active:scale-95 ${getStatusColor(
+            className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border shadow-sm inline-flex items-center gap-1 transition-all transform hover:scale-105 active:scale-95 ${getStatusColor(
               order.estatus
             )}`}
             title="Haz clic para cambiar el estatus"
@@ -160,14 +160,14 @@ export default function MobileOrderCard({
         </td>
 
         {/* 10. FACTURA */}
-        <td className="py-3.5 px-3 text-center whitespace-nowrap">
+        <td className="py-3 px-1.5 xl:px-2.5 text-center whitespace-nowrap">
           {order.requiereFactura ? (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onFacturaClick(order);
               }}
-              className={`px-3 py-1 rounded-full text-[10px] font-black border shadow-sm inline-flex items-center gap-1 transition-all transform hover:scale-105 ${
+              className={`px-2.5 py-1 rounded-full text-[10px] font-black border shadow-sm inline-flex items-center gap-1 transition-all transform hover:scale-105 ${
                 order.facturaEstatus === 'Facturado'
                   ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600'
                   : 'bg-red-600 hover:bg-red-700 text-white border-red-600'
@@ -182,11 +182,11 @@ export default function MobileOrderCard({
         </td>
 
         {/* 11. ACCIONES */}
-        <td className="py-3.5 px-3 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-center justify-center gap-1.5">
+        <td className="py-3 px-1.5 xl:px-2.5 text-center whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center justify-center gap-1">
             <button
               onClick={() => onPdfClick(order)}
-              className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
+              className="w-7 h-7 xl:w-8 xl:h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors"
               title="Ver PDF / Imprimir"
             >
               <Printer className="w-3.5 h-3.5" />
@@ -195,7 +195,7 @@ export default function MobileOrderCard({
             {order.telefono && (
               <button
                 onClick={sendWhatsApp}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-green-50 hover:bg-green-100 text-green-600 transition-colors"
+                className="w-7 h-7 xl:w-8 xl:h-8 flex items-center justify-center rounded-full bg-green-50 hover:bg-green-100 text-green-600 transition-colors"
                 title="Contactar por WhatsApp"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
@@ -205,7 +205,7 @@ export default function MobileOrderCard({
             {onEdit && (
               <button
                 onClick={() => onEdit(order)}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 text-[#173865] transition-colors"
+                className="w-7 h-7 xl:w-8 xl:h-8 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 text-[#173865] transition-colors"
                 title="Editar pedido"
               >
                 <Edit3 className="w-3.5 h-3.5" />
@@ -215,7 +215,7 @@ export default function MobileOrderCard({
             {order.estatus !== 'Cancelado' && onStatusClick && (
               <button
                 onClick={() => onStatusClick({ ...order, estatus: 'Cancelado' })}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 text-red-500 transition-colors"
+                className="w-7 h-7 xl:w-8 xl:h-8 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 text-red-500 transition-colors"
                 title={`Cancelar ${order.tipo === 'COTIZACION' ? 'cotización' : 'pedido'}`}
               >
                 <XCircle className="w-3.5 h-3.5" />
@@ -225,7 +225,7 @@ export default function MobileOrderCard({
             {order.tipo === 'COTIZACION' && !order.convertidaAPedido && order.estatus !== 'Aprobado' && order.estatus !== 'Convertido' && onAprobarCotizacion && (
               <button
                 onClick={() => onAprobarCotizacion(order)}
-                className="px-3 py-1.5 rounded-full bg-[#173865] hover:bg-blue-900 text-white text-[11px] font-bold shadow-sm transition-all active:scale-95 flex items-center gap-1"
+                className="px-2.5 py-1 rounded-full bg-[#173865] hover:bg-blue-900 text-white text-[10px] xl:text-[11px] font-bold shadow-sm transition-all active:scale-95 flex items-center gap-1"
                 title="Aprobar a Pedido"
               >
                 <CheckCircle2 className="w-3 h-3" />
