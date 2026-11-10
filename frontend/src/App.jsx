@@ -230,6 +230,11 @@ export default function App() {
     }
   };
 
+  const handleCancelMovimiento = async (id, data) => {
+    await api.cancelMovimiento(id, data);
+    await fetchData();
+  };
+
   const handleSaveRecoleccion = async (payload) => {
     await api.saveRecoleccion(payload);
     await fetchData();
