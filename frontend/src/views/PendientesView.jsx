@@ -285,113 +285,112 @@ export default function PendientesView({
 
   return (
     <div className="w-full space-y-4">
-      {/* 2. Tarjetas de Resumen de Métricas (Estilo Jobie) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+      {/* 2. Tarjetas de Resumen de Métricas (Diseño idéntico a las tarjetas del ERP) */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {/* Total */}
         <div 
           onClick={() => setStatusFilter('Todos')}
-          className={`cursor-pointer rounded-3xl p-4 transition-all flex items-center justify-between text-white shadow-md active:scale-98 ${
-            statusFilter === 'Todos' ? 'ring-4 ring-purple-300 shadow-xl' : 'hover:opacity-95'
-          } bg-gradient-to-br from-[#3511A3] to-[#4F26E2]`}
+          className={`cursor-pointer bg-gray-900/90 border rounded-xl p-3.5 transition-all flex items-center justify-between ${
+            statusFilter === 'Todos' ? 'border-gray-500 shadow-lg ring-1 ring-gray-500' : 'border-gray-800 hover:border-gray-700'
+          }`}
         >
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-purple-200 block mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block mb-1">
               TOTAL PENDIENTES
             </span>
-            <span className="text-3xl font-black text-white">{totalCount}</span>
+            <span className="text-2xl font-black text-gray-100">{totalCount}</span>
           </div>
-          <div className="p-3 rounded-2xl bg-white/20 text-white backdrop-blur-sm">
-            <ListTodo className="w-6 h-6 stroke-[2.5]" />
+          <div className="p-2.5 rounded-lg bg-gray-800 text-gray-300">
+            <ListTodo className="w-5 h-5" />
           </div>
         </div>
 
         {/* Pendientes Activos */}
         <div 
           onClick={() => setStatusFilter('Pendiente')}
-          className={`cursor-pointer rounded-3xl p-4 transition-all flex items-center justify-between text-white shadow-md active:scale-98 ${
-            statusFilter === 'Pendiente' ? 'ring-4 ring-blue-300 shadow-xl' : 'hover:opacity-95'
-          } bg-gradient-to-br from-[#1E9AF1] to-[#2176FF]`}
+          className={`cursor-pointer bg-gray-900/90 border rounded-xl p-3.5 transition-all flex items-center justify-between ${
+            statusFilter === 'Pendiente' ? 'border-amber-500 shadow-lg ring-1 ring-amber-500' : 'border-gray-800 hover:border-amber-900/40'
+          }`}
         >
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-blue-100 block mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400/90 block mb-1">
               PENDIENTES
             </span>
-            <span className="text-3xl font-black text-white">{pendientesCount}</span>
+            <span className="text-2xl font-black text-amber-400">{pendientesCount}</span>
           </div>
-          <div className="p-3 rounded-2xl bg-white/20 text-white backdrop-blur-sm">
-            <Clock className="w-6 h-6 stroke-[2.5]" />
+          <div className="p-2.5 rounded-lg bg-amber-950/60 text-amber-400 border border-amber-800/50">
+            <Clock className="w-5 h-5" />
           </div>
         </div>
 
         {/* En espera */}
         <div 
           onClick={() => setStatusFilter('En espera')}
-          className={`cursor-pointer rounded-3xl p-4 transition-all flex items-center justify-between text-white shadow-md active:scale-98 ${
-            statusFilter === 'En espera' ? 'ring-4 ring-purple-300 shadow-xl' : 'hover:opacity-95'
-          } bg-gradient-to-br from-[#8A3FFC] to-[#6E1FD1]`}
+          className={`cursor-pointer bg-gray-900/90 border rounded-xl p-3.5 transition-all flex items-center justify-between ${
+            statusFilter === 'En espera' ? 'border-purple-500 shadow-lg ring-1 ring-purple-500' : 'border-gray-800 hover:border-purple-900/40'
+          }`}
         >
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-purple-100 block mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400/90 block mb-1">
               EN ESPERA
             </span>
-            <span className="text-3xl font-black text-white">{enEsperaCount}</span>
+            <span className="text-2xl font-black text-purple-400">{enEsperaCount}</span>
           </div>
-          <div className="p-3 rounded-2xl bg-white/20 text-white backdrop-blur-sm">
-            <Hourglass className="w-6 h-6 stroke-[2.5]" />
+          <div className="p-2.5 rounded-lg bg-purple-950/60 text-purple-400 border border-purple-800/50">
+            <Hourglass className="w-5 h-5" />
           </div>
         </div>
 
         {/* Atendidos */}
         <div 
           onClick={() => setStatusFilter('Atendido')}
-          className={`cursor-pointer rounded-3xl p-4 transition-all flex items-center justify-between text-white shadow-md active:scale-98 ${
-            statusFilter === 'Atendido' ? 'ring-4 ring-cyan-300 shadow-xl' : 'hover:opacity-95'
-          } bg-gradient-to-br from-[#00B4D8] to-[#0077B6]`}
+          className={`cursor-pointer bg-gray-900/90 border rounded-xl p-3.5 transition-all flex items-center justify-between ${
+            statusFilter === 'Atendido' ? 'border-cyan-500 shadow-lg ring-1 ring-cyan-500' : 'border-gray-800 hover:border-cyan-900/40'
+          }`}
         >
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-cyan-100 block mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400/90 block mb-1">
               ATENDIDOS
             </span>
-            <span className="text-3xl font-black text-white">{atendidosCount}</span>
+            <span className="text-2xl font-black text-cyan-400">{atendidosCount}</span>
           </div>
-          <div className="p-3 rounded-2xl bg-white/20 text-white backdrop-blur-sm">
-            <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
+          <div className="p-2.5 rounded-lg bg-cyan-950/60 text-cyan-400 border border-cyan-800/50">
+            <CheckCircle2 className="w-5 h-5" />
           </div>
         </div>
 
         {/* Culminados */}
         <div 
           onClick={() => setStatusFilter('Culminado')}
-          className={`cursor-pointer rounded-3xl p-4 transition-all flex items-center justify-between text-white shadow-md active:scale-98 ${
-            statusFilter === 'Culminado' ? 'ring-4 ring-emerald-300 shadow-xl' : 'hover:opacity-95'
-          } bg-gradient-to-br from-[#00C988] to-[#059669]`}
+          className={`cursor-pointer bg-gray-900/90 border rounded-xl p-3.5 transition-all flex items-center justify-between ${
+            statusFilter === 'Culminado' ? 'border-emerald-500 shadow-lg ring-1 ring-emerald-500' : 'border-gray-800 hover:border-emerald-900/40'
+          }`}
         >
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-100 block mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400/90 block mb-1">
               CULMINADOS
             </span>
-            <span className="text-3xl font-black text-white">{culminadosCount}</span>
+            <span className="text-2xl font-black text-emerald-400">{culminadosCount}</span>
           </div>
-          <div className="p-3 rounded-2xl bg-white/20 text-white backdrop-blur-sm">
-            <Check className="w-6 h-6 stroke-[3]" />
+          <div className="p-2.5 rounded-lg bg-emerald-950/60 text-emerald-400 border border-emerald-800/50">
+            <Check className="w-5 h-5 stroke-[2.5]" />
           </div>
         </div>
       </div>
-
-      {/* Barra de B{/* Barra de Búsqueda y Botón Nuevo Pendiente (Estilo Jobie Pill) */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3 rounded-3xl border border-gray-100 shadow-sm text-xs">
+      {/* Barra de Búsqueda y Botón Nuevo Pendiente */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-gray-900/60 p-2.5 rounded-xl border border-gray-800 text-xs">
         <div className="relative flex items-center w-full sm:w-80">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 pointer-events-none" />
+          <Search className="w-4 h-4 text-gray-500 absolute left-3 pointer-events-none" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-200 focus:border-[#3511A3] focus:bg-white rounded-full pl-10 pr-8 py-2.5 text-gray-800 focus:outline-none transition-all text-xs font-medium shadow-inner"
+            className="w-full bg-gray-950 border border-gray-800 focus:border-emerald-500 rounded-lg pl-9 pr-8 py-2 text-gray-200 focus:outline-none transition-colors text-xs"
           />
           {searchTerm && (
             <button 
               onClick={() => setSearchTerm('')}
-              className="absolute right-3 text-gray-400 hover:text-gray-600"
+              className="absolute right-2.5 text-gray-500 hover:text-gray-300"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -400,15 +399,15 @@ export default function PendientesView({
 
         <button
           onClick={handleOpenNew}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#3511A3] hover:bg-[#2A0D85] text-white rounded-full text-xs font-bold shadow-md shadow-indigo-900/15 transition-all active:scale-95 shrink-0"
+          className="flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold shadow-md transition-all active:scale-95 shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[2.5]" />
           Nuevo Pendiente
         </button>
       </div>
 
-      {/* 4. Tabla{/* 4. Tabla / Lista de Pendientes (100% primera plana, sin scroll horizontal) */}
-      <div className="w-full bg-white border border-gray-100 rounded-3xl overflow-hidden shadow-sm">
+      {/* 4. Tabla / Lista de Pendientes (100% primera plana, sin scroll horizontal) */}
+      <div className="w-full bg-gray-900 border border-gray-800 rounded-xl overflow-hidden shadow-xl">
         {/* Cabecera */}
         <div className="hidden md:flex items-center gap-3 px-4 py-2.5 bg-gray-950 border-b border-gray-800 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
           <div className="w-8 text-center">✓</div>
@@ -512,7 +511,7 @@ export default function PendientesView({
                         {visibleTags.map((tag, idx) => (
                           <span 
                             key={idx} 
-                            className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold bg-purple-50 text-[#3511A3] border border-purple-100 max-w-[110px] truncate shadow-sm"
+                            className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-gray-800/90 text-gray-200 border border-gray-700 max-w-[100px] truncate"
                             title={tag}
                           >
                             {tag}
@@ -521,7 +520,7 @@ export default function PendientesView({
                         {extraTagsCount > 0 && (
                           <span 
                             title={itemTags.slice(2).join(', ')}
-                            className="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-extrabold bg-indigo-100 text-[#3511A3] border border-indigo-200 cursor-help shadow-sm"
+                            className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-800 text-emerald-400 border border-emerald-700/60 cursor-help"
                           >
                             +{extraTagsCount}
                           </span>
@@ -567,7 +566,7 @@ export default function PendientesView({
                       type="button"
                       onClick={() => handleOpenBitacora(item)}
                       title="Abrir bitácora y agregar comentarios"
-                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${
+                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border transition-all ${
                         comentariosCount > 0 
                           ? 'bg-blue-950/60 text-blue-300 border-blue-800 hover:bg-blue-900/60' 
                           : 'bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700 hover:text-white'

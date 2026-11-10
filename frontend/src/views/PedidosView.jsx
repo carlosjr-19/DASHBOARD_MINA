@@ -95,7 +95,7 @@ export default function PedidosView({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-th-121314 text-[11px] text-gray-100 pl-8 pr-2.5 py-1.5 rounded-full border border-gray-200 shadow-inner focus:outline-none focus:ring-1 focus:ring-orange-500"
+            className="w-full bg-th-121314 text-[11px] text-gray-100 pl-8 pr-2.5 py-1.5 rounded-lg border border-gray-700 focus:outline-none focus:ring-1 focus:ring-orange-500"
           />
         </div>
 
@@ -118,7 +118,7 @@ export default function PedidosView({
               <button
                 key={st.id}
                 onClick={() => setStatusFilter(st.id)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 shadow-sm ${
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 ${
                   isSelected
                     ? 'bg-orange-600 text-white shadow-sm border border-orange-500'
                     : 'bg-th-151617 text-gray-400 hover:text-gray-200 border border-gray-800 hover:border-gray-700'
@@ -126,7 +126,7 @@ export default function PedidosView({
               >
                 <span>{st.label}</span>
                 <span
-                  className={`min-w-[18px] h-4 px-1 rounded-full text-[11px] font-extrabold flex items-center justify-center leading-none ${
+                  className={`min-w-[16px] h-4 px-0.5 rounded-full text-xs font-bold flex items-center justify-center leading-none ${
                     isSelected
                       ? 'bg-white text-orange-600 shadow-sm'
                       : 'bg-gray-800 text-gray-200 border border-gray-700/60'
@@ -141,7 +141,7 @@ export default function PedidosView({
       </div>
 
       {/* Orders Table Container matching reference image */}
-      <div className="overflow-x-auto rounded-3xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+      <div className="overflow-x-auto rounded-xl border border-gray-800 bg-th-161719 shadow-sm">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr className="border-b border-gray-800 bg-th-131416 text-[10px] sm:text-[11px] font-bold uppercase text-gray-400">

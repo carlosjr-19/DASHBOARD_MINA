@@ -8,8 +8,7 @@ import {
   Users, 
   Layers,
   LogOut,
-  ListTodo,
-  X
+  ListTodo
 } from 'lucide-react';
 
 export default function Sidebar({
@@ -67,16 +66,16 @@ export default function Sidebar({
       {/* Backdrop overlay for mobile */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden no-print transition-opacity" 
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 lg:hidden no-print transition-opacity" 
           onClick={onClose}
           aria-hidden="true"
         />
       )}
 
-      {/* Sidebar element estilo Jobie */}
+      {/* Sidebar element */}
       <aside
         className={`
-          no-print flex flex-col bg-gradient-to-b from-[#3511A3] via-[#2F0E93] to-[#240974] text-white border-r border-[#3E16BF]/30
+          no-print flex flex-col bg-th-161719 border-r border-gray-800/80
           /* Mobile styles (fixed drawer overlay) */
           fixed inset-y-0 left-0 z-50 w-64 transition-transform duration-300 ease-in-out lg:static lg:z-20
           ${isOpen ? 'translate-x-0 shadow-2xl lg:shadow-none' : '-translate-x-full lg:translate-x-0'}
@@ -85,16 +84,16 @@ export default function Sidebar({
         `}
       >
         {/* Brand Header */}
-        <div className="p-5 border-b border-white/10 flex items-center justify-between">
+        <div className="p-4 border-b border-gray-800/80 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-white text-[#3511A3] flex items-center justify-center font-black text-lg shadow-lg shadow-black/20">
+            <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center font-bold text-white shadow-md shadow-orange-900/40 text-sm">
               M
             </div>
             <div>
-              <h1 className="font-extrabold text-sm text-white tracking-wide">
+              <h1 className="font-bold text-sm text-gray-100 tracking-wide">
                 MINA DESIGN
               </h1>
-              <span className="text-[10px] text-purple-200/80 block -mt-0.5 font-bold tracking-wider">
+              <span className="text-[10px] text-gray-400 block -mt-0.5 font-medium">
                 SISTEMA INTEGRAL
               </span>
             </div>
@@ -103,15 +102,15 @@ export default function Sidebar({
           {/* Mobile close button */}
           <button 
             onClick={onClose}
-            className="lg:hidden text-white/70 hover:text-white p-1 rounded-xl hover:bg-white/10 transition-colors"
+            className="lg:hidden text-gray-400 hover:text-gray-200 p-1 rounded-md"
             aria-label="Cerrar menú"
           >
-            <X className="w-5 h-5" />
+            ✕
           </button>
         </div>
 
-        {/* Navigation Tabs (Pill Shape) */}
-        <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
+        {/* Navigation Tabs */}
+        <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = currentTab === tab.id;
@@ -123,16 +122,16 @@ export default function Sidebar({
                   setCurrentTab(tab.id);
                   onClose();
                 }}
-                className={`w-full flex items-center justify-between px-3.5 py-3 rounded-2xl text-xs font-bold transition-all group ${
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
                   isActive
-                    ? 'bg-white text-[#3511A3] shadow-md shadow-black/15 translate-x-1'
-                    : 'text-white/75 hover:text-white hover:bg-white/10'
+                    ? 'bg-orange-600/15 text-orange-400 border border-orange-500/30 shadow-sm'
+                    : 'text-gray-400 hover:text-gray-100 hover:bg-gray-800/60 border border-transparent'
                 }`}
               >
-                <div className="flex items-center gap-3 truncate">
+                <div className="flex items-center gap-2.5 truncate">
                   <Icon 
                     className={`w-4 h-4 flex-shrink-0 transition-colors ${
-                      isActive ? 'text-[#3511A3]' : 'text-white/70 group-hover:text-white'
+                      isActive ? 'text-orange-400' : 'text-gray-400 group-hover:text-gray-200'
                     }`} 
                   />
                   <span className="truncate">{tab.label}</span>
@@ -140,10 +139,14 @@ export default function Sidebar({
 
                 {(tab.id === 'pedidos' || tab.badge > 0) && (
                   <span
-                    className={`min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-extrabold flex items-center justify-center leading-none transition-all ${
-                      isActive
-                        ? 'bg-[#3511A3] text-white shadow-sm'
-                        : 'bg-white/20 text-white group-hover:bg-white/30'
+                    className={`min-w-[18px] h-4 px-1 rounded-full text-xs font-bold flex items-center justify-center leading-none ${
+                      tab.id === 'pendientes'
+                        ? 'bg-amber-500 text-white shadow-sm shadow-amber-950/60'
+                        : tab.id === 'pedidos'
+                          ? 'bg-orange-500 text-white shadow-sm shadow-orange-950/60'
+                          : isActive
+                            ? 'bg-orange-500 text-white'
+                            : 'bg-gray-800 text-gray-300 group-hover:bg-gray-700'
                     }`}
                   >
                     {tab.badge}
@@ -155,17 +158,17 @@ export default function Sidebar({
         </nav>
 
         {/* User Card at bottom of sidebar */}
-        <div className="p-3.5 border-t border-white/10 bg-black/15">
+        <div className="p-3 border-t border-gray-800/80 bg-th-131416">
           <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2.5 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-white/20 border border-white/30 flex items-center justify-center text-xs font-black text-white flex-shrink-0 shadow-sm">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-full bg-orange-600/20 border border-orange-500/30 flex items-center justify-center text-xs font-bold text-orange-400 flex-shrink-0">
                 {user?.nombre ? user.nombre.charAt(0).toUpperCase() : 'M'}
               </div>
               <div className="truncate">
-                <p className="text-xs font-bold text-white truncate">
+                <p className="text-xs font-semibold text-gray-200 truncate">
                   {user?.nombre || 'Admin'}
                 </p>
-                <span className="text-[10px] text-purple-200 capitalize block -mt-0.5 font-medium">
+                <span className="text-[10px] text-gray-400 capitalize block -mt-0.5">
                   {user?.rol || 'Administrador'}
                 </span>
               </div>
@@ -174,7 +177,7 @@ export default function Sidebar({
             {onLogout && (
               <button
                 onClick={onLogout}
-                className="p-1.5 rounded-xl text-white/70 hover:text-rose-300 hover:bg-white/10 transition-colors flex-shrink-0"
+                className="p-1.5 rounded-lg text-gray-400 hover:text-rose-400 hover:bg-rose-950/30 transition-colors flex-shrink-0"
                 title="Cerrar sesión"
               >
                 <LogOut className="w-4 h-4" />

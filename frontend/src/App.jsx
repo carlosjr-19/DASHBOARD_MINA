@@ -386,7 +386,7 @@ export default function App() {
 
       {/* Banner de Borrador Global (como Gmail) */}
       {draftOrderInfo && !isNuevoPedidoOpen && (
-        <div className="bg-gradient-to-r from-[#3511A3] to-[#4F26E2] border-b border-purple-400/30 px-6 py-2.5 flex flex-wrap items-center justify-between text-xs text-white z-30 shadow-md">
+        <div className="bg-gradient-to-r from-amber-950 via-amber-900 to-gray-900 border-b border-amber-600/50 px-4 py-2 flex flex-wrap items-center justify-between text-xs text-amber-200 z-30 shadow-md">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
             <span>
@@ -401,7 +401,7 @@ export default function App() {
                 setNuevoPedidoTipo(draftOrderInfo.tipo || 'PEDIDO');
                 setIsNuevoPedidoOpen(true);
               }}
-              className="px-4 py-1.5 bg-white text-[#3511A3] font-extrabold rounded-full shadow-sm transition-all text-xs hover:bg-purple-50"
+              className="px-3 py-1 bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold rounded-md shadow-sm transition-all text-xs"
             >
               Retomar Borrador
             </button>
